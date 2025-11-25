@@ -1,0 +1,31 @@
+{
+  "name": "ScoutPro",
+  "version": "1.0.0",
+  "description": "Profesyonel Oyuncu İzleme ve Analiz Uygulaması",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "author": "tugracoskun",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.scoutpro.app",
+    "productName": "ScoutPro",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "files": [
+      "**/*",
+      "!dist/*",
+      "!node_modules/*"
+    ]
+  }
+}

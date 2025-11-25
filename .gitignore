@@ -1,0 +1,4 @@
+node_modules/
+dist/
+scout_data.json
+.DS_Store
