@@ -1,6 +1,6 @@
 {
   "name": "ScoutPro",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Profesyonel Oyuncu İzleme ve Analiz Uygulaması",
   "main": "main.js",
   "scripts": {
