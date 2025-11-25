@@ -117,3 +117,26 @@ html, body {
 #content-area::-webkit-scrollbar-thumb:hover {
     background: #475569; /* Üzerine gelince renk değişimi */
 }
+
+/* INPUT VE SELECT FIX */
+input, textarea, select {
+    user-select: text !important; /* Metin seçilebilir olsun */
+    pointer-events: auto !important; /* Tıklanabilir olsun */
+    z-index: 20; /* Diğer öğelerin üstünde olsun */
+}
+
+/* Modal Overlay'in inputları kapatmaması için */
+#modal-content {
+    position: relative;
+    z-index: 60; /* Overlay'den (z-50) daha yüksek */
+}
+
+/* BİLDİRİM ANİMASYONU */
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.toast-message {
+    animation: slideIn 0.3s ease-out forwards;
+    pointer-events: auto; /* Tıklanabilir olsun */
+}

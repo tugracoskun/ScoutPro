@@ -187,12 +187,12 @@ ScoutApp.prototype.updateMatch = function(id) {
 }
 
 ScoutApp.prototype.deleteMatch = function(id) {
-    if(!confirm("Bu maçı silmek istediğinize emin misiniz?")) return;
-    this.state.data.matches = this.state.data.matches.filter(x => x.id !== id);
-    
-    this.saveData(); // KAYIT
-
-    this.renderMatches(document.getElementById('content-area'));
+    this.confirmAction("Bu maçı izleme listesinden kaldırmak istiyor musunuz?", () => {
+        this.state.data.matches = this.state.data.matches.filter(x => x.id !== id);
+        this.saveData();
+        this.renderMatches(document.getElementById('content-area'));
+        this.notify("Maç silindi.");
+    });
 }
 
 ScoutApp.prototype.addToWatchlist = function() {

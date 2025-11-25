@@ -49,13 +49,15 @@ ScoutApp.prototype.addPlayerVideo = function(playerId) {
 };
 
 ScoutApp.prototype.deletePlayerVideo = function(playerId, index) {
-    if(!confirm("Silinsin mi?")) return;
-    const player = this.state.data.players.find(p => p.id === playerId);
-    if(player && player.videos) {
-        player.videos.splice(index, 1);
-        this.saveData(); // KAYIT
-        this.openPlayerModal(playerId, 0, 'videos');
-    }
+    this.confirmAction("Bu videoyu silmek istediğinize emin misiniz?", () => {
+        const player = this.state.data.players.find(p => p.id === playerId);
+        if(player && player.videos) {
+            player.videos.splice(index, 1);
+            this.saveData();
+            this.openPlayerModal(playerId, 0, 'videos');
+            this.notify("Video silindi.");
+        }
+    });
 };
 
 ScoutApp.prototype.addSocialNote = function(playerId, currentTab='notes') {

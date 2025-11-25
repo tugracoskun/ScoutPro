@@ -6,14 +6,11 @@
     <title>ScoutPro v1.0.1 - Desktop</title>
     
     <!-- YEREL (OFFLINE) KÜTÜPHANELER -->
-    <!-- İnternet olmasa bile çalışması için vendor klasöründen çekiyoruz -->
     <script src="assets/vendor/tailwind.js"></script>
     <script src="assets/vendor/lucide.js"></script>
     <script src="assets/vendor/apexcharts.js"></script>
 
-    <!-- FONTLAR (Google Fonts) -->
-    <!-- Not: Tamamen offline için bu font dosyaları da indirilip assets klasörüne alınabilir. 
-         Şimdilik internet varsa çeker, yoksa sistem fontunu kullanır. -->
+    <!-- FONTLAR -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <!-- ÖZEL CSS -->
@@ -126,7 +123,7 @@
         </header>
 
         <div id="content-area" class="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
-            <!-- DYNAMIC CONTENT WILL BE LOADED HERE BY JS -->
+            <!-- DYNAMIC CONTENT -->
         </div>
     </main>
 
@@ -134,6 +131,9 @@
     <div id="modal-overlay" class="fixed inset-0 z-50 hidden bg-dark-950/80 backdrop-blur-md flex items-center justify-center px-4 fade-in">
         <div id="modal-content" class="bg-dark-900 border border-dark-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden relative"></div>
     </div>
+
+    <!-- YENİ: BİLDİRİM KUTUSU (Alert yerine) -->
+    <div id="notification-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- JAVASCRIPT MODÜLLERİ (SIRALAMA ÖNEMLİ) -->
     <script src="assets/js/data.js"></script>
