@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScoutPro v1.0.1</title>
+    <title>ScoutPro v1.0 - Desktop</title>
     
-    <!-- FRAMEWORKS & LIBRARIES -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- YEREL (OFFLINE) KÜTÜPHANELER -->
+    <!-- İnternet olmasa bile çalışması için vendor klasöründen çekiyoruz -->
+    <script src="assets/vendor/tailwind.js"></script>
+    <script src="assets/vendor/lucide.js"></script>
+    <script src="assets/vendor/apexcharts.js"></script>
+
+    <!-- FONTLAR (Google Fonts) -->
+    <!-- Not: Tamamen offline için bu font dosyaları da indirilip assets klasörüne alınabilir. 
+         Şimdilik internet varsa çeker, yoksa sistem fontunu kullanır. -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- CUSTOM CSS -->
+    <!-- ÖZEL CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 
-    <!-- TAILWIND CONFIG -->
+    <!-- TAILWIND AYARLARI -->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -37,7 +42,7 @@
         }
     </script>
 </head>
-<body class="flex h-screen overflow-hidden font-sans selection:bg-scout-500/30">
+<body class="flex h-screen overflow-hidden font-sans selection:bg-scout-500/30 bg-dark-950 text-slate-200">
 
     <!-- SIDEBAR -->
     <aside id="sidebar" class="w-72 bg-dark-900 border-r border-dark-800 flex flex-col z-30 shadow-2xl transition-all duration-300">
@@ -130,21 +135,25 @@
         <div id="modal-content" class="bg-dark-900 border border-dark-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden relative"></div>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- JAVASCRIPT MODÜLLERİ (SIRALAMA ÖNEMLİ) -->
     <script src="assets/js/data.js"></script>
     <script src="assets/js/core.js"></script>
     <script src="assets/js/utils.js"></script>
     <script src="assets/js/database.js"></script>
+    
+    <!-- Player Modules -->
     <script src="assets/js/players-list.js"></script>
     <script src="assets/js/players-report.js"></script>
     <script src="assets/js/players-modal.js"></script>
     <script src="assets/js/players-media.js"></script>
     <script src="assets/js/players-chart.js"></script>
+    
     <script src="assets/js/matches.js"></script>
     
-    <!-- YENİ EKLENEN -->
+    <!-- Auth (Dosya Yönetimi) -->
     <script src="assets/js/auth.js"></script>
     
+    <!-- Başlatıcı -->
     <script src="assets/js/init.js"></script>
 </body>
 </html>
