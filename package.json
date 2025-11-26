@@ -1,5 +1,5 @@
 {
-  "name": "ScoutPro",
+  "name": "scoutpro",
   "version": "1.0.1",
   "description": "Profesyonel Oyuncu İzleme ve Analiz Uygulaması",
   "main": "main.js",
@@ -7,7 +7,7 @@
     "start": "electron .",
     "dist": "electron-builder"
   },
-  "author": "tugracoskun",
+  "author": "Senin Adın",
   "license": "ISC",
   "devDependencies": {
     "electron": "^33.2.0",
@@ -20,7 +20,8 @@
       "output": "dist"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "assets/icon.ico"
     },
     "files": [
       "**/*",
