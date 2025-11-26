@@ -13,7 +13,7 @@
     <!-- FONTLAR -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- ÖZEL CSS -->
+    <!-- ÖZEL CSS (Cyberform Fontu burada tanımlı) -->
     <link rel="stylesheet" href="assets/css/style.css">
 
     <!-- TAILWIND AYARLARI -->
@@ -25,6 +25,7 @@
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
+                        cyber: ['Cyberform', 'sans-serif'], // Özel Font Eklendi
                     },
                     colors: {
                         scout: {
@@ -45,11 +46,18 @@
     <aside id="sidebar" class="w-72 bg-dark-900 border-r border-dark-800 flex flex-col z-30 shadow-2xl transition-all duration-300">
         <div class="h-20 flex items-center px-6 border-b border-dark-800 overflow-hidden">
             <div class="flex items-center gap-3 text-scout-500">
-                <div class="min-w-[32px] h-8 flex items-center justify-center bg-scout-500/10 rounded-lg">
-                    <i data-lucide="radar" class="w-6 h-6"></i>
+                <!-- LOGO KISMI -->
+                <div class="w-10 h-10 flex items-center justify-center">
+                    <img src="assets/logo.png" class="w-full h-full object-contain drop-shadow-lg" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <!-- Yedek İkon -->
+                    <div class="hidden min-w-[32px] h-8 items-center justify-center bg-scout-500/10 rounded-lg">
+                        <i data-lucide="radar" class="w-6 h-6"></i>
+                    </div>
                 </div>
+                
                 <div class="sidebar-text flex flex-col">
-                    <span class="font-bold text-xl tracking-tight text-white leading-none">Scout<span class="text-scout-500">Pro</span></span>
+                    <!-- YENİ FONT İLE LOGO YAZISI -->
+                    <span class="font-cyber text-2xl tracking-wide text-white leading-none mt-1">Scout<span class="text-scout-500">Pro</span></span>
                     <span class="text-[10px] text-slate-500 font-mono mt-1">Custom DB</span>
                 </div>
             </div>
@@ -132,7 +140,7 @@
         <div id="modal-content" class="bg-dark-900 border border-dark-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden relative"></div>
     </div>
 
-    <!-- YENİ: BİLDİRİM KUTUSU (Alert yerine) -->
+    <!-- BİLDİRİM KUTUSU -->
     <div id="notification-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- JAVASCRIPT MODÜLLERİ (SIRALAMA ÖNEMLİ) -->
