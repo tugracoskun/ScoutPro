@@ -1,4 +1,4 @@
-// --- OYUNCU DETAY MODALI (ANA YAPI VE GÜNCELLEME) ---
+// --- OYUNCU DETAY MODALI (DÜZENLEME & SİLME EKLENDİ) ---
 
 ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, activeTab = 'notes') {
     const p = this.state.data.players.find(x => x.id === id);
@@ -45,8 +45,9 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                     </div>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <div class="relative group">
+                <div class="flex items-center gap-3">
+                    <!-- Tarih Seçimi -->
+                    <div class="relative group mr-2">
                         <div class="flex items-center gap-2 bg-dark-800 border border-dark-700 px-2 py-2 rounded-lg cursor-pointer">
                             <i data-lucide="calendar-days" class="w-4 h-4 text-slate-400 ml-1"></i>
                             <select onchange="app.openPlayerModal(${id}, this.value, '${activeTab}')" class="bg-transparent text-white text-sm font-bold outline-none cursor-pointer appearance-none pr-6 pl-1">
@@ -59,6 +60,17 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                             <i data-lucide="chevron-down" class="w-3 h-3 text-slate-500 absolute right-3 pointer-events-none"></i>
                         </div>
                     </div>
+
+                    <!-- YENİ: Düzenle ve Sil Butonları -->
+                    <button onclick="app.openEditPlayerModal(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-blue-500/20 hover:text-blue-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700" title="Bilgileri Düzenle">
+                        <i data-lucide="pencil" class="w-4 h-4"></i>
+                    </button>
+                    
+                    <button onclick="app.deletePlayer(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700 mr-2" title="Oyuncuyu Sil">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+
+                    <div class="h-8 w-[1px] bg-dark-800"></div>
 
                     <button onclick="app.openNewReportMode(${id})" class="flex items-center gap-2 bg-scout-600 hover:bg-scout-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg shadow-scout-900/20">
                         <i data-lucide="file-plus" class="w-4 h-4"></i> Yeni Rapor
@@ -136,17 +148,13 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
 
                     <!-- 3. RADAR VE TABLI MEDYA ALANI -->
                     <div class="lg:col-span-4 flex flex-col gap-6">
-                        
-                        <!-- Radar -->
                         <div class="bg-dark-900/50 backdrop-blur rounded-3xl border border-dark-800 p-6 shadow-xl flex flex-col items-center justify-center relative min-h-[380px]">
                             <h3 class="absolute top-6 left-6 text-sm font-bold text-slate-400 flex items-center gap-2 uppercase tracking-wider"><i data-lucide="radar" class="w-4 h-4 text-scout-500"></i> Analiz Grafiği</h3>
                             <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-scout-900/10 to-transparent pointer-events-none"></div>
                             <div id="modal-radar" class="w-full h-[320px] mt-6 relative z-10"></div>
                         </div>
 
-                        <!-- Medya & Notlar -->
                         <div class="bg-dark-900/50 backdrop-blur rounded-3xl border border-dark-800 p-6 shadow-xl flex-1 flex flex-col min-h-[300px]">
-                            
                             <div class="flex gap-6 border-b border-dark-800 mb-4">
                                 <button onclick="app.openPlayerModal(${id}, ${selectedHistoryIndex}, 'notes')" class="text-sm font-bold ${activeTab === 'notes' ? tabActive : tabInactive} flex items-center gap-2">
                                     <i data-lucide="message-square-quote" class="w-4 h-4"></i> Notlar
@@ -156,7 +164,6 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                                 </button>
                             </div>
 
-                            <!-- NOTLAR TABI -->
                             <div class="${activeTab === 'notes' ? 'flex' : 'hidden'} flex-col flex-1 h-full">
                                 <div id="social-list-${p.id}" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2 mb-4">
                                     ${socialNotes.length === 0 ? '<div class="text-slate-600 text-xs italic text-center py-8">Henüz not yok.</div>' : socialNotes.map(n => `
@@ -171,7 +178,6 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                                 </div>
                             </div>
 
-                            <!-- VİDEOLAR TABI -->
                             <div class="${activeTab === 'videos' ? 'flex' : 'hidden'} flex-col flex-1 h-full">
                                 <div class="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2 mb-4">
                                     ${videos.length === 0 ? '<div class="text-slate-600 text-xs italic text-center py-8">Henüz video yok.</div>' : videos.map((v, i) => `
@@ -206,14 +212,121 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
     this.initComparisonRadar(p, currentReport, prevReport);
 };
 
-// --- YENİ RAPOR EKLEME MODU ---
+// --- OYUNCU DÜZENLEME MODU ---
+
+ScoutApp.prototype.openEditPlayerModal = function(id) {
+    const p = this.state.data.players.find(x => x.id === id);
+    if (!p) return;
+
+    const teams = this.state.data.teams.map(t=>({val:t.id, txt:t.name}));
+
+    // Mevcut modal içeriğini temizle ve düzenleme formunu yerleştir
+    const container = document.getElementById('modal-content-body');
+    
+    container.innerHTML = `
+        <div class="max-w-2xl mx-auto bg-dark-900 p-8 rounded-3xl border border-dark-800 shadow-2xl mt-10">
+            <div class="flex justify-between items-center mb-6 border-b border-dark-800 pb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="pencil" class="text-blue-500"></i> Oyuncu Bilgilerini Düzenle</h3>
+                <button onclick="app.openPlayerModal(${id})" class="text-slate-400 hover:text-white flex items-center gap-1 text-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Vazgeç</button>
+            </div>
+            
+            <div class="space-y-4">
+                ${this.createInput('edit-p-name', 'Adı Soyadı', 'Ad Soyad', 'text', p.name)}
+                
+                <div class="grid grid-cols-2 gap-4">
+                    ${this.createSelect('edit-p-team', 'Takım', teams, p.teamId)}
+                    ${this.createSelect('edit-p-pos', 'Mevki', POSITIONS.map(x=>({val:x, txt:x})), p.position)}
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    ${this.createInput('edit-p-age', 'Yaş', '18', 'number', p.age, '', 40)}
+                    ${this.createInput('edit-p-height', 'Boy (cm)', '180', 'number', p.height)}
+                    ${this.createSelect('edit-p-foot', 'Ayak', [{val:'Sağ', txt:'Sağ'}, {val:'Sol', txt:'Sol'}, {val:'Her İkisi', txt:'Her İkisi'}], p.foot)}
+                </div>
+                
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-slate-400 ml-1">Potansiyel</label>
+                    <select id="edit-p-potential" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none text-sm">
+                        <option value="Düşük" ${p.potential === 'Düşük' ? 'selected' : ''}>Düşük</option>
+                        <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>Yüksek</option>
+                    </select>
+                </div>
+
+                ${this.createInput('edit-p-img', 'Fotoğraf URL', 'https://...', 'text', p.image)}
+                
+                <div class="grid grid-cols-2 gap-4">
+                    ${this.createInput('edit-p-tm', 'Transfermarkt URL', 'https://...', 'text', p.tmUrl)}
+                    ${this.createInput('edit-p-sofa', 'Sofascore URL', 'https://...', 'text', p.sofaUrl)}
+                </div>
+            </div>
+
+            <button onclick="app.updatePlayer(${id})" class="w-full mt-6 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 transition-all">
+                <i data-lucide="save" class="w-5 h-5"></i> Değişiklikleri Kaydet
+            </button>
+        </div>
+    `;
+    lucide.createIcons();
+};
+
+// --- OYUNCU GÜNCELLEME ---
+ScoutApp.prototype.updatePlayer = function(id) {
+    const p = this.state.data.players.find(x => x.id === id);
+    if (!p) return;
+
+    // Form verilerini al
+    const name = document.getElementById('edit-p-name').value.trim();
+    const teamId = document.getElementById('edit-p-team').value;
+    const age = document.getElementById('edit-p-age').value;
+    
+    if (!name || !teamId) return alert("İsim ve Takım zorunludur.");
+    if (age && parseInt(age) > 40) return alert("Yaş 40'tan büyük olamaz.");
+
+    // Veriyi güncelle
+    p.name = name;
+    p.teamId = parseInt(teamId);
+    p.position = document.getElementById('edit-p-pos').value;
+    p.age = age;
+    p.height = document.getElementById('edit-p-height').value;
+    p.foot = document.getElementById('edit-p-foot').value;
+    p.potential = document.getElementById('edit-p-potential').value;
+    p.image = document.getElementById('edit-p-img').value;
+    p.tmUrl = document.getElementById('edit-p-tm').value;
+    p.sofaUrl = document.getElementById('edit-p-sofa').value;
+
+    this.saveData(); // Kaydet
+    this.notify("Oyuncu bilgileri güncellendi.");
+    this.openPlayerModal(id); // Detay sayfasına geri dön
+};
+
+// --- OYUNCU SİLME ---
+ScoutApp.prototype.deletePlayer = function(id) {
+    this.confirmAction("Bu oyuncuyu ve tüm rapor geçmişini silmek istediğinize emin misiniz?", () => {
+        this.state.data.players = this.state.data.players.filter(x => x.id !== id);
+        
+        // Ayrıca bu oyuncuyla ilgili maçları ve watchlist kayıtlarını da temizleyelim
+        this.state.data.watchlist = this.state.data.watchlist.filter(w => w.id !== id); // ID çakışması olmamalı ama yine de temizleyelim
+        
+        this.saveData();
+        this.closeModal();
+        
+        if(this.state.activePage === 'players') {
+            this.renderPlayers(document.getElementById('content-area'));
+        } else {
+            this.navigate('players');
+        }
+        
+        this.notify("Oyuncu silindi.");
+    });
+};
+
+// ... Diğer fonksiyonlar (openNewReportMode, saveNewPlayerReport vb.) aşağıda aynen kalıyor ...
+// Dosya bütünlüğü için onları da tekrar ekliyorum:
+
 ScoutApp.prototype.openNewReportMode = function(id) {
     const p = this.state.data.players.find(x => x.id === id);
     if(!p) return;
-
     const lastStats = p.history[0].stats;
     this.state.newReport.stats = {...lastStats}; 
-
     const attributeSet = (p.position === 'Kaleci') ? ATTRIBUTE_SETS['Kaleci'] : ATTRIBUTE_SETS['Default'];
 
     const container = document.getElementById('modal-content-body');
@@ -223,7 +336,6 @@ ScoutApp.prototype.openNewReportMode = function(id) {
                 <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="file-plus" class="text-green-500"></i> Yeni Rapor Ekle: ${p.name}</h3>
                 <button onclick="app.openPlayerModal(${id})" class="text-slate-400 hover:text-white flex items-center gap-1 text-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Vazgeç</button>
             </div>
-            
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-bold text-slate-400 ml-1">Potansiyel Durumu</label>
@@ -233,14 +345,8 @@ ScoutApp.prototype.openNewReportMode = function(id) {
                     </select>
                 </div>
             </div>
-
-            <div class="max-h-[500px] overflow-y-auto custom-scrollbar pr-2 mb-6">
-                ${this.getSliderHTMLForUpdate(attributeSet, lastStats)}
-            </div>
-
-            <button onclick="app.saveNewPlayerReport(${id})" class="w-full py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 transition-all">
-                <i data-lucide="save" class="w-5 h-5"></i> Raporu Kaydet
-            </button>
+            <div class="max-h-[500px] overflow-y-auto custom-scrollbar pr-2 mb-6">${this.getSliderHTMLForUpdate(attributeSet, lastStats)}</div>
+            <button onclick="app.saveNewPlayerReport(${id})" class="w-full py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 transition-all"><i data-lucide="save" class="w-5 h-5"></i> Raporu Kaydet</button>
         </div>
     `;
     lucide.createIcons();
@@ -269,28 +375,18 @@ ScoutApp.prototype.getSliderHTMLForUpdate = function(set, currentStats) {
 ScoutApp.prototype.saveNewPlayerReport = function(id) {
     const p = this.state.data.players.find(x => x.id === id);
     if(!p) return;
-
     const newStats = this.state.newReport.stats;
     const newPotential = document.getElementById('new-rep-potential').value;
     const statsArr = Object.values(newStats);
     const avg = statsArr.length > 0 ? Math.round(statsArr.reduce((a,b)=>a+b,0)/statsArr.length) : 50;
     const today = new Date().toLocaleDateString('tr-TR');
-
-    const newHistoryEntry = {
-        date: today,
-        rating: avg,
-        stats: {...newStats},
-        potential: newPotential
-    };
-
+    const newHistoryEntry = { date: today, rating: avg, stats: {...newStats}, potential: newPotential };
     p.history.unshift(newHistoryEntry);
     p.rating = avg;
     p.stats = {...newStats};
     p.potential = newPotential;
     p.dateAdded = today; 
-
-    this.saveData(); // KAYIT
-
+    this.saveData(); 
     this.state.newReport = this.resetReport(); 
     this.openPlayerModal(id); 
 };
