@@ -193,3 +193,28 @@ ScoutApp.prototype.confirmAction = function(message, onConfirmCallback) {
         onConfirmCallback(); // "Evet" denirse asıl işlemi yap
     };
 };
+
+// --- YAŞ HESAPLAMA MOTORU ---
+ScoutApp.prototype.calculateAge = function(birthDateString) {
+    if (!birthDateString) return '-';
+    
+    const today = new Date();
+    const birthDate = new Date(birthDateString);
+    
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    
+    // Henüz doğum günü gelmediyse 1 yaş düş
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    
+    return age;
+};
+
+// Formatlı Tarih Gösterimi (Örn: 10 Ekim 2002)
+ScoutApp.prototype.formatDatePretty = function(dateString) {
+    if (!dateString) return '';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('tr-TR', options);
+};

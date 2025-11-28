@@ -11,7 +11,7 @@ class ScoutApp {
     }
 
     init() {
-        // Sadece ESC tuşu dinleyicisi
+        // Sadece ESC tuşu dinleyicisi kalsın
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeModal();

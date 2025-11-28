@@ -4,7 +4,6 @@ class AuthManager {
     }
 
     async init() {
-        // Uygulama açılır açılmaz dosyadan veriyi çekmeye çalış
         try {
             const savedData = await window.electronAPI.loadData();
             
@@ -15,13 +14,21 @@ class AuthManager {
                 console.log("Kayıtlı veri bulunamadı, yeni dosya oluşturulacak.");
             }
             
-            // Direkt başlat (Login ekranı yok artık, Obsidian gibi direkt açılır)
+            // FIX: Önce Layout'u çiz (Sidebar ve Header gelsin)
+            if (this.app.renderLayout) {
+                this.app.renderLayout();
+            }
+            
+            // SONRA Navigate et (Artık sidebar var, hata vermez)
             this.app.navigate('dashboard');
             lucide.createIcons();
             
         } catch (error) {
             console.error("Veri yükleme hatası:", error);
-            // Hata olsa bile boş veriyle başlat
+            
+            // Hata olsa bile Layout'u çiz
+            if (this.app.renderLayout) this.app.renderLayout();
+            
             this.app.navigate('dashboard');
             lucide.createIcons();
         }

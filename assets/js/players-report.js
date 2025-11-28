@@ -1,4 +1,4 @@
-// --- YENİ RAPORLAMA MODÜLÜ (V3.5 - Chart Loading Fix) ---
+// --- YENİ RAPORLAMA MODÜLÜ (V3.6 - Real Time Age) ---
 
 ScoutApp.prototype.renderNewReport = function(c) {
     const teams = this.state.data.teams.map(t=>({val:t.id, txt:t.name}));
@@ -10,14 +10,31 @@ ScoutApp.prototype.renderNewReport = function(c) {
             <div class="lg:col-span-4 space-y-6">
                 <div class="bg-dark-900 p-6 rounded-2xl border border-dark-800 space-y-4">
                     <h3 class="text-lg font-bold text-white mb-4 flex gap-2"><i data-lucide="user" class="text-scout-400 w-5 h-5"></i> Kimlik</h3>
+                    
                     ${this.createInput('rep-name', 'Adı Soyadı', 'Örn: Semih', 'text', this.state.newReport.name, "app.updateRep('name', this.value)")}
+                    
                     ${teams.length > 0 
                         ? this.createSelect('rep-team', 'Takım', teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") 
                         : '<div class="p-3 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-xs">Önce Veritabanından Takım Ekleyiniz!</div>'}
                     
+                    <!-- DOĞUM TARİHİ VE MEVKİ -->
                     <div class="grid grid-cols-2 gap-4">
                         ${this.createSelect('rep-pos', 'Mevki', POSITIONS.map(p=>({val:p, txt:p})), currentPos, 'app.handlePositionChange(this.value)')}
-                        ${this.createInput('rep-age', 'Yaş', '19', 'number', this.state.newReport.age, "app.updateRep('age', this.value)", 40)}
+                        
+                        <!-- YENİ: Date Input -->
+                        <div class="flex flex-col gap-1.5 relative z-10">
+                            <label class="text-xs font-bold text-slate-400 ml-1 flex justify-between">
+                                Doğum Tarihi
+                                <span id="calculated-age-display" class="text-scout-400 font-mono"></span>
+                            </label>
+                            <input 
+                                type="date" 
+                                id="rep-birth" 
+                                value="${this.state.newReport.birthDate || ''}" 
+                                onchange="app.updateBirthDate(this.value)"
+                                class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none transition-all text-sm relative z-20"
+                            >
+                        </div>
                     </div>
 
                     <!-- BOY VE AYAK -->
@@ -48,15 +65,12 @@ ScoutApp.prototype.renderNewReport = function(c) {
                 
                 <div class="bg-dark-900 p-6 rounded-2xl border border-dark-800">
                     <h3 class="text-lg font-bold text-white mb-4 flex gap-2"><i data-lucide="image" class="text-scout-400 w-5 h-5"></i> Medya (Fotoğraf)</h3>
-                    <div class="flex gap-2 items-end">
-                        <div class="flex-1">${this.createInput('rep-img', 'Foto URL', 'https://...', 'text', this.state.newReport.image, "app.updateRep('image', this.value)")}</div>
-                    </div>
+                    ${this.createInput('rep-img', 'Foto URL', 'https://...', 'text', this.state.newReport.image, "app.updateRep('image', this.value)")}
                 </div>
             </div>
 
             <!-- SAĞ KOLON -->
             <div class="lg:col-span-8 bg-dark-900 p-8 rounded-2xl border border-dark-800 flex flex-col h-full relative overflow-hidden">
-                
                 <div class="flex justify-between items-center sticky top-0 bg-dark-900 z-50 py-4 border-b border-dark-800/50 mb-4">
                     <h3 class="text-xl font-bold text-white">Yetenek Analizi</h3>
                     <div class="bg-dark-950 px-4 py-2 rounded-lg border border-dark-800 flex items-center gap-3">
@@ -81,20 +95,30 @@ ScoutApp.prototype.renderNewReport = function(c) {
     
     lucide.createIcons();
 
-    // BUG FIX: Grafiği DOM tamamen hazır olduktan sonra yükle
-    setTimeout(() => {
-        // Önce grafiği başlat (Her durumda)
-        this.initReportRadar([], []);
+    // Eğer daha önce girilmiş bir tarih varsa yaşını hesapla göster
+    if(this.state.newReport.birthDate) {
+        this.updateBirthDate(this.state.newReport.birthDate);
+    }
 
-        // Eğer daha önce seçilmiş bir mevki varsa (sayfalar arası gezerken state korunmuşsa)
-        // Grafiği o verilere göre güncelle
-        if (currentPos) {
-            this.handlePositionChange(currentPos, false); 
-        }
-    }, 150); // 150ms gecikme DOM'un oturmasını sağlar
+    if (currentPos) {
+        this.handlePositionChange(currentPos, false); 
+    } else {
+        this.initReportRadar([], []);
+    }
 };
 
-// --- MEVKİ VE CHART YÖNETİMİ ---
+// YENİ: Tarih girilince yaşı hesaplayıp gösteren fonksiyon
+ScoutApp.prototype.updateBirthDate = function(val) {
+    this.state.newReport.birthDate = val;
+    const age = this.calculateAge(val);
+    const display = document.getElementById('calculated-age-display');
+    if(display) {
+        display.innerText = `(${age} Yaş)`;
+    }
+};
+
+// --- DİĞER FONKSİYONLAR AYNI (Players-Report.js devamı) ---
+// (Kopyala-yapıştır kolaylığı için dosyanın geri kalanını da ekliyorum)
 
 ScoutApp.prototype.handlePositionChange = function(pos, resetStats = true) {
     this.state.newReport.position = pos;
@@ -146,13 +170,11 @@ ScoutApp.prototype.calculateAverage = function() {
 
 ScoutApp.prototype.updateRadarChart = function() {
     if (!this.reportRadarChart) {
-        // Eğer grafik henüz yoksa (örn: çok hızlı tıklandıysa), oluşturmayı dene
         const labels = Object.keys(this.state.newReport.stats).length > 0 ? Object.keys(this.state.newReport.stats) : [];
         const data = Object.values(this.state.newReport.stats);
         this.initReportRadar(labels, data);
         return;
     }
-
     let labels = [], data = [];
     const pos = this.state.newReport.position;
     const set = (pos === 'Kaleci') ? ATTRIBUTE_SETS['Kaleci'] : ATTRIBUTE_SETS['Default'];
@@ -166,13 +188,15 @@ ScoutApp.prototype.updateRadarChart = function() {
     this.reportRadarChart.updateSeries([{ data: data }]);
 };
 
-// --- KAYIT İŞLEMİ ---
+// --- KAYIT İŞLEMİ (GÜNCELLENDİ: birthDate) ---
 
 ScoutApp.prototype.submitReport = function() {
     const r = this.state.newReport;
     if(!r.name || !r.teamId) return alert("İsim ve Takım zorunlu.");
-    if(r.age && parseInt(r.age) > 40) return alert("Yaş 40'tan büyük olamaz.");
     
+    // Yaş kontrolü artık Tarih üzerinden yapılıyor, gerekirse buraya tarih dolu mu kontrolü ekleyebiliriz
+    if(!r.birthDate) return alert("Doğum tarihi giriniz.");
+
     const stats = Object.values(r.stats);
     const avg = stats.length > 0 ? Math.round(stats.reduce((a,b)=>a+b,0)/stats.length) : 50;
     const teamIdInt = parseInt(r.teamId);
@@ -199,18 +223,13 @@ ScoutApp.prototype.submitReport = function() {
 };
 
 ScoutApp.prototype.initReportRadar = function(labels = [], data = []) {
-    // Element var mı kontrol et
     const chartEl = document.querySelector("#report-radar");
     if (!chartEl) return;
-
     if(this.reportRadarChart) this.reportRadarChart.destroy();
-    
     const options = {
         series: [{ name: 'Analiz', data: data }],
         chart: { height: 300, type: 'radar', toolbar: { show: false }, background: 'transparent', animations: { enabled: true } },
-        labels: labels,
-        stroke: { width: 2, colors: ['#22c55e'] },
-        fill: { opacity: 0.2, colors: ['#22c55e'] },
+        labels: labels, stroke: { width: 2, colors: ['#22c55e'] }, fill: { opacity: 0.2, colors: ['#22c55e'] },
         markers: { size: 3, colors: ['#22c55e'], hover: { size: 5 } },
         yaxis: { show: false, min: 0, max: 100 },
         xaxis: { categories: labels, labels: { style: { colors: ['#94a3b8', '#94a3b8', '#94a3b8', '#94a3b8', '#94a3b8', '#94a3b8'], fontSize: '11px', fontFamily: 'Inter' } } },

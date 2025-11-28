@@ -1,4 +1,4 @@
-// --- OYUNCU LİSTELEME MODÜLÜ ---
+// --- OYUNCU LİSTELEME MODÜLÜ (V3.6 - Dynamic Age) ---
 
 ScoutApp.prototype.renderPlayers = function(c) {
     const filtered = this.state.data.players.filter(p => 
@@ -19,6 +19,10 @@ ScoutApp.prototype.getPlayerCardHTML = function(p) {
     const grade = this.getGrade(p.rating);
     const potColor = p.potential === 'Yüksek' ? 'text-scout-400' : 'text-slate-500';
     
+    // YAŞ HESAPLAMA:
+    // Eğer doğum tarihi varsa hesapla, yoksa (eski kayıt) düz yaşı göster
+    const currentAge = p.birthDate ? this.calculateAge(p.birthDate) : p.age;
+
     return `
         <div onclick="app.openPlayerModal(${p.id})" class="scout-card bg-dark-900 rounded-2xl p-5 relative group overflow-hidden cursor-pointer border border-dark-800 hover:border-scout-500/30 transition-all">
             <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-scout-500 to-transparent opacity-50"></div>
@@ -36,7 +40,10 @@ ScoutApp.prototype.getPlayerCardHTML = function(p) {
                 </div>
             </div>
             <div class="grid grid-cols-3 gap-2 bg-dark-950/50 rounded-lg p-2 border border-dark-800/50">
-                <div class="text-center"><div class="text-[10px] text-slate-500">Yaş</div><div class="font-medium text-white">${p.age}</div></div>
+                <div class="text-center">
+                    <div class="text-[10px] text-slate-500">Yaş</div>
+                    <div class="font-medium text-white">${currentAge}</div>
+                </div>
                 <div class="text-center"><div class="text-[10px] text-slate-500">Potansiyel</div><div class="font-bold text-xs ${potColor}">${p.potential || 'Düşük'}</div></div>
                 <div class="text-center"><div class="text-[10px] text-slate-500">Detay</div><i data-lucide="search" class="w-4 h-4 mx-auto text-slate-400 hover:text-white transition-colors"></i></div>
             </div>
