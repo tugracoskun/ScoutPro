@@ -1,7 +1,6 @@
 // --- UYGULAMA İSKELETİ VE LAYOUT ---
 
 ScoutApp.prototype.renderLayout = function() {
-    // FIX: Body'yi silmek yerine özel kapsayıcıyı hedefliyoruz
     const root = document.getElementById('app-root');
     if (!root) return;
 
@@ -63,5 +62,32 @@ ScoutApp.prototype.renderLayout = function() {
         <!-- MODAL SYSTEM & NOTIFICATIONS -->
         <div id="modal-overlay" class="fixed inset-0 z-50 hidden bg-dark-950/80 backdrop-blur-md flex items-center justify-center px-4 fade-in"><div id="modal-content" class="bg-dark-900 border border-dark-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden relative"></div></div>
         <div id="notification-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+        <!-- UYGULAMA İÇİ TARAYICI (WEBVIEW - FIXED USER AGENT) -->
+        <div id="in-app-browser" class="fixed inset-0 z-[70] bg-dark-950 hidden flex flex-col animate-fade-in">
+            <!-- Browser Header -->
+            <div class="h-14 bg-dark-900 border-b border-dark-800 flex items-center px-4 justify-between shrink-0">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <button onclick="app.closeWebBrowser()" class="p-2 hover:bg-red-500/20 hover:text-red-400 text-slate-400 rounded-lg transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    <div class="h-6 w-[1px] bg-dark-800"></div>
+                    <span id="browser-title" class="text-sm font-bold text-white truncate">Web Gezgini</span>
+                    <span id="browser-url" class="text-xs text-slate-500 truncate max-w-[300px]"></span>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="document.getElementById('webview-frame').reload()" class="p-2 hover:bg-dark-800 text-slate-400 rounded-lg"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                    <button onclick="app.openExternal(document.getElementById('webview-frame').getURL())" class="p-2 hover:bg-dark-800 text-slate-400 rounded-lg" title="Tarayıcıda Aç"><i data-lucide="external-link" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+            <!-- WebView (Kritik Ekleme: useragent) -->
+            <div class="flex-1 bg-white relative">
+                <webview 
+                    id="webview-frame" 
+                    src="about:blank" 
+                    class="w-full h-full"
+                    allowpopups
+                    useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+                ></webview>
+            </div>
+        </div>
     `;
 };

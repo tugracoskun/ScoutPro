@@ -6,6 +6,7 @@
     <title>ScoutPro v1.0.2 - Desktop</title>
     
     <!-- YEREL (OFFLINE) KÜTÜPHANELER -->
+    <!-- İnternet olmadan çalışması için vendor klasöründen çekiyoruz -->
     <script src="assets/vendor/tailwind.js"></script>
     <script src="assets/vendor/lucide.js"></script>
     <script src="assets/vendor/apexcharts.js"></script>
@@ -13,7 +14,7 @@
     <!-- FONTLAR -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- ÖZEL CSS (Cyberform Fontu vb.) -->
+    <!-- ÖZEL CSS (Cyberform Fontu, Animasyonlar vb.) -->
     <link rel="stylesheet" href="assets/css/style.css">
 
     <!-- TAILWIND AYARLARI -->
@@ -28,39 +29,63 @@
                         cyber: ['Cyberform', 'sans-serif'],
                     },
                     colors: {
-                        scout: { 50: '#f0fdf4', 100: '#dcfce7', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 900: '#14532d', 950: '#052e16' },
-                        dark: { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+                        scout: { 
+                            50: '#f0fdf4', 100: '#dcfce7', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 900: '#14532d', 950: '#052e16' 
+                        },
+                        dark: { 
+                            800: '#1e293b', 900: '#0f172a', 950: '#020617' 
+                        }
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="font-sans selection:bg-scout-500/30 bg-dark-950 text-slate-200">
+<body class="flex h-screen overflow-hidden font-sans selection:bg-scout-500/30 bg-dark-950 text-slate-200">
     
-    <!-- UYGULAMANIN ÇİZİLECEĞİ ALAN -->
+    <!-- UYGULAMANIN ÇİZİLECEĞİ ALAN (Layout.js burayı doldurur) -->
     <!-- Scriptler bu kutunun dışındadır, böylece layout.js çalıştığında silinmezler -->
     <div id="app-root" class="flex h-screen w-full overflow-hidden"></div>
 
-    <!-- JAVASCRIPT MODÜLLERİ (GÜNCEL SIRALAMA) -->
+    <!-- JAVASCRIPT MODÜLLERİ (Yükleme Sırası Önemlidir) -->
+    
+    <!-- 1. Temel Veri ve Çekirdek -->
     <script src="assets/js/data.js"></script>
     <script src="assets/js/core.js"></script>
     <script src="assets/js/layout.js"></script>
-    <script src="assets/js/utils.js"></script>
+    
+    <!-- 2. Alt Sayfa Modülleri -->
+    <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/settings.js"></script>
+    <script src="assets/js/browser.js"></script>
+
+    <!-- 3. Yardımcılar (Parçalanmış Utils) -->
+    <script src="assets/js/utils-dom.js"></script>
+    <script src="assets/js/utils-format.js"></script>
+    <script src="assets/js/utils-system.js"></script>
+
     <script src="assets/js/database.js"></script>
     
-    <!-- Player Modules -->
+    <!-- 4. Oyuncu Yönetimi (Parçalanmış) -->
     <script src="assets/js/players-list.js"></script>
     <script src="assets/js/players-report.js"></script>
-    <script src="assets/js/players-modal-view.js"></script>
-    <script src="assets/js/players-modal-edit.js"></script>
-    <script src="assets/js/players-modal-report.js"></script>
+    
+    <!-- Detay Modalı Parçaları -->
+    <script src="assets/js/players-modal-view.js"></script>     <!-- Ana İskelet -->
+    <script src="assets/js/players-modal-content.js"></script>  <!-- İçerik -->
+    <script src="assets/js/players-modal-edit.js"></script>     <!-- Düzenleme -->
+    <script src="assets/js/players-modal-report.js"></script>   <!-- Yeni Rapor Ekleme -->
+    
     <script src="assets/js/players-media.js"></script>
     <script src="assets/js/players-chart.js"></script>
     
+    <!-- 5. Maç ve İzleme -->
     <script src="assets/js/matches.js"></script>
+
+    <!-- 6. Yapay Zeka Asistanı (Tek Dosya) -->
+    <script src="assets/js/ai-assistant.js"></script>
     
-    <!-- Auth & Init -->
+    <!-- 7. Dosya Yönetimi ve Başlatma -->
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/init.js"></script>
 </body>

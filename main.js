@@ -13,12 +13,18 @@ function createWindow() {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
-            contextIsolation: true
+            contextIsolation: true,
+            webviewTag: true // <-- BU ÇOK ÖNEMLİ (Uygulama içi tarayıcı için şart)
         }
     });
 
     win.loadFile('index.html');
     win.setMenuBarVisibility(false); // Menü çubuğunu gizle
+    
+    // Yeni pencere açılmasını engelle (Popup'lar uygulamanın dışına taşmasın)
+    win.webContents.setWindowOpenHandler(({ url }) => {
+        return { action: 'deny' };
+    });
 }
 
 app.whenReady().then(() => {
@@ -32,9 +38,9 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
 
-// --- IPC HANDLERS (Arka Plan İşlemleri) ---
+// --- ARKA PLAN İŞLEMLERİ (IPC HANDLERS) ---
 
-// 1. Otomatik Kayıt
+// 1. Otomatik Kayıt (Save Data)
 ipcMain.handle('save-data', async (event, data) => {
     try {
         fs.writeFileSync(dataPath, JSON.stringify(data));
@@ -44,7 +50,7 @@ ipcMain.handle('save-data', async (event, data) => {
     }
 });
 
-// 2. Otomatik Yükleme
+// 2. Otomatik Yükleme (Load Data)
 ipcMain.handle('load-data', async () => {
     try {
         if (fs.existsSync(dataPath)) {
@@ -57,7 +63,7 @@ ipcMain.handle('load-data', async () => {
     }
 });
 
-// 3. YEDEK ALMA (Export) - EKSİK OLAN KISIM BUYDU
+// 3. YEDEK ALMA (Export Backup)
 ipcMain.handle('export-backup', async (event, data) => {
     const { filePath } = await dialog.showSaveDialog({
         title: 'Yedek Dosyasını Kaydet',
@@ -76,7 +82,7 @@ ipcMain.handle('export-backup', async (event, data) => {
     return { success: false, cancelled: true };
 });
 
-// 4. YEDEK YÜKLEME (Import) - EKSİK OLAN KISIM BUYDU
+// 4. YEDEK YÜKLEME (Import Backup)
 ipcMain.handle('import-backup', async () => {
     const { filePaths } = await dialog.showOpenDialog({
         title: 'Yedek Dosyası Seç',
