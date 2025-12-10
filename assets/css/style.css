@@ -148,3 +148,41 @@ input, textarea, select {
     animation: slideIn 0.3s ease-out forwards;
     pointer-events: auto; /* Tıklanabilir olsun */
 }
+
+/* --- ATTRIBUTE HIGHLIGHTING (FM STYLE) --- */
+
+/* Kritik Özellik (Fosforlu/Parlak) */
+.attr-critical span.attr-label {
+    color: #4ade80; /* Parlak Yeşil */
+    font-weight: 900;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
+    letter-spacing: 0.5px;
+}
+.attr-critical input[type=range] {
+    accent-color: #4ade80;
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.2);
+}
+
+/* Yüksek Öncelik (Hafif Parlak) */
+.attr-high span.attr-label {
+    color: #a3e635; /* Lime Yeşili */
+    font-weight: 700;
+}
+.attr-high input[type=range] {
+    accent-color: #a3e635;
+}
+
+/* Düşük Öncelik (Sönük) */
+.attr-low {
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+.attr-low:hover {
+    opacity: 1;
+}
+
+/* Kategori Başlıkları */
+.category-header {
+    border-left: 3px solid;
+    padding-left: 10px;
+}
