@@ -6,6 +6,7 @@
     <title>ScoutPro v1.0.2 - Desktop</title>
     
     <!-- YEREL (OFFLINE) KÜTÜPHANELER -->
+    <!-- İnternet olmadan çalışması için vendor klasöründen çekiyoruz -->
     <script src="assets/vendor/tailwind.js"></script>
     <script src="assets/vendor/lucide.js"></script>
     <script src="assets/vendor/apexcharts.js"></script>
@@ -13,7 +14,7 @@
     <!-- FONTLAR -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- ÖZEL CSS -->
+    <!-- ÖZEL CSS (Cyberform Fontu, Animasyonlar vb.) -->
     <link rel="stylesheet" href="assets/css/style.css">
 
     <!-- TAILWIND AYARLARI -->
@@ -42,9 +43,16 @@
 </head>
 <body class="flex h-screen overflow-hidden font-sans selection:bg-scout-500/30 bg-dark-950 text-slate-200">
     
-    <!-- UYGULAMA İSKELETİ -->
-    <!-- Tüm arayüz (Sidebar, Header, Modallar) layout.js tarafından buraya çizilir -->
+    <!-- UYGULAMANIN ÇİZİLECEĞİ ALAN (Layout.js burayı doldurur) -->
     <div id="app-root" class="flex h-screen w-full overflow-hidden"></div>
+
+    <!-- MODAL SİSTEMİ (Global Overlay) -->
+    <div id="modal-overlay" class="fixed inset-0 z-50 hidden bg-dark-950/80 backdrop-blur-md flex items-center justify-center px-4 fade-in">
+        <div id="modal-content" class="bg-dark-900 border border-dark-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden relative"></div>
+    </div>
+
+    <!-- BİLDİRİM KUTUSU (Sağ Üst) -->
+    <div id="notification-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- JAVASCRIPT MODÜLLERİ (Yükleme Sırası Kritiktir) -->
     
@@ -66,10 +74,12 @@
     <!-- 3. Oyuncu Listeleme -->
     <script src="assets/js/players-list.js"></script>
     
-    <!-- 4. Yeni Raporlama (PARÇALANMIŞ) -->
-    <script src="assets/js/players-report-view.js"></script>   <!-- Görünüm -->
-    <script src="assets/js/players-report-inputs.js"></script> <!-- Sliderlar -->
-    <script src="assets/js/players-report-logic.js"></script>  <!-- Mantık/Kayıt -->
+    <!-- 4. Yeni Raporlama (PARÇALANMIŞ - GÜNCEL) -->
+    <script src="assets/js/players-report-form.js"></script>     <!-- Sol Kolon -->
+    <script src="assets/js/players-report-analysis.js"></script> <!-- Sağ Kolon -->
+    <script src="assets/js/players-report-view.js"></script>     <!-- Ana Yönetici -->
+    <script src="assets/js/players-report-inputs.js"></script>   <!-- Sliderlar -->
+    <script src="assets/js/players-report-logic.js"></script>    <!-- Mantık -->
     
     <!-- 5. Oyuncu Detay Modalı (PARÇALANMIŞ) -->
     <script src="assets/js/players-modal-view.js"></script>    <!-- Ana İskelet -->
@@ -84,8 +94,10 @@
     <!-- 7. Maç ve İzleme -->
     <script src="assets/js/matches.js"></script>
 
-    <!-- 8. Asistan -->
-    <script src="assets/js/ai-assistant.js"></script>
+    <!-- 8. Yapay Zeka Asistanı (PARÇALANMIŞ - YENİ) -->
+    <script src="assets/js/ai-data.js"></script> <!-- Veri -->
+    <script src="assets/js/ai-ui.js"></script>   <!-- Görünüm -->
+    <script src="assets/js/ai-core.js"></script> <!-- Beyin -->
     
     <!-- 9. Başlatıcılar -->
     <script src="assets/js/auth.js"></script>

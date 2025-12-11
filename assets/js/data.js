@@ -5,10 +5,48 @@ const POSITIONS = [
     "Sağ Kanat", "Sol Kanat", "Santrafor" 
 ];
 
+// --- YAŞA GÖRE GELİŞİM HEDEFLERİ (PDF ANALİZİ - GERİ EKLENDİ) ---
+const AGE_SPECIFIC_KPI = {
+    'U9-U12': {
+        title: "Temel Eğitim Aşaması (Topla Aşk)",
+        focus: "Bireysel teknik, yaratıcılık ve oyun sevgisi.",
+        kpis: [
+            "🔴 İki Ayağı Kullanabilme: Doğal akışta her iki ayağını kullanıyor mu?",
+            "🔴 Top Manipülasyonu: Dar alanda topu vücudunun bir uzvu gibi kullanabiliyor mu?",
+            "🔴 1v1 Yaratıcılık: Rakip eksiltme cesareti ve teknik çeşitlilik (Skor önemsiz).",
+            "🔵 ABC (Agility, Balance, Coord): Koşarken kolların/bacakların uyumu.",
+            "🟢 Hata Sonrası Reaksiyon: Topu kaybedince küsüyor mu, geri kazanmaya çalışıyor mu?"
+        ],
+        warning: "⚠️ Bu yaşta taktiksel disiplin veya saf fiziksel güç aramayın!"
+    },
+    'U13-U16': {
+        title: "Gençlik Gelişim Aşaması (Taktiksel Uyanış)",
+        focus: "Kollektif oyun, alan bilgisi ve baskı altında beceri.",
+        kpis: [
+            "🟡 Tarama (Scanning): Top gelmeden önce omzunun arkasını kontrol ediyor mu?",
+            "🟡 Topsuz Hareket: Pas kanalı yaratmak için doğru koşular yapıyor mu?",
+            "🔴 Baskı Altında Beceri: Zaman ve alan daraldığında tekniğini koruyor mu?",
+            "🔵 Büyüme Atağı (PHV): 'Ergen Sakarlığı' yaşayabilir, teknik hataları geçici olabilir.",
+            "🟢 Direnç (Resilience): Kötü hakem kararı veya sert rakip karşısında oyuna küsüyor mu?"
+        ],
+        warning: "⚠️ Fiziksel olarak erken gelişmiş oyuncuların 'Halo Etkisi'ne kanmayın."
+    },
+    'U17-U21': {
+        title: "Profesyonel Gelişim Aşaması (Kazanma Zihniyeti)",
+        focus: "Performans, yüksek yoğunluk ve profesyonellik.",
+        kpis: [
+            "🔵 Patlayıcı Güç & RSA: Tekrarlanan yüksek şiddetli sprint kapasitesi.",
+            "🟢 Profesyonellik: Saha dışı disiplin, beslenme ve 'Görünmez Antrenman'.",
+            "🟡 Taktiksel Sadakat: Karmaşık görevleri maç boyu disiplinle uyguluyor mu?",
+            "🟢 Liderlik: Kriz anlarında saklanıyor mu yoksa sorumluluk alıyor mu?",
+            "🔴 Pozisyonel Uzmanlık: Mevkisinin gerektirdiği spesifik aksiyonlarda elit mi?"
+        ],
+        warning: "⚠️ Artık 'potansiyel' değil, 'performans' ve 'istikrar' ön plandadır."
+    }
+};
+
 // --- ÖZELLİK HAVUZU VE ALT DETAYLAR ---
 const ATTRIBUTE_GROUPS = {
-    
-    // 1. DEFANS GRUBU (Stoper, Bekler)
     'Defans': {
         'Teknik': [
             { name: 'Pas Dağıtımı', sub: 'Kısa Pas, Uzun Diyagonal, Baskı Altında Pas' },
@@ -36,8 +74,6 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Soğukkanlılık', sub: 'Baskı Altında Karar Verme (Composure)' }
         ]
     },
-
-    // 2. ORTA SAHA GRUBU (DOS, MOS, OOS)
     'OrtaSaha': {
         'Teknik': [
             { name: 'Paslaşma', sub: 'Kısa/Uzun Pas, Oyun Kurma, Tempo Belirleme' },
@@ -65,8 +101,6 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Hızlanma', sub: 'İlk Adım, Rakibinden Kurtulma Yeteneği' }
         ]
     },
-
-    // 3. KANAT GRUBU
     'Kanat': {
         'Teknik': [
             { name: 'Dribbling / 1v1', sub: 'Rakibi Ekarte Etme, Top Taşıma Becerisi' },
@@ -92,15 +126,13 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Çalışkanlık', sub: 'Savunma Katkısı ve Pres Gücü' },
             { name: 'Soğukkanlılık', sub: 'Baskı Altında Net Vuruş/Pas Yapabilme' }
         ],
-        'Sosyolojik': [ // EKLENDİ
+        'Sosyolojik': [
             { name: 'İletişim', sub: 'Takım İçi Yönlendirme, Vücut Dili' },
             { name: 'Uyum & Esneklik', sub: 'Kanat Değiştirme, Taktiksel Adaptasyon' },
             { name: 'İstikrar', sub: 'Maç İçi Devamlılık, Performans Standartı' },
             { name: 'Büyük Maç', sub: 'Baskı Altında Sorumluluk Alma' }
         ]
     },
-
-    // 4. FORVET GRUBU (YENİ EKLENDİ!)
     'Forvet': {
         'Teknik': [
             { name: 'Bitiricilik', sub: 'Gol Vuruşu, Plase, Sert Şut, Karşı Karşıya' },
@@ -130,15 +162,13 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Konsantrasyon', sub: 'Tek Fırsat İçin 90 Dk Hazır Olma' },
             { name: 'Çalışkanlık', sub: 'Ön Alan Presi, Topu Geri Kazanma Arzusu' }
         ],
-        'Sosyolojik': [ // Kanat ile benzer ama forvet özelinde
+        'Sosyolojik': [
             { name: 'Baskıya Tepki', sub: 'Gol Kaçırınca Toparlanma, Medya/Taraftar Baskısı' },
             { name: 'Liderlik', sub: 'Takımı Ateşleme, Sorumluluk Alma' },
             { name: 'Uyum', sub: 'Farklı Taktik ve Partnerlerle Oynayabilme' },
             { name: 'Profesyonellik', sub: 'Antrenman Disiplini, Saha Dışı Yaşam' }
         ]
     },
-
-    // 5. KALECİ GRUBU
     'Kaleci': {
         'Teknik': [
             { name: 'Top Kontrolü', sub: 'Geri Pasları Alma, Ayakla Kontrol' },
@@ -156,18 +186,13 @@ const ATTRIBUTE_GROUPS = {
             { name: 'İletişim', sub: 'Defans Hattını Uyarma ve Yönetme' }
         ]
     },
-
-    // Varsayılan
     'Default': {
         'Genel': [ { name: 'Hız', sub: '' }, { name: 'Şut', sub: '' }, { name: 'Pas', sub: '' }, { name: 'Fizik', sub: '' } ]
     }
 };
 
-// --- ÖNEM DERECELERİ (HIGHLIGHTING) ---
-// 3: Kritik, 2: Yüksek, 1: Orta, 0: Düşük
-
+// --- ÖNEM DERECELERİ ---
 const POSITION_WEIGHTS = {
-    // --- DEFANS ---
     'Stoper': {
         'Hava Hakimiyeti': 3, 'Pozisyon Alma': 3, 'Oyun Okuma': 3, 'Konsantrasyon': 3,
         'Pas Dağıtımı': 2, 'Müdahale Kalitesi': 2, 'Markaj': 2, 'Güç & Denge': 2
@@ -175,8 +200,6 @@ const POSITION_WEIGHTS = {
     'Bek': { 
         'Orta Yapma': 3, 'Hız & İvmelenme': 3, 'Dayanıklılık': 3, 'Hücum Desteği': 2, 'Top Hakimiyeti': 2 
     },
-
-    // --- ORTA SAHA ---
     'DefansifOrtaSaha': { 
         'Pozisyon Alma': 3, 'Konsantrasyon': 3,
         'Top Kapma': 2, 'Paslaşma': 2, 'İlk Dokunuş': 2, 'Kararlılık & Cesaret': 2, 'Güç': 2, 'Denge': 2
@@ -189,42 +212,30 @@ const POSITION_WEIGHTS = {
         'Vizyon': 3, 'Top Kontrolü / Teknik': 3, 'Yaratıcılık': 3,
         'Karar Verme': 2, 'Şut & Bitiricilik': 2, 'Çeviklik': 2
     },
-
-    // --- KANAT ---
     'Kanat': { 
         'Hızlanma': 3, 'Hız (Son Sürat)': 3, 'Dribbling / 1v1': 3, 'Orta Yapma': 3,
         'Çeviklik': 2, 'İlk Dokunuş': 2, 'Topsuz Alan': 2, 'Özel Yetenek': 2
     },
-
-    // --- FORVET (YENİ) ---
     'Santrafor': {
         'Bitiricilik': 3, 'Soğukkanlılık': 3, 'Topsuz Oyun': 3, 'Hızlanma': 3, 'Önsezi': 3,
-        'İlk Dokunuş': 2, 'Kafa Vuruşu': 2, 'Güç': 2, 'Denge': 2, 'Çeviklik': 2,
-        'Dribbling': 1, 'Uzaktan Şut': 1, 'Bağlantı Oyunu': 1
+        'İlk Dokunuş': 2, 'Kafa Vuruşu': 2, 'Güç': 2, 'Denge': 2, 'Çeviklik': 2
     },
-
-    // --- KALECİ ---
     'Kaleci': { 'Refleks': 3, 'Pozisyon Alma': 3, 'Elle Kontrol': 3 }
 };
 
 // --- EŞLEŞTİRME ---
 const POSITION_MAPPING = {
     'Kaleci': { group: 'Kaleci', weightKey: 'Kaleci' },
-    
     'Stoper': { group: 'Defans', weightKey: 'Stoper' },
     'Sağ Bek': { group: 'Defans', weightKey: 'Bek' },
     'Sol Bek': { group: 'Defans', weightKey: 'Bek' },
-    
     'Defansif Orta Saha': { group: 'OrtaSaha', weightKey: 'DefansifOrtaSaha' },
     'Orta Saha': { group: 'OrtaSaha', weightKey: 'MerkezOrtaSaha' },
     'Ofansif Orta Saha': { group: 'OrtaSaha', weightKey: 'OfansifOrtaSaha' },
-
     'Sağ Kanat': { group: 'Kanat', weightKey: 'Kanat' },
     'Sol Kanat': { group: 'Kanat', weightKey: 'Kanat' },
-
-    // Yeni Eklenen Forvet
     'Santrafor': { group: 'Forvet', weightKey: 'Santrafor' }
 };
 
-// Veritabanı Başlangıç
+// --- VERİTABANI ---
 const DB = { countries: [], leagues: [], teams: [], players: [], matches: [], watchlist: [] };

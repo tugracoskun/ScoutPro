@@ -37,8 +37,62 @@ ScoutApp.prototype.updateBirthDate = function(val) {
     this.state.newReport.birthDate = val;
     const age = this.calculateAge(val);
     const display = document.getElementById('calculated-age-display');
+    const tipsBox = document.getElementById('age-specific-tips');
+
     if(display) {
         display.innerText = `(${age} Yaş)`;
+    }
+
+    // YAŞA GÖRE KPI İPUÇLARI (GELİŞMİŞ TASARIM)
+    if (tipsBox && AGE_SPECIFIC_KPI) {
+        let groupKey = null;
+        if (age >= 9 && age <= 12) groupKey = 'U9-U12';
+        else if (age >= 13 && age <= 16) groupKey = 'U13-U16';
+        else if (age >= 17 && age <= 21) groupKey = 'U17-U21';
+
+        if (groupKey) {
+            const data = AGE_SPECIFIC_KPI[groupKey];
+            
+            // Profesyonel HTML Yapısı
+            tipsBox.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-scout-500/20 flex items-center justify-center text-scout-500 shrink-0 mt-1">
+                        <i data-lucide="lightbulb" class="w-5 h-5"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-white font-bold text-sm mb-1">${data.title}</h4>
+                        <p class="text-xs text-slate-300 italic mb-3 border-l-2 border-scout-500 pl-2">"${data.focus}"</p>
+                        
+                        <div class="space-y-2 mb-4">
+                            ${data.kpis.map(k => `
+                                <div class="flex items-start gap-2 text-[11px] text-slate-400">
+                                    <span class="mt-1 w-1.5 h-1.5 rounded-full bg-scout-500 shrink-0"></span>
+                                    <span>${k}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-2 flex gap-2 items-start text-[10px] text-red-300 mb-4">
+                            <i data-lucide="alert-triangle" class="w-3 h-3 mt-0.5 shrink-0"></i>
+                            ${data.warning}
+                        </div>
+
+                        <button onclick="document.getElementById('age-specific-tips').classList.add('closing')" 
+                            class="w-full py-2 bg-scout-600 hover:bg-scout-500 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-scout-900/20 flex items-center justify-center gap-2 group">
+                            <i data-lucide="check-circle" class="w-3 h-3 group-hover:scale-110 transition-transform"></i>
+                            Okudum, Anladım
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Sınıfları ayarla (Animasyon için)
+            tipsBox.className = "bg-dark-950 border border-scout-500/30 rounded-2xl p-5 mb-4 tips-container relative overflow-hidden";
+            tipsBox.classList.remove('hidden');
+            lucide.createIcons();
+        } else {
+            tipsBox.classList.add('hidden'); 
+        }
     }
 };
 

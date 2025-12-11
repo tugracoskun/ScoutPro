@@ -186,3 +186,34 @@ input, textarea, select {
     border-left: 3px solid;
     padding-left: 10px;
 }
+
+/* --- TIPS (İPUCU) KUTUSU ANİMASYONLARI --- */
+
+/* 1. Işıldayan Kenarlık (Nefes Alma Efekti) */
+@keyframes borderGlow {
+    0% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); }
+    50% { box-shadow: 0 0 25px rgba(34, 197, 94, 0.4); border-color: rgba(34, 197, 94, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); }
+}
+
+/* 2. Giriş Animasyonu (Alttan Yumuşakça) */
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 3. Çıkış Animasyonu (Küçülerek Kaybolma) */
+@keyframes scaleOutFade {
+    to { opacity: 0; transform: scale(0.9); height: 0; margin: 0; padding: 0; }
+}
+
+.tips-container {
+    animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards, borderGlow 3s infinite;
+    backdrop-filter: blur(10px);
+}
+
+.tips-container.closing {
+    animation: scaleOutFade 0.4s ease-in forwards;
+    border: none; /* Kenarlığı hemen kaldır ki iz kalmasın */
+    overflow: hidden;
+}
