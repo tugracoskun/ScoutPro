@@ -10,6 +10,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
     }
     if (!p.videos) p.videos = [];
 
+    // Tarihe göre sırala (En yeni en üstte)
     p.history.sort((a, b) => new Date(b.date.split('.').reverse().join('-')) - new Date(a.date.split('.').reverse().join('-')));
 
     const currentReport = p.history[selectedHistoryIndex];
@@ -24,6 +25,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
     // Yaş ve Tarih Hesaplama (Güvenli)
     let currentAge = '-';
     let birthDatePretty = '-';
+    
     if (typeof this.calculateAge === 'function') {
         currentAge = p.birthDate ? this.calculateAge(p.birthDate) : p.age;
         birthDatePretty = p.birthDate ? this.formatDatePretty(p.birthDate) : '-';
@@ -31,7 +33,8 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
         currentAge = p.age || '?';
     }
 
-    // Diğer kolonların içeriğini al (players-modal-content.js dosyasından)
+    // Diğer kolonların içeriğini al (players-modal-content.js dosyasından gelir)
+    // Bu sayede dosya boyutu yönetilebilir kalır.
     const mainContentHTML = this.getPlayerContentHTML(p, currentReport, prevReport, id, selectedHistoryIndex, activeTab);
 
     this.showModal(`
@@ -52,7 +55,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <!-- Tarih Seçimi -->
+                    <!-- Tarih Seçimi (Geçmiş Raporlar) -->
                     <div class="relative group mr-2">
                         <div class="flex items-center gap-2 bg-dark-800 border border-dark-700 px-2 py-2 rounded-lg cursor-pointer">
                             <i data-lucide="calendar-days" class="w-4 h-4 text-slate-400 ml-1"></i>
@@ -67,8 +70,14 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                         </div>
                     </div>
 
-                    <button onclick="app.openEditPlayerModal(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-blue-500/20 hover:text-blue-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700" title="Düzenle"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                    <button onclick="app.deletePlayer(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700 mr-2" title="Sil"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <!-- Düzenle ve Sil Butonları -->
+                    <button onclick="app.openEditPlayerModal(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-blue-500/20 hover:text-blue-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700" title="Bilgileri Düzenle">
+                        <i data-lucide="pencil" class="w-4 h-4"></i>
+                    </button>
+                    
+                    <button onclick="app.deletePlayer(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700 mr-2" title="Oyuncuyu Sil">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
 
                     <div class="h-8 w-[1px] bg-dark-800"></div>
 
@@ -89,7 +98,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                 </div>
             </div>
 
-            <!-- CONTENT BODY -->
+            <!-- CONTENT BODY (3 KOLONLU YAPI) -->
             <div id="modal-content-body" class="flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-10 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-dark-900 via-dark-950 to-dark-950">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-[1920px] mx-auto h-full">
                     
@@ -123,6 +132,66 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
         </div>
     `);
     
-    // Grafiği Başlat
-    this.initComparisonRadar(p, currentReport, prevReport);
+    // BUG FIX: Grafik çizimi için süreyi artır ve pencere boyutunu kontrol et
+    setTimeout(() => {
+        this.initComparisonRadar(p, currentReport, prevReport);
+        
+        // Pencere boyutuna göre yeniden çizimi tetikle (Garanti olsun)
+        window.dispatchEvent(new Event('resize'));
+    }, 300); // 300ms gecikme (Animasyon bitişini bekler)
+};
+
+// --- TAB DEĞİŞTİRME FONKSİYONLARI (RE-RENDER YOK) ---
+
+// 1. Özellik Sekmeleri (Teknik, Taktik vs.)
+ScoutApp.prototype.switchAttrTab = function(category) {
+    // Tüm içerikleri gizle
+    document.querySelectorAll('.attr-content').forEach(el => el.classList.add('hidden'));
+    // Seçileni göster
+    document.getElementById(`content-cat-${category}`).classList.remove('hidden');
+
+    // Buton stillerini güncelle
+    document.querySelectorAll('.attr-tab-btn').forEach(btn => {
+        btn.classList.remove('text-white', 'border-scout-500');
+        btn.classList.add('text-slate-500', 'border-transparent');
+    });
+    
+    // Aktif butonu parlat
+    const activeBtn = document.getElementById(`btn-cat-${category}`);
+    if(activeBtn) {
+        activeBtn.classList.remove('text-slate-500', 'border-transparent');
+        activeBtn.classList.add('text-white', 'border-scout-500');
+    }
+};
+
+// 2. Medya Sekmeleri (Notlar vs Videolar)
+ScoutApp.prototype.switchMediaTab = function(tabName) {
+    // Tüm medya içeriklerini gizle
+    document.querySelectorAll('.media-content').forEach(el => {
+        el.classList.remove('flex');
+        el.classList.add('hidden');
+    });
+
+    // Seçileni göster
+    const activeContent = document.getElementById(`content-media-${tabName}`);
+    if (activeContent) {
+        activeContent.classList.remove('hidden');
+        activeContent.classList.add('flex');
+    }
+
+    // Buton stillerini güncelle
+    document.querySelectorAll('.media-tab-btn').forEach(btn => {
+        btn.classList.remove('text-white', 'border-scout-500');
+        btn.classList.add('text-slate-500', 'border-transparent');
+    });
+
+    // Aktif butonu parlat
+    const activeBtn = document.getElementById(`btn-media-${tabName}`);
+    if(activeBtn) {
+        activeBtn.classList.remove('text-slate-500', 'border-transparent');
+        activeBtn.classList.add('text-white', 'border-scout-500');
+    }
+    
+    // Grafik boyutunu korumak için küçük bir hack (ApexCharts bazen layout değişiminde sapıtabiliyor)
+    window.dispatchEvent(new Event('resize'));
 };
