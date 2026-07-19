@@ -5,6 +5,10 @@ ScoutApp.prototype.getLogoDisplayHTML = function(value, classes = "w-full h-full
     if (value && (value.startsWith('http') || value.startsWith('data:image'))) {
         return `<img src="${value}" class="${classes}" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex items-center justify-center bg-dark-800 text-slate-700"><i data-lucide="image-off" class="w-1/2 h-1/2"></i></div>`;
     }
+    // Emoji veya kısa metin (örn: bayraklar) için destek
+    if (value && value.length > 0 && value.length <= 15) {
+        return `<span class="flex items-center justify-center text-xl">${value}</span>`;
+    }
     return `<div class="w-full h-full flex items-center justify-center bg-dark-800/50 text-slate-700"><i data-lucide="image" class="w-1/2 h-1/2 opacity-50"></i></div>`;
 };
 

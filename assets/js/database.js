@@ -8,78 +8,99 @@ ScoutApp.prototype.renderDatabase = function(c) {
                     <h2 class="text-lg font-bold text-white">Veritabanı Yapısı</h2>
                     <p class="text-xs text-slate-500">Ülke > Lig > Takım > Oyuncu</p>
                 </div>
-                <button onclick="app.openAddCountryModal()" class="px-4 py-2 bg-scout-600 hover:bg-scout-500 text-white rounded-lg text-sm flex items-center gap-2"><i data-lucide="globe"></i> Ülke Ekle</button>
             </div>
             
             ${this.state.data.countries.length === 0 ? 
                 `<div class="text-center py-12 border-2 border-dashed border-dark-800 rounded-2xl text-slate-500">Veritabanı boş. Ülke ekleyerek başlayınız.</div>` : ''}
             
-            ${this.state.data.countries.map(country => {
-                const leagues = this.state.data.leagues.filter(l => l.countryId === country.id);
+            ${['Favoriler', 'Avrupa', 'Afrika', 'Amerika', 'Asya', 'Okyanusya', 'Diğer'].map(regionName => {
+                const regionCountries = regionName === 'Favoriler' 
+                    ? this.state.data.countries.filter(c => c.isFavorite)
+                    : this.state.data.countries.filter(c => c.region === regionName);
+                if(regionCountries.length === 0) return '';
+                
+                const regionIcon = regionName === 'Favoriler' ? 'star' : 'map-pin';
+                const regionColor = regionName === 'Favoriler' ? 'text-yellow-400' : 'text-scout-400';
+                
                 return `
-                    <div class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden hover-trigger relative">
-                        <div class="bg-dark-950/50 p-4 border-b border-dark-800 flex items-center justify-between group">
-                            <div class="flex items-center gap-3">
-                                <!-- Ülke Bayrağı -->
-                                <div class="w-8 h-6 overflow-hidden rounded shadow-sm flex items-center justify-center text-lg bg-dark-800">
-                                    ${this.getLogoDisplayHTML(country.flag)}
-                                </div>
-                                <h3 class="text-lg font-bold text-white">${country.name}</h3>
-                                <div class="edit-actions flex gap-1 ml-2">
-                                    <button onclick="app.openEditCountryModal(${country.id})" class="p-1 hover:bg-dark-700 rounded text-slate-400 hover:text-white" title="Düzenle"><i data-lucide="pencil" class="w-3 h-3"></i></button>
-                                    <button onclick="app.deleteCountry(${country.id})" class="p-1 hover:bg-red-900/30 rounded text-slate-400 hover:text-red-400" title="Sil"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
-                                </div>
-                            </div>
-                            <button onclick="app.openAddLeagueModal(${country.id})" class="text-xs bg-dark-800 hover:bg-dark-700 text-slate-300 px-3 py-1.5 rounded-lg border border-dark-700 flex items-center gap-1"><i data-lucide="plus"></i> Lig Ekle</button>
-                        </div>
-                        <div class="p-4 grid grid-cols-1 gap-4">
-                            ${leagues.map(league => {
-                                const teams = this.state.data.teams.filter(t => t.leagueId === league.id);
+                    <div class="mb-8 bg-dark-950/30 p-6 rounded-3xl border border-dark-800">
+                        <h3 class="text-2xl font-bold ${regionColor} mb-6 flex items-center gap-2">
+                            <i data-lucide="${regionIcon}" class="${regionName === 'Favoriler' ? 'fill-current' : ''}"></i> ${regionName}
+                        </h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            ${regionCountries.map(country => {
+                                const leagues = this.state.data.leagues.filter(l => l.countryId === country.id);
                                 return `
-                                    <div class="border border-dark-800 rounded-xl bg-dark-800/20 p-4 hover-trigger">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <div class="flex items-center gap-2 text-scout-400 font-semibold text-sm uppercase tracking-wider">
-                                                <!-- Lig Logosu -->
-                                                <div class="w-6 h-6 flex items-center justify-center">
-                                                    ${this.getLogoDisplayHTML(league.logo)}
-                                                </div> 
-                                                ${league.name}
+                                    <div class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden hover-trigger relative">
+                                        <div class="bg-dark-950/50 p-4 border-b border-dark-800 flex items-center justify-between group">
+                                            <div class="flex items-center gap-3">
+                                                <!-- Ülke Bayrağı -->
+                                                <div class="w-8 h-6 overflow-hidden rounded shadow-sm flex items-center justify-center text-lg bg-dark-800">
+                                                    ${this.getLogoDisplayHTML(country.flag)}
+                                                </div>
+                                                <h3 class="text-lg font-bold text-white">${country.name}</h3>
+                                                <button onclick="app.toggleFavorite(${country.id}, 'country')" class="p-1 hover:bg-dark-700 rounded transition-colors ${country.isFavorite ? 'text-yellow-400' : 'text-slate-600 hover:text-yellow-400'}" title="Favorilere Ekle/Çıkar">
+                                                    <i data-lucide="star" class="w-4 h-4 ${country.isFavorite ? 'fill-current' : ''}"></i>
+                                                </button>
                                                 <div class="edit-actions flex gap-1 ml-2">
-                                                    <button onclick="app.openEditLeagueModal(${league.id})" class="p-1 hover:bg-dark-700 rounded text-slate-500 hover:text-white" title="Düzenle"><i data-lucide="pencil" class="w-3 h-3"></i></button>
-                                                    <button onclick="app.deleteLeague(${league.id})" class="p-1 hover:bg-red-900/30 rounded text-slate-500 hover:text-red-400" title="Sil"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                    <button onclick="app.openEditCountryModal(${country.id})" class="p-1 hover:bg-dark-700 rounded text-slate-400 hover:text-white" title="Düzenle"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                                                    <button onclick="app.deleteCountry(${country.id})" class="p-1 hover:bg-red-900/30 rounded text-slate-400 hover:text-red-400" title="Sil"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
                                                 </div>
                                             </div>
-                                            <button onclick="app.openAddTeamModal(${league.id})" class="text-[10px] bg-scout-500/10 hover:bg-scout-500/20 text-scout-400 px-2 py-1 rounded border border-scout-500/20 transition-colors flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Takım Ekle</button>
+                                            <button onclick="app.openAddLeagueModal(${country.id})" class="text-xs bg-dark-800 hover:bg-dark-700 text-slate-300 px-3 py-1.5 rounded-lg border border-dark-700 flex items-center gap-1"><i data-lucide="plus"></i> Lig Ekle</button>
                                         </div>
-                                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                                            ${teams.map(team => {
-                                                const playerCount = this.state.data.players.filter(p => p.teamId === team.id).length;
+                                        <div class="p-4 grid grid-cols-1 gap-4">
+                                            ${leagues.map(league => {
+                                                const teams = this.state.data.teams.filter(t => t.leagueId === league.id);
                                                 return `
-                                                    <div class="relative group/team">
-                                                        <div onclick="app.navigate('team-detail', ${team.id})" class="flex items-center gap-3 p-2 rounded-lg bg-dark-900 hover:bg-dark-800 cursor-pointer transition-colors border border-dark-800 hover:border-scout-500/30">
-                                                            <!-- Takım Logosu -->
-                                                            <div class="w-8 h-8 rounded-full bg-dark-950 flex items-center justify-center text-lg shadow-sm border border-dark-700 relative overflow-hidden">
-                                                                ${this.getLogoDisplayHTML(team.logo, "w-full h-full object-cover")}
-                                                                ${playerCount > 0 ? `<span class="absolute -top-1 -right-1 w-3 h-3 bg-scout-500 rounded-full border border-dark-900"></span>` : ''}
+                                                    <div class="border border-dark-800 rounded-xl bg-dark-800/20 p-4 hover-trigger">
+                                                        <div class="flex items-center justify-between mb-3">
+                                                            <div class="flex items-center gap-2 text-scout-400 font-semibold text-sm uppercase tracking-wider">
+                                                                <!-- Lig Logosu -->
+                                                                <div class="w-6 h-6 flex items-center justify-center">
+                                                                    ${this.getLogoDisplayHTML(league.logo)}
+                                                                </div> 
+                                                                ${league.name}
+                                                                <div class="edit-actions flex gap-1 ml-2">
+                                                                    <button onclick="app.openEditLeagueModal(${league.id})" class="p-1 hover:bg-dark-700 rounded text-slate-500 hover:text-white" title="Düzenle"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                                                                    <button onclick="app.deleteLeague(${league.id})" class="p-1 hover:bg-red-900/30 rounded text-slate-500 hover:text-red-400" title="Sil"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                                </div>
                                                             </div>
-                                                            <div class="flex flex-col min-w-0">
-                                                                <span class="text-sm text-slate-300 group-hover:text-white truncate font-medium">${team.name}</span>
-                                                                <span class="text-[10px] text-slate-500">${playerCount} Oyuncu</span>
-                                                            </div>
+                                                            <button onclick="app.openAddTeamModal(${league.id})" class="text-[10px] bg-scout-500/10 hover:bg-scout-500/20 text-scout-400 px-2 py-1 rounded border border-scout-500/20 transition-colors flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Takım Ekle</button>
                                                         </div>
-                                                        <div class="absolute top-1 right-1 hidden group-hover/team:flex gap-1 bg-dark-950 rounded-lg p-1 border border-dark-700 z-10">
-                                                                <button onclick="app.openEditTeamModal(${team.id})" class="p-1 hover:text-white text-slate-400"><i data-lucide="pencil" class="w-3 h-3"></i></button>
-                                                                <button onclick="app.deleteTeam(${team.id})" class="p-1 hover:text-red-400 text-slate-400"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                        <div class="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                                                            ${teams.map(team => {
+                                                                const playerCount = this.state.data.players.filter(p => p.teamId === team.id).length;
+                                                                return `
+                                                                    <div class="relative group/team">
+                                                                        <div onclick="app.navigate('team-detail', ${team.id})" class="flex items-center gap-3 p-2 rounded-lg bg-dark-900 hover:bg-dark-800 cursor-pointer transition-colors border border-dark-800 hover:border-scout-500/30">
+                                                                            <!-- Takım Logosu -->
+                                                                            <div class="w-8 h-8 rounded-full bg-dark-950 flex items-center justify-center text-lg shadow-sm border border-dark-700 relative overflow-hidden">
+                                                                                ${this.getLogoDisplayHTML(team.logo, "w-full h-full object-cover")}
+                                                                                ${playerCount > 0 ? `<span class="absolute -top-1 -right-1 w-3 h-3 bg-scout-500 rounded-full border border-dark-900"></span>` : ''}
+                                                                            </div>
+                                                                            <div class="flex flex-col min-w-0">
+                                                                                <span class="text-sm text-slate-300 group-hover:text-white truncate font-medium">${team.name}</span>
+                                                                                <span class="text-[10px] text-slate-500">${playerCount} Oyuncu</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="absolute top-1 right-1 hidden group-hover/team:flex gap-1 bg-dark-950 rounded-lg p-1 border border-dark-700 z-10">
+                                                                                <button onclick="app.openEditTeamModal(${team.id})" class="p-1 hover:text-white text-slate-400"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                                                                                <button onclick="app.deleteTeam(${team.id})" class="p-1 hover:text-red-400 text-slate-400"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                                        </div>
+                                                                    </div>
+                                                                `;
+                                                            }).join('')}
+                                                            ${teams.length === 0 ? '<span class="text-xs text-slate-600 p-2">Takım yok</span>' : ''}
                                                         </div>
                                                     </div>
                                                 `;
                                             }).join('')}
-                                            ${teams.length === 0 ? '<span class="text-xs text-slate-600 p-2">Takım yok</span>' : ''}
+                                            ${leagues.length === 0 ? '<span class="text-xs text-slate-600">Lig bulunamadı.</span>' : ''}
                                         </div>
                                     </div>
                                 `;
                             }).join('')}
-                            ${leagues.length === 0 ? '<span class="text-xs text-slate-600">Lig bulunamadı.</span>' : ''}
                         </div>
                     </div>
                 `;

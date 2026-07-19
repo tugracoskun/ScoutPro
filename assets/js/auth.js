@@ -9,6 +9,18 @@ class AuthManager {
             
             if (savedData) {
                 this.app.state.data = savedData;
+                
+                // MIGRATION: Eğer ülkeler tam liste değilse veya region yoksa veya bayraklar resim formatında değilse DB'yi güncelle
+                if (!this.app.state.data.countries || this.app.state.data.countries.length < 200 || (this.app.state.data.countries[0] && (!this.app.state.data.countries[0].region || !this.app.state.data.countries[0].flag.startsWith('http')))) {
+                    const favorites = this.app.state.data.countries ? this.app.state.data.countries.filter(c => c.isFavorite).map(c => c.id) : [];
+                    this.app.state.data.countries = DB.countries;
+                    favorites.forEach(id => {
+                        const c = this.app.state.data.countries.find(x => x.id === id);
+                        if(c) c.isFavorite = true;
+                    });
+                    this.saveUserData(); // Güncellenmiş listeyi kaydet
+                }
+                
                 console.log("Veriler dosyadan yüklendi.");
             } else {
                 console.log("Kayıtlı veri bulunamadı, yeni dosya oluşturulacak.");

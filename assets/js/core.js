@@ -85,8 +85,12 @@ class ScoutApp {
 
     // --- YENİ: FAVORİ EKLEME/ÇIKARMA ---
     toggleFavorite(id, type) {
-        // type: 'player' (Raporlu) veya 'watchlist' (Aday)
-        let list = type === 'player' ? this.state.data.players : this.state.data.watchlist;
+        // type: 'player' (Raporlu), 'watchlist' (Aday) veya 'country' (Ülke)
+        let list;
+        if (type === 'player') list = this.state.data.players;
+        else if (type === 'watchlist') list = this.state.data.watchlist;
+        else if (type === 'country') list = this.state.data.countries;
+
         const item = list.find(x => x.id === id);
         
         if (item) {
@@ -101,12 +105,10 @@ class ScoutApp {
             } else if (this.state.activePage === 'watchlist' && type === 'watchlist') {
                 this.renderWatchlist(document.getElementById('content-area'));
             } else if (this.state.activePage === 'dashboard') {
-                // Dashboard'da favori listesi olursa orayı da yenilemek gerekir (İlerde)
                 this.renderDashboard(document.getElementById('content-area'));
+            } else if (this.state.activePage === 'database' && type === 'country') {
+                this.renderDatabase(document.getElementById('content-area'));
             }
-            
-            // Kullanıcıya küçük bir geri bildirim (Opsiyonel)
-            // if(item.isFavorite) this.notify("Favorilere eklendi");
         }
     }
 
