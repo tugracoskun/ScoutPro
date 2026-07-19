@@ -30,7 +30,7 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
                     </div>
 
                     ${this.createInput('edit-p-height', 'Boy (cm)', '180', 'number', p.height)}
-                    ${this.createSelect('edit-p-foot', 'Ayak', [{val:'Sağ', txt:'Sağ'}, {val:'Sol', txt:'Sol'}, {val:'Her İkisi', txt:'Her İkisi'}], p.foot)}
+                    ${this.createSelect('edit-p-foot', 'Ayak', [{val:'Sağ', txt:'Sağ'}, {val:'Sol', txt:'Sol'}, {val:'Her İkisi', txt:'Her İkisi'}, {val:'Bilinmiyor', txt:'Bilinmiyor'}], p.foot)}
                 </div>
                 
                 <div class="flex flex-col gap-1.5">

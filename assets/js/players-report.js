@@ -30,7 +30,7 @@ ScoutApp.prototype.renderNewReport = function(c) {
 
                     <div class="grid grid-cols-2 gap-4">
                         ${this.createInput('rep-height', 'Boy (cm)', '185', 'number', this.state.newReport.height, "app.updateRep('height', this.value)")}
-                        ${this.createSelect('rep-foot', 'Kullandığı Ayak', [{val:'Sağ', txt:'Sağ'}, {val:'Sol', txt:'Sol'}, {val:'Her İkisi', txt:'Her İkisi'}], this.state.newReport.foot, "app.updateRep('foot', this.value)")}
+                        ${this.createSelect('rep-foot', 'Kullandığı Ayak', [{val:'Sağ', txt:'Sağ'}, {val:'Sol', txt:'Sol'}, {val:'Her İkisi', txt:'Her İkisi'}, {val:'Bilinmiyor', txt:'Bilinmiyor'}], this.state.newReport.foot, "app.updateRep('foot', this.value)")}
                     </div>
 
                     <div class="flex flex-col gap-1.5">
