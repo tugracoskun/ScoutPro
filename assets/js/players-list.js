@@ -1,6 +1,8 @@
 // --- OYUNCU LİSTELEME MODÜLÜ (FAVORİ FİLTRESİ EKLENDİ) ---
 
-ScoutApp.prototype.renderPlayers = function(c) {
+ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
+    this.state.activePage = 'players';
+
     // Filtre state kontrolü
     if (!this.state.playerFilter) {
         this.state.playerFilter = { favoritesOnly: false };
@@ -58,7 +60,7 @@ ScoutApp.prototype.renderPlayers = function(c) {
 
 ScoutApp.prototype.togglePlayerFilter = function() {
     this.state.playerFilter.favoritesOnly = !this.state.playerFilter.favoritesOnly;
-    this.renderPlayers(document.getElementById('content-area'));
+    this.renderPlayers(document.getElementById('content-area'), true);
 };
 
 ScoutApp.prototype.getPlayerCardHTML = function(p) {

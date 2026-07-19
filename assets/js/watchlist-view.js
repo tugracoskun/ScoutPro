@@ -1,6 +1,6 @@
 // --- ADAY HAVUZU (WATCHLIST) MODÜLÜ ---
 
-ScoutApp.prototype.renderWatchlist = function(c) {
+ScoutApp.prototype.renderWatchlist = function(c, skipAnimation = false) {
     // Filtre state kontrolü
     if (!this.state.wlFilter) {
         this.state.wlFilter = { search: '', category: 'All', sort: 'newest', favoritesOnly: false };
@@ -45,7 +45,7 @@ ScoutApp.prototype.renderWatchlist = function(c) {
     const favBtnClass = filter.favoritesOnly ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-500/20" : "bg-dark-900 text-slate-400 border-dark-700 hover:text-white";
 
     c.innerHTML = `
-        <div class="max-w-6xl mx-auto space-y-8 fade-in pb-20">
+        <div class="max-w-6xl mx-auto space-y-8 ${skipAnimation ? '' : 'fade-in'} pb-20">
             
             <!-- EKLEME FORMU -->
             <div class="bg-dark-900 border border-dark-800 p-6 rounded-2xl shadow-lg">
@@ -161,7 +161,7 @@ ScoutApp.prototype.filterWatchlist = function(type, value) {
         this.state.wlFilter[type] = value;
     }
     
-    this.renderWatchlist(document.getElementById('content-area'));
+    this.renderWatchlist(document.getElementById('content-area'), true);
 };
 
 ScoutApp.prototype.addToWatchlist = function() {

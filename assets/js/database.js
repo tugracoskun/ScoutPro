@@ -1,8 +1,8 @@
 // --- VERİTABANI GÖRÜNTÜLEME MODÜLÜ ---
 
-ScoutApp.prototype.renderDatabase = function(c) {
+ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
     c.innerHTML = `
-        <div class="space-y-6 fade-in max-w-5xl mx-auto">
+        <div class="space-y-6 ${skipAnimation ? '' : 'fade-in'} max-w-5xl mx-auto">
             <div class="flex justify-between items-center bg-dark-900 p-4 rounded-xl border border-dark-800">
                 <div>
                     <h2 class="text-lg font-bold text-white">Veritabanı Yapısı</h2>

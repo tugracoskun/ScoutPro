@@ -101,13 +101,18 @@ class ScoutApp {
             // Sadece ilgili sayfadaysak o sayfayı yenile
             // (Böylece sayfa titremez, sadece ikon değişir)
             if (this.state.activePage === 'players' && type === 'player') {
-                this.renderPlayers(document.getElementById('content-area'));
+                this.renderPlayers(document.getElementById('content-area'), true);
             } else if (this.state.activePage === 'watchlist' && type === 'watchlist') {
-                this.renderWatchlist(document.getElementById('content-area'));
+                this.renderWatchlist(document.getElementById('content-area'), true);
             } else if (this.state.activePage === 'dashboard') {
                 this.renderDashboard(document.getElementById('content-area'));
             } else if (this.state.activePage === 'database' && type === 'country') {
-                this.renderDatabase(document.getElementById('content-area'));
+                this.renderDatabase(document.getElementById('content-area'), true);
+            }
+            
+            // Re-render sonrası ikonları yeniden yükle
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
             }
         }
     }
