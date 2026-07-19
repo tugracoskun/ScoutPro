@@ -5,27 +5,33 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
         <div class="space-y-6 ${skipAnimation ? '' : 'fade-in'} max-w-5xl mx-auto">
             <div class="flex justify-between items-center bg-dark-900 p-4 rounded-xl border border-dark-800">
                 <div>
-                    <h2 class="text-lg font-bold text-white">Veritabanı Yapısı</h2>
-                    <p class="text-xs text-slate-500">Ülke > Lig > Takım > Oyuncu</p>
+                    <h2 class="text-lg font-bold text-white">${t('db_title')}</h2>
+                    <p class="text-xs text-slate-500">${t('db_subtitle')}</p>
                 </div>
             </div>
             
             ${this.state.data.countries.length === 0 ? 
-                `<div class="text-center py-12 border-2 border-dashed border-dark-800 rounded-2xl text-slate-500">Veritabanı boş. Ülke ekleyerek başlayınız.</div>` : ''}
+                `<div class="text-center py-12 border-2 border-dashed border-dark-800 rounded-2xl text-slate-500">${t('db_empty')}</div>` : ''}
             
-            ${['Favoriler', 'Avrupa', 'Afrika', 'Amerika', 'Asya', 'Okyanusya', 'Diğer'].map(regionName => {
-                const regionCountries = regionName === 'Favoriler' 
+            ${['Favoriler', 'Avrupa', 'Afrika', 'Amerika', 'Asya', 'Okyanusya', 'Diğer'].map(regionKey => {
+                const regionCountries = regionKey === 'Favoriler' 
                     ? this.state.data.countries.filter(c => c.isFavorite)
-                    : this.state.data.countries.filter(c => c.region === regionName);
+                    : this.state.data.countries.filter(c => c.region === regionKey);
                 if(regionCountries.length === 0) return '';
                 
-                const regionIcon = regionName === 'Favoriler' ? 'star' : 'map-pin';
-                const regionColor = regionName === 'Favoriler' ? 'text-yellow-400' : 'text-scout-400';
+                const regionIcon = regionKey === 'Favoriler' ? 'star' : 'map-pin';
+                const regionColor = regionKey === 'Favoriler' ? 'text-yellow-400' : 'text-scout-400';
+                
+                const displayRegionMap = {
+                    'Favoriler': t('region_favorites'), 'Avrupa': t('region_europe'), 'Afrika': t('region_africa'),
+                    'Amerika': t('region_americas'), 'Asya': t('region_asia'), 'Okyanusya': t('region_oceania'), 'Diğer': t('region_other')
+                };
+                const displayRegion = displayRegionMap[regionKey] || regionKey;
                 
                 return `
                     <div class="mb-8 bg-dark-950/30 p-6 rounded-3xl border border-dark-800">
                         <h3 class="text-2xl font-bold ${regionColor} mb-6 flex items-center gap-2">
-                            <i data-lucide="${regionIcon}" class="${regionName === 'Favoriler' ? 'fill-current' : ''}"></i> ${regionName}
+                            <i data-lucide="${regionIcon}" class="${regionKey === 'Favoriler' ? 'fill-current' : ''}"></i> ${displayRegion}
                         </h3>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             ${regionCountries.map(country => {
@@ -43,11 +49,11 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                                                     <i data-lucide="star" class="w-4 h-4 ${country.isFavorite ? 'fill-current' : ''}"></i>
                                                 </button>
                                                 <div class="edit-actions flex gap-1 ml-2">
-                                                    <button onclick="app.openEditCountryModal(${country.id})" class="p-1 hover:bg-dark-700 rounded text-slate-400 hover:text-white" title="Düzenle"><i data-lucide="pencil" class="w-3 h-3"></i></button>
-                                                    <button onclick="app.deleteCountry(${country.id})" class="p-1 hover:bg-red-900/30 rounded text-slate-400 hover:text-red-400" title="Sil"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                    <button onclick="app.openEditCountryModal(${country.id})" class="p-1 hover:bg-dark-700 rounded text-slate-400 hover:text-white" title="${t('edit')}"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                                                    <button onclick="app.deleteCountry(${country.id})" class="p-1 hover:bg-red-900/30 rounded text-slate-400 hover:text-red-400" title="${t('delete')}"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
                                                 </div>
                                             </div>
-                                            <button onclick="app.openAddLeagueModal(${country.id})" class="text-xs bg-dark-800 hover:bg-dark-700 text-slate-300 px-3 py-1.5 rounded-lg border border-dark-700 flex items-center gap-1"><i data-lucide="plus"></i> Lig Ekle</button>
+                                            <button onclick="app.openAddLeagueModal(${country.id})" class="text-xs bg-dark-800 hover:bg-dark-700 text-slate-300 px-3 py-1.5 rounded-lg border border-dark-700 flex items-center gap-1"><i data-lucide="plus"></i> ${t('add_league')}</button>
                                         </div>
                                         <div class="p-4 grid grid-cols-1 gap-4">
                                             ${leagues.map(league => {
@@ -62,11 +68,11 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                                                                 </div> 
                                                                 ${league.name}
                                                                 <div class="edit-actions flex gap-1 ml-2">
-                                                                    <button onclick="app.openEditLeagueModal(${league.id})" class="p-1 hover:bg-dark-700 rounded text-slate-500 hover:text-white" title="Düzenle"><i data-lucide="pencil" class="w-3 h-3"></i></button>
-                                                                    <button onclick="app.deleteLeague(${league.id})" class="p-1 hover:bg-red-900/30 rounded text-slate-500 hover:text-red-400" title="Sil"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                                    <button onclick="app.openEditLeagueModal(${league.id})" class="p-1 hover:bg-dark-700 rounded text-slate-500 hover:text-white" title="${t('edit')}"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                                                                    <button onclick="app.deleteLeague(${league.id})" class="p-1 hover:bg-red-900/30 rounded text-slate-500 hover:text-red-400" title="${t('delete')}"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
                                                                 </div>
                                                             </div>
-                                                            <button onclick="app.openAddTeamModal(${league.id})" class="text-[10px] bg-scout-500/10 hover:bg-scout-500/20 text-scout-400 px-2 py-1 rounded border border-scout-500/20 transition-colors flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Takım Ekle</button>
+                                                            <button onclick="app.openAddTeamModal(${league.id})" class="text-[10px] bg-scout-500/10 hover:bg-scout-500/20 text-scout-400 px-2 py-1 rounded border border-scout-500/20 transition-colors flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> ${t('add_team')}</button>
                                                         </div>
                                                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-2">
                                                             ${teams.map(team => {
@@ -81,7 +87,7 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                                                                             </div>
                                                                             <div class="flex flex-col min-w-0">
                                                                                 <span class="text-sm text-slate-300 group-hover:text-white truncate font-medium">${team.name}</span>
-                                                                                <span class="text-[10px] text-slate-500">${playerCount} Oyuncu</span>
+                                                                                <span class="text-[10px] text-slate-500">${playerCount} ${t('players_count')}</span>
                                                                             </div>
                                                                         </div>
                                                                         <div class="absolute top-1 right-1 hidden group-hover/team:flex gap-1 bg-dark-950 rounded-lg p-1 border border-dark-700 z-10">
@@ -91,12 +97,12 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                                                                     </div>
                                                                 `;
                                                             }).join('')}
-                                                            ${teams.length === 0 ? '<span class="text-xs text-slate-600 p-2">Takım yok</span>' : ''}
+                                                            ${teams.length === 0 ? `<span class="text-xs text-slate-600 p-2">${t('no_teams')}</span>` : ''}
                                                         </div>
                                                     </div>
                                                 `;
                                             }).join('')}
-                                            ${leagues.length === 0 ? '<span class="text-xs text-slate-600">Lig bulunamadı.</span>' : ''}
+                                            ${leagues.length === 0 ? `<span class="text-xs text-slate-600">${t('no_leagues')}</span>` : ''}
                                         </div>
                                     </div>
                                 `;
@@ -119,7 +125,7 @@ ScoutApp.prototype.renderTeamDetail = function(c, teamId) {
 
     c.innerHTML = `
         <div class="space-y-8 fade-in max-w-6xl mx-auto">
-            <button onclick="app.navigate('database')" class="text-slate-400 hover:text-white flex items-center gap-2 text-sm mb-4"><i data-lucide="arrow-left" class="w-4 h-4"></i> Veritabanına Dön</button>
+            <button onclick="app.navigate('database')" class="text-slate-400 hover:text-white flex items-center gap-2 text-sm mb-4"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${t('return_db')}</button>
             <div class="bg-dark-900 border border-dark-800 rounded-3xl p-8 relative overflow-hidden">
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-8 relative z-10">
                     <div class="w-32 h-32 rounded-2xl bg-dark-950 flex items-center justify-center text-6xl shadow-2xl border border-dark-800 overflow-hidden">

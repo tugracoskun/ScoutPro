@@ -23,20 +23,20 @@ ScoutApp.prototype.renderLayout = function() {
 
             <nav class="flex-1 py-6 px-3 space-y-1 overflow-y-auto custom-scrollbar">
                 <div class="px-3 mb-2 mt-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider sidebar-text">Operasyon</div>
-                <button onclick="app.navigate('dashboard')" class="nav-item" id="nav-dashboard"><div class="min-w-[24px] flex justify-center"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">Dashboard</span></button>
-                <button onclick="app.navigate('new-report')" class="nav-item" id="nav-new-report"><div class="min-w-[24px] flex justify-center"><i data-lucide="file-plus" class="w-5 h-5 text-scout-400"></i></div><span class="sidebar-text ml-3 font-medium text-sm text-scout-400">Yeni Rapor</span></button>
+                <button onclick="app.navigate('dashboard')" class="nav-item" id="nav-dashboard"><div class="min-w-[24px] flex justify-center"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_dashboard')}</span></button>
+                <button onclick="app.navigate('new-report')" class="nav-item" id="nav-new-report"><div class="min-w-[24px] flex justify-center"><i data-lucide="file-plus" class="w-5 h-5 text-scout-400"></i></div><span class="sidebar-text ml-3 font-medium text-sm text-scout-400">${t('menu_new_report')}</span></button>
 
                 <div class="px-3 mb-2 mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-wider sidebar-text">Veritabanı</div>
-                <button onclick="app.navigate('database')" class="nav-item" id="nav-database"><div class="min-w-[24px] flex justify-center"><i data-lucide="database" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">Takım Veritabanı</span></button>
-                <button onclick="app.navigate('players')" class="nav-item" id="nav-players"><div class="min-w-[24px] flex justify-center"><i data-lucide="users" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">Oyuncu Havuzu</span></button>
+                <button onclick="app.navigate('database')" class="nav-item" id="nav-database"><div class="min-w-[24px] flex justify-center"><i data-lucide="database" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_database')}</span></button>
+                <button onclick="app.navigate('players')" class="nav-item" id="nav-players"><div class="min-w-[24px] flex justify-center"><i data-lucide="users" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_players')}</span></button>
 
                 <div class="px-3 mb-2 mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-wider sidebar-text">İzleme</div>
-                <button onclick="app.navigate('matches')" class="nav-item" id="nav-matches"><div class="min-w-[24px] flex justify-center relative"><i data-lucide="tv-2" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">Maç İzleme Listesi</span></button>
-                <button onclick="app.navigate('watchlist')" class="nav-item" id="nav-watchlist"><div class="min-w-[24px] flex justify-center"><i data-lucide="eye" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">Aday Havuzu</span></button>
+                <button onclick="app.navigate('matches')" class="nav-item" id="nav-matches"><div class="min-w-[24px] flex justify-center relative"><i data-lucide="tv-2" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_matches')}</span></button>
+                <button onclick="app.navigate('watchlist')" class="nav-item" id="nav-watchlist"><div class="min-w-[24px] flex justify-center"><i data-lucide="eye" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_watchlist')}</span></button>
             </nav>
 
             <div class="p-4 border-t border-dark-800 bg-dark-900/50 backdrop-blur">
-                <button onclick="app.navigate('settings')" class="nav-item" id="nav-settings"><div class="min-w-[24px] flex justify-center"><i data-lucide="settings-2" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">Ayarlar</span></button>
+                <button onclick="app.navigate('settings')" class="nav-item" id="nav-settings"><div class="min-w-[24px] flex justify-center"><i data-lucide="settings-2" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_settings')}</span></button>
                 <button onclick="app.toggleSidebar()" class="w-full mt-2 flex items-center justify-center p-2 rounded-lg hover:bg-dark-800 text-slate-600 hover:text-slate-300 transition-colors group"><i data-lucide="chevrons-left" class="w-4 h-4 transition-transform duration-300" id="sidebar-toggle-icon"></i></button>
             </div>
         </aside>
@@ -45,12 +45,12 @@ ScoutApp.prototype.renderLayout = function() {
         <main class="flex-1 flex flex-col min-w-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-scout-900/10 via-dark-950 to-dark-950 relative">
             <header class="h-20 border-b border-dark-800/50 bg-dark-950/80 backdrop-blur-xl flex items-center justify-between px-8 sticky top-0 z-20">
                 <div class="flex flex-col">
-                    <h1 id="page-title" class="text-xl font-bold text-white">Dashboard</h1>
-                    <span id="page-subtitle" class="text-xs text-slate-500">Genel Bakış</span>
+                    <h1 id="page-title" class="text-xl font-bold text-white"></h1>
+                    <span id="page-subtitle" class="text-xs text-slate-500"></span>
                 </div>
                 <div class="relative w-64 md:w-80 group">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-scout-500 transition-colors w-4 h-4"></i>
-                    <input id="global-search" type="text" onkeyup="app.handleSearch(this.value)" placeholder="Oyuncu veya Takım Ara..." class="w-full bg-dark-900/50 border border-dark-800 text-slate-200 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-scout-500/50 focus:ring-1 focus:ring-scout-500/50 transition-all placeholder:text-slate-600">
+                    <input id="global-search" type="text" onkeyup="app.handleSearch(this.value)" placeholder="${t('search_player')}" class="w-full bg-dark-900/50 border border-dark-800 text-slate-200 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-scout-500/50 focus:ring-1 focus:ring-scout-500/50 transition-all placeholder:text-slate-600">
                 </div>
             </header>
 

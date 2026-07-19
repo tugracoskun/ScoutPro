@@ -38,12 +38,12 @@ ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
             <!-- FİLTRE BAR (YENİ) -->
             <div class="sticky top-0 z-30 bg-dark-950/80 backdrop-blur-xl border-b border-dark-800 py-4 -mx-8 px-8 flex justify-between items-center">
                 <div class="text-sm font-bold text-slate-400">
-                    Toplam: <span class="text-white">${filtered.length}</span> Oyuncu
+                    ${t('total')}: <span class="text-white">${filtered.length}</span> ${t('players_count')}
                 </div>
                 
                 <button onclick="app.togglePlayerFilter()" class="flex items-center gap-2 px-4 py-2 rounded-xl border transition-all font-bold text-xs ${favBtnClass}">
                     <i data-lucide="heart" class="w-4 h-4 ${this.state.playerFilter.favoritesOnly ? 'fill-white' : ''}"></i>
-                    Sadece Favoriler
+                    ${t('only_favorites')}
                 </button>
             </div>
 
@@ -52,7 +52,7 @@ ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
                 ${filtered.map(p => this.getPlayerCardHTML(p)).join('')}
             </div>
             
-            ${filtered.length === 0 ? '<div class="text-center p-10 text-slate-500 border-2 border-dashed border-dark-800 rounded-2xl">Kriterlere uygun oyuncu bulunamadı.</div>' : ''}
+            ${filtered.length === 0 ? `<div class="text-center p-10 text-slate-500 border-2 border-dashed border-dark-800 rounded-2xl">${t('no_players')}</div>` : ''}
         </div>
     `;
     lucide.createIcons();
@@ -72,7 +72,7 @@ ScoutApp.prototype.getPlayerCardHTML = function(p) {
         <div class="scout-card bg-dark-900 rounded-2xl p-5 relative group overflow-hidden border border-dark-800 hover:border-scout-500/30 transition-all">
             
             <!-- Favori Butonu -->
-            <button onclick="app.toggleFavorite(${p.id}, 'player')" class="absolute top-3 right-3 z-20 p-2 rounded-lg transition-all ${p.isFavorite ? 'text-red-500 bg-red-500/10' : 'text-slate-500 hover:text-white bg-dark-950/50'}" title="${p.isFavorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}">
+            <button onclick="app.toggleFavorite(${p.id}, 'player')" class="absolute top-3 right-3 z-20 p-2 rounded-lg transition-all ${p.isFavorite ? 'text-red-500 bg-red-500/10' : 'text-slate-500 hover:text-white bg-dark-950/50'}" title="Favori">
                 <i data-lucide="heart" class="w-4 h-4 ${p.isFavorite ? 'fill-red-500' : ''}"></i>
             </button>
 
@@ -90,9 +90,9 @@ ScoutApp.prototype.getPlayerCardHTML = function(p) {
                 </div>
                 
                 <div class="grid grid-cols-3 gap-2 bg-dark-950/50 rounded-lg p-2 border border-dark-800/50">
-                    <div class="text-center"><div class="text-[10px] text-slate-500">Yaş</div><div class="font-medium text-white">${currentAge}</div></div>
-                    <div class="text-center"><div class="text-[10px] text-slate-500">Puan</div><div class="font-bold text-xs ${grade.color}">${grade.letter}</div></div>
-                    <div class="text-center"><div class="text-[10px] text-slate-500">Detay</div><i data-lucide="search" class="w-4 h-4 mx-auto text-slate-400 hover:text-white transition-colors"></i></div>
+                    <div class="text-center"><div class="text-[10px] text-slate-500">${t('age')}</div><div class="font-medium text-white">${currentAge}</div></div>
+                    <div class="text-center"><div class="text-[10px] text-slate-500">${t('grade')}</div><div class="font-bold text-xs ${grade.color}">${grade.letter}</div></div>
+                    <div class="text-center"><div class="text-[10px] text-slate-500">${t('detail')}</div><i data-lucide="search" class="w-4 h-4 mx-auto text-slate-400 hover:text-white transition-colors"></i></div>
                 </div>
             </div>
         </div>

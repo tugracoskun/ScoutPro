@@ -16,16 +16,16 @@ ScoutApp.prototype.openNewReportMode = function(id) {
     container.innerHTML = `
         <div class="max-w-3xl mx-auto bg-dark-900 p-8 rounded-3xl border border-dark-800 shadow-2xl">
             <div class="flex justify-between items-center mb-6 border-b border-dark-800 pb-4">
-                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="file-plus" class="text-green-500"></i> Yeni Rapor Ekle: ${p.name}</h3>
-                <button onclick="app.openPlayerModal(${id})" class="text-slate-400 hover:text-white flex items-center gap-1 text-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Vazgeç</button>
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="file-plus" class="text-green-500"></i> ${t('new_report')}: ${p.name}</h3>
+                <button onclick="app.openPlayerModal(${id})" class="text-slate-400 hover:text-white flex items-center gap-1 text-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${t('cancel')}</button>
             </div>
             
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-bold text-slate-400 ml-1">Potansiyel Durumu</label>
+                    <label class="text-xs font-bold text-slate-400 ml-1">${t('potential')}</label>
                     <select id="new-rep-potential" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-green-500 outline-none text-sm cursor-pointer">
-                        <option value="Düşük" ${p.potential === 'Düşük' ? 'selected' : ''}>Düşük (Standart)</option>
-                        <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>Yüksek (Gelişime Açık)</option>
+                        <option value="Düşük" ${p.potential === 'Düşük' ? 'selected' : ''}>${t('potential_low')} (${t('standard')})</option>
+                        <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>${t('potential_high')} (${t('open_to_dev')})</option>
                     </select>
                 </div>
             </div>
@@ -36,7 +36,7 @@ ScoutApp.prototype.openNewReportMode = function(id) {
             </div>
 
             <button onclick="app.saveNewPlayerReport(${id})" class="w-full py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 transition-all">
-                <i data-lucide="save" class="w-5 h-5"></i> Raporu Kaydet
+                <i data-lucide="save" class="w-5 h-5"></i> ${t('save')}
             </button>
         </div>
     `;
@@ -63,8 +63,9 @@ ScoutApp.prototype.getSliderHTMLForUpdate = function(attributeGroup, currentStat
     if (isCategorized) {
         Object.keys(attributeGroup).forEach(cat => {
             const clr = {'Teknik':'text-red-400','Fiziksel':'text-yellow-400','Psikolojik':'text-green-400','Sosyolojik':'text-blue-400','Taktik':'text-purple-400','Mental':'text-pink-400','Psiko-Sosyal':'text-indigo-400'}[cat] || 'text-white';
+            const displayCat = t(`cat_${cat.toLowerCase().replace(/ /g, '_')}`) || cat;
             
-            html += `<div class="col-span-2 mt-4 mb-2 pb-1 border-b border-dark-800 font-bold text-sm uppercase tracking-wider ${clr}">${cat}</div>`;
+            html += `<div class="col-span-2 mt-4 mb-2 pb-1 border-b border-dark-800 font-bold text-sm uppercase tracking-wider ${clr}">${displayCat}</div>`;
             
             attributeGroup[cat].forEach(attr => { 
                 const val = currentStats[attr.name] || 50;
@@ -114,7 +115,8 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
     // Ortalama Hesapla
     const statsArr = Object.values(newStats);
     const avg = statsArr.length > 0 ? Math.round(statsArr.reduce((a,b)=>a+b,0)/statsArr.length) : 50;
-    const today = new Date().toLocaleDateString('tr-TR');
+    const lang = window.getLang() === 'en' ? 'en-US' : 'tr-TR';
+    const today = new Date().toLocaleDateString(lang);
 
     const newHistoryEntry = {
         date: today,
@@ -133,7 +135,7 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
     p.dateAdded = today; 
 
     this.saveData(); // Kayıt
-    this.notify("Yeni rapor başarıyla eklendi!");
+    this.notify(t('success'));
 
     this.state.newReport = this.resetReport(); 
     this.openPlayerModal(id); 

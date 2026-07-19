@@ -19,7 +19,7 @@ ScoutApp.prototype.renderNewReport = function(c) {
                         : '<div class="p-3 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-xs">Önce Veritabanından Takım Ekleyiniz!</div>'}
                     
                     <div class="grid grid-cols-2 gap-4">
-                        ${this.createSelect('rep-pos', 'Mevki', POSITIONS.map(p=>({val:p, txt:p})), currentPos, 'app.handlePositionChange(this.value)')}
+                        ${this.createSelect('rep-pos', 'Mevki', POSITIONS.map(p=>({val:p, txt:tPos(p)})), currentPos, 'app.handlePositionChange(this.value)')}
                         <div class="flex flex-col gap-1.5 relative z-10">
                             <label class="text-xs font-bold text-slate-400 ml-1 flex justify-between">Doğum Tarihi <span id="calculated-age-display" class="text-scout-400 font-mono"></span></label>
                             <input type="date" id="rep-birth" value="${this.state.newReport.birthDate || ''}" onchange="app.updateBirthDate(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none transition-all text-sm relative z-20">

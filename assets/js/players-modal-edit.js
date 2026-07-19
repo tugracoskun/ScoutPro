@@ -10,38 +10,38 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
     container.innerHTML = `
         <div class="max-w-2xl mx-auto bg-dark-900 p-8 rounded-3xl border border-dark-800 shadow-2xl mt-10">
             <div class="flex justify-between items-center mb-6 border-b border-dark-800 pb-4">
-                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="pencil" class="text-blue-500"></i> Oyuncu Bilgilerini Düzenle</h3>
-                <button onclick="app.openPlayerModal(${id})" class="text-slate-400 hover:text-white flex items-center gap-1 text-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Vazgeç</button>
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="pencil" class="text-blue-500"></i> ${t('edit')}</h3>
+                <button onclick="app.openPlayerModal(${id})" class="text-slate-400 hover:text-white flex items-center gap-1 text-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${t('cancel')}</button>
             </div>
             
             <div class="space-y-4">
-                ${this.createInput('edit-p-name', 'Adı Soyadı', 'Ad Soyad', 'text', p.name)}
+                ${this.createInput('edit-p-name', t('player_name'), 'Ad Soyad', 'text', p.name)}
                 
                 <div class="grid grid-cols-2 gap-4">
-                    ${this.createSelect('edit-p-team', 'Takım', teams, p.teamId)}
-                    ${this.createSelect('edit-p-pos', 'Mevki', POSITIONS.map(x=>({val:x, txt:x})), p.position)}
+                    ${this.createSelect('edit-p-team', t('team'), teams, p.teamId)}
+                    ${this.createSelect('edit-p-pos', t('position'), POSITIONS.map(x=>({val:x, txt:tPos(x)})), p.position)}
                 </div>
 
                 <div class="grid grid-cols-3 gap-4">
                     <!-- YAŞ YERİNE DOĞUM TARİHİ -->
                     <div class="flex flex-col gap-1.5 relative z-10">
-                        <label class="text-xs font-bold text-slate-400 ml-1">Doğum Tarihi</label>
+                        <label class="text-xs font-bold text-slate-400 ml-1">${t('birth_date')}</label>
                         <input type="date" id="edit-p-birth" value="${p.birthDate || ''}" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none text-sm relative z-20">
                     </div>
 
-                    ${this.createInput('edit-p-height', 'Boy (cm)', '180', 'number', p.height)}
-                    ${this.createSelect('edit-p-foot', 'Ayak', [{val:'Sağ', txt:'Sağ'}, {val:'Sol', txt:'Sol'}, {val:'Her İkisi', txt:'Her İkisi'}, {val:'Bilinmiyor', txt:'Bilinmiyor'}], p.foot)}
+                    ${this.createInput('edit-p-height', t('height') + ' (cm)', '180', 'number', p.height)}
+                    ${this.createSelect('edit-p-foot', t('foot'), [{val:'Sağ', txt:t('foot_right')||'Sağ'}, {val:'Sol', txt:t('foot_left')||'Sol'}, {val:'Her İkisi', txt:t('foot_both')||'Her İkisi'}, {val:'Bilinmiyor', txt:t('unknown')}], p.foot)}
                 </div>
                 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-bold text-slate-400 ml-1">Potansiyel</label>
+                    <label class="text-xs font-bold text-slate-400 ml-1">${t('potential')}</label>
                     <select id="edit-p-potential" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none text-sm">
-                        <option value="Düşük" ${p.potential === 'Düşük' ? 'selected' : ''}>Düşük</option>
-                        <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>Yüksek</option>
+                        <option value="Düşük" ${p.potential === 'Düşük' ? 'selected' : ''}>${t('potential_low')}</option>
+                        <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>${t('potential_high')}</option>
                     </select>
                 </div>
 
-                ${this.createInput('edit-p-img', 'Fotoğraf URL', 'https://...', 'text', p.image)}
+                ${this.createInput('edit-p-img', t('photo_url'), 'https://...', 'text', p.image)}
                 
                 <div class="grid grid-cols-2 gap-4">
                     ${this.createInput('edit-p-tm', 'Transfermarkt URL', 'https://...', 'text', p.tmUrl)}
@@ -50,7 +50,7 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
             </div>
 
             <button onclick="app.updatePlayer(${id})" class="w-full mt-6 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 transition-all">
-                <i data-lucide="save" class="w-5 h-5"></i> Değişiklikleri Kaydet
+                <i data-lucide="save" class="w-5 h-5"></i> ${t('save')}
             </button>
         </div>
     `;
@@ -66,8 +66,8 @@ ScoutApp.prototype.updatePlayer = function(id) {
     const teamId = document.getElementById('edit-p-team').value;
     const birthDate = document.getElementById('edit-p-birth').value;
     
-    if (!name || !teamId) return alert("İsim ve Takım zorunludur.");
-    if (!birthDate) return alert("Doğum tarihi giriniz.");
+    if (!name || !teamId) return alert(t('err_incomplete'));
+    if (!birthDate) return alert(t('err_incomplete'));
 
     p.name = name;
     p.teamId = parseInt(teamId);
@@ -82,13 +82,13 @@ ScoutApp.prototype.updatePlayer = function(id) {
     p.sofaUrl = document.getElementById('edit-p-sofa').value;
 
     this.saveData(); // Kalıcı Kayıt
-    this.notify("Oyuncu bilgileri güncellendi.");
+    this.notify(t('success'));
     this.openPlayerModal(id); // Detay sayfasına geri dön
 };
 
 // --- OYUNCU SİLME ---
 ScoutApp.prototype.deletePlayer = function(id) {
-    this.confirmAction("Bu oyuncuyu ve tüm rapor geçmişini silmek istediğinize emin misiniz?", () => {
+    this.confirmAction(t('confirm_delete'), () => {
         this.state.data.players = this.state.data.players.filter(x => x.id !== id);
         // İlişkili verileri temizle
         this.state.data.watchlist = this.state.data.watchlist.filter(w => w.id !== id);
@@ -103,6 +103,6 @@ ScoutApp.prototype.deletePlayer = function(id) {
             this.navigate('players');
         }
         
-        this.notify("Oyuncu silindi.");
+        this.notify(t('deleted_success'));
     });
 };

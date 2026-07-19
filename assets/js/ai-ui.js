@@ -48,10 +48,10 @@ class AI_UI {
                     
                     <!-- Konu Butonları (Grid Layout) -->
                     <div class="grid grid-cols-2 gap-2.5 px-4 pb-4 fade-in delay-100">
-                        <button onclick="scoutAI.askTopic('watchlist')" class="ai-topic-btn"><i data-lucide="eye" class="w-3.5 h-3.5"></i> Aday Havuzu</button>
+                        <button onclick="scoutAI.askTopic('watchlist')" class="ai-topic-btn"><i data-lucide="eye" class="w-3.5 h-3.5"></i> ${t('nav_watchlist')}</button>
                         <button onclick="scoutAI.askTopic('reporting')" class="ai-topic-btn"><i data-lucide="file-edit" class="w-3.5 h-3.5"></i> Raporlama</button>
-                        <button onclick="scoutAI.askTopic('database')" class="ai-topic-btn"><i data-lucide="database" class="w-3.5 h-3.5"></i> Veritabanı</button>
-                        <button onclick="scoutAI.askTopic('matches')" class="ai-topic-btn"><i data-lucide="tv" class="w-3.5 h-3.5"></i> Maç İzleme</button>
+                        <button onclick="scoutAI.askTopic('database')" class="ai-topic-btn"><i data-lucide="database" class="w-3.5 h-3.5"></i> ${t('nav_database')}</button>
+                        <button onclick="scoutAI.askTopic('matches')" class="ai-topic-btn"><i data-lucide="tv" class="w-3.5 h-3.5"></i> ${t('nav_matches')}</button>
                         <button onclick="scoutAI.askTopic('backup')" class="ai-topic-btn"><i data-lucide="save" class="w-3.5 h-3.5"></i> Yedekleme</button>
                         <button onclick="scoutAI.askTopic('dev_phases')" class="ai-topic-btn"><i data-lucide="trending-up" class="w-3.5 h-3.5"></i> Gelişim Evreleri</button>
                         <button onclick="scoutAI.askTopic('about')" class="ai-topic-btn col-span-2 justify-center bg-blue-600/10 border-blue-500/30 text-blue-400 hover:bg-blue-600 hover:text-white"><i data-lucide="info" class="w-3.5 h-3.5"></i> Uygulama Hakkında</button>

@@ -19,6 +19,18 @@ ScoutApp.prototype.renderSettings = function(c) {
                     </div>
                 </div>
             </div>
+            
+            <div class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden">
+                <div class="p-6 border-b border-dark-800"><h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="globe" class="text-scout-500"></i> ${t('language')}</h3></div>
+                <div class="p-6 space-y-4">
+                    <p class="text-sm text-slate-400 mb-4">${t('language_desc')}</p>
+                    <select id="lang-select" onchange="app.changeLanguage(this.value)" class="w-full bg-dark-950 border border-dark-800 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none appearance-none text-sm cursor-pointer">
+                        <option value="tr" ${window.getLang() === 'tr' ? 'selected' : ''}>Türkçe</option>
+                        <option value="en" ${window.getLang() === 'en' ? 'selected' : ''}>English</option>
+                    </select>
+                </div>
+            </div>
+
             <button onclick="window.location.reload()" class="w-full p-4 bg-red-900/10 border border-red-900/30 rounded-xl hover:bg-red-900/20 text-red-400 transition-colors flex items-center justify-center gap-2"><i data-lucide="refresh-cw" class="w-5 h-5"></i> Uygulamayı Yeniden Başlat</button>
         </div>
     `;

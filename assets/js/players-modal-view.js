@@ -62,7 +62,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                             <select onchange="app.openPlayerModal(${id}, this.value, '${activeTab}')" class="bg-transparent text-white text-sm font-bold outline-none cursor-pointer appearance-none pr-6 pl-1">
                                 ${p.history.map((h, idx) => `
                                     <option value="${idx}" class="bg-dark-900 text-slate-300" ${idx == selectedHistoryIndex ? 'selected' : ''}>
-                                        ${h.date} (Puan: ${h.rating})
+                                        ${h.date} (${t('grade')}: ${h.rating})
                                     </option>
                                 `).join('')}
                             </select>
@@ -71,24 +71,24 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                     </div>
 
                     <!-- Düzenle ve Sil Butonları -->
-                    <button onclick="app.openEditPlayerModal(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-blue-500/20 hover:text-blue-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700" title="Bilgileri Düzenle">
+                    <button onclick="app.openEditPlayerModal(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-blue-500/20 hover:text-blue-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700" title="${t('edit')}">
                         <i data-lucide="pencil" class="w-4 h-4"></i>
                     </button>
                     
-                    <button onclick="app.deletePlayer(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700 mr-2" title="Oyuncuyu Sil">
+                    <button onclick="app.deletePlayer(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700 mr-2" title="${t('delete')}">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </button>
 
                     <div class="h-8 w-[1px] bg-dark-800"></div>
 
                     <button onclick="app.openNewReportMode(${id})" class="flex items-center gap-2 bg-scout-600 hover:bg-scout-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg shadow-scout-900/20">
-                        <i data-lucide="file-plus" class="w-4 h-4"></i> Yeni Rapor
+                        <i data-lucide="file-plus" class="w-4 h-4"></i> ${t('new_report')}
                     </button>
 
                     <div class="h-8 w-[1px] bg-dark-800 mx-2"></div>
                     
                     <div class="text-right mr-2">
-                        <div class="text-[10px] text-slate-500 uppercase font-bold">Puan</div>
+                        <div class="text-[10px] text-slate-500 uppercase font-bold">${t('grade')}</div>
                         <div class="text-lg font-black ${grade.color}">${grade.letter} <span class="text-sm text-slate-600 font-medium">(${currentReport.rating})</span></div>
                     </div>
                     
@@ -109,13 +109,13 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                                 <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-48 h-48 rounded-2xl object-cover border-4 border-dark-800 shadow-2xl">
                                 <div class="absolute -bottom-4 -right-4 bg-dark-900 rounded-full p-1.5 shadow-xl"><div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold border-2 border-dark-800 bg-dark-950 ${grade.color}">${grade.letter}</div></div>
                             </div>
-                            <div class="w-full py-4 px-5 rounded-xl border border-dashed flex justify-between items-center ${potClass} mb-6"><span class="text-xs font-bold opacity-70">POTANSİYEL</span><span class="text-sm font-black tracking-wider uppercase">${currentReport.potential || 'DÜŞÜK'}</span></div>
+                            <div class="w-full py-4 px-5 rounded-xl border border-dashed flex justify-between items-center ${potClass} mb-6"><span class="text-xs font-bold opacity-70">${t('potential').toUpperCase()}</span><span class="text-sm font-black tracking-wider uppercase">${currentReport.potential || t('potential_low')}</span></div>
                             <div class="w-full space-y-3 text-sm">
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">Yaş</span><span class="text-white font-mono font-bold">${currentAge}</span></div>
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">D. Tarihi</span><span class="text-white text-xs">${birthDatePretty}</span></div>
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">Boy</span><span class="text-white font-mono font-bold">${p.height || '-'}</span></div>
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">Ayak</span><span class="text-white font-bold">${p.foot || '-'}</span></div>
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">Rapor Tarihi</span><span class="text-white font-mono text-xs opacity-70">${currentReport.date}</span></div>
+                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('age')}</span><span class="text-white font-mono font-bold">${currentAge}</span></div>
+                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('birth_date')}</span><span class="text-white text-xs">${birthDatePretty}</span></div>
+                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('height')}</span><span class="text-white font-mono font-bold">${p.height || '-'}</span></div>
+                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('foot')}</span><span class="text-white font-bold">${p.foot || '-'}</span></div>
+                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('report_date')}</span><span class="text-white font-mono text-xs opacity-70">${currentReport.date}</span></div>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">

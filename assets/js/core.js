@@ -76,6 +76,15 @@ class ScoutApp {
         }
     }
     
+    // --- YENİ: DİL DEĞİŞTİRME ---
+    changeLanguage(lang) {
+        if (window.setLang) {
+            window.setLang(lang);
+            this.navigate(this.state.activePage, this.state.lastParams);
+            this.updateSidebarUI();
+        }
+    }
+    
     // --- MERKEZİ KAYIT FONKSİYONU ---
     saveData() {
         if (typeof auth !== 'undefined') {
@@ -134,14 +143,14 @@ class ScoutApp {
         c.innerHTML = '';
 
         const titles = {
-            'dashboard': ['Dashboard', 'Genel Bakış'],
-            'new-report': ['Yeni Rapor', 'Oyuncu Ekle'],
-            'database': ['Veritabanı', 'Takım Yönetimi'],
-            'players': ['Oyuncu Havuzu', 'Raporlanmışlar'],
-            'watchlist': ['Aday Havuzu', 'Takip Listesi'],
-            'matches': ['Maç İzleme', 'Fikstür Planlama'],
-            'settings': ['Ayarlar', 'Sistem'],
-            'team-detail': ['Takım Detayı', 'Analiz']
+            'dashboard': [t('menu_dashboard'), t('dash_subtitle')],
+            'new-report': [t('menu_new_report'), ''],
+            'database': [t('menu_database'), t('db_subtitle')],
+            'players': [t('menu_players'), ''],
+            'watchlist': [t('menu_watchlist'), ''],
+            'matches': [t('menu_matches'), ''],
+            'settings': [t('menu_settings'), ''],
+            'team-detail': [t('team_detail'), '']
         };
         if(titles[page]) {
             document.getElementById('page-title').innerText = titles[page][0];
