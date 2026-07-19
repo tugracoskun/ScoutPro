@@ -22,15 +22,15 @@ ScoutApp.prototype.renderLayout = function() {
             </div>
 
             <nav class="flex-1 py-6 px-3 space-y-1 overflow-y-auto custom-scrollbar">
-                <div class="px-3 mb-2 mt-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider sidebar-text">Operasyon</div>
+                <div class="px-3 mb-2 mt-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider sidebar-text">${t('section_operation')}</div>
                 <button onclick="app.navigate('dashboard')" class="nav-item" id="nav-dashboard"><div class="min-w-[24px] flex justify-center"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_dashboard')}</span></button>
                 <button onclick="app.navigate('new-report')" class="nav-item" id="nav-new-report"><div class="min-w-[24px] flex justify-center"><i data-lucide="file-plus" class="w-5 h-5 text-scout-400"></i></div><span class="sidebar-text ml-3 font-medium text-sm text-scout-400">${t('menu_new_report')}</span></button>
 
-                <div class="px-3 mb-2 mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-wider sidebar-text">Veritabanı</div>
+                <div class="px-3 mb-2 mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-wider sidebar-text">${t('section_database')}</div>
                 <button onclick="app.navigate('database')" class="nav-item" id="nav-database"><div class="min-w-[24px] flex justify-center"><i data-lucide="database" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_database')}</span></button>
                 <button onclick="app.navigate('players')" class="nav-item" id="nav-players"><div class="min-w-[24px] flex justify-center"><i data-lucide="users" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_players')}</span></button>
 
-                <div class="px-3 mb-2 mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-wider sidebar-text">İzleme</div>
+                <div class="px-3 mb-2 mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-wider sidebar-text">${t('section_scouting')}</div>
                 <button onclick="app.navigate('matches')" class="nav-item" id="nav-matches"><div class="min-w-[24px] flex justify-center relative"><i data-lucide="tv-2" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_matches')}</span></button>
                 <button onclick="app.navigate('watchlist')" class="nav-item" id="nav-watchlist"><div class="min-w-[24px] flex justify-center"><i data-lucide="eye" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_watchlist')}</span></button>
             </nav>

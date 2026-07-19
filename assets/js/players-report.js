@@ -10,18 +10,18 @@ ScoutApp.prototype.renderNewReport = function(c) {
             <!-- SOL KOLON -->
             <div class="lg:col-span-4 space-y-6">
                 <div class="bg-dark-900 p-6 rounded-2xl border border-dark-800 space-y-4">
-                    <h3 class="text-lg font-bold text-white mb-4 flex gap-2"><i data-lucide="user" class="text-scout-400 w-5 h-5"></i> Kimlik</h3>
+                    <h3 class="text-lg font-bold text-white mb-4 flex gap-2"><i data-lucide="user" class="text-scout-400 w-5 h-5"></i> ${t('identity')}</h3>
                     
-                    ${this.createInput('rep-name', 'Adı Soyadı', 'Örn: Semih', 'text', this.state.newReport.name, "app.updateRep('name', this.value)")}
+                    ${this.createInput('rep-name', t('player_name'), 'Örn: Semih', 'text', this.state.newReport.name, "app.updateRep('name', this.value)")}
                     
                     ${teams.length > 0 
-                        ? this.createSelect('rep-team', 'Takım', teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") 
-                        : '<div class="p-3 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-xs">Önce Veritabanından Takım Ekleyiniz!</div>'}
+                        ? this.createSelect('rep-team', t('team'), teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") 
+                        : '<div class="p-3 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-xs">' + t('db_empty') + '</div>'}
                     
                     <div class="grid grid-cols-2 gap-4">
-                        ${this.createSelect('rep-pos', 'Mevki', POSITIONS.map(p=>({val:p, txt:tPos(p)})), currentPos, 'app.handlePositionChange(this.value)')}
+                        ${this.createSelect('rep-pos', t('position'), POSITIONS.map(p=>({val:p, txt:tPos(p)})), currentPos, 'app.handlePositionChange(this.value)')}
                         <div class="flex flex-col gap-1.5 relative z-10">
-                            <label class="text-xs font-bold text-slate-400 ml-1 flex justify-between">Doğum Tarihi <span id="calculated-age-display" class="text-scout-400 font-mono"></span></label>
+                            <label class="text-xs font-bold text-slate-400 ml-1 flex justify-between">${t('birth_date')} <span id="calculated-age-display" class="text-scout-400 font-mono"></span></label>
                             <input type="date" id="rep-birth" value="${this.state.newReport.birthDate || ''}" onchange="app.updateBirthDate(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none transition-all text-sm relative z-20">
                         </div>
                     </div>
@@ -29,54 +29,54 @@ ScoutApp.prototype.renderNewReport = function(c) {
                     <div id="age-specific-tips" class="hidden bg-blue-900/20 border border-blue-500/30 rounded-xl p-4 text-xs space-y-2 animate-fade-in"></div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        ${this.createInput('rep-height', 'Boy (cm)', '185', 'number', this.state.newReport.height, "app.updateRep('height', this.value)")}
-                        ${this.createSelect('rep-foot', 'Kullandığı Ayak', [{val:'Sağ', txt:'Sağ'}, {val:'Sol', txt:'Sol'}, {val:'Her İkisi', txt:'Her İkisi'}, {val:'Bilinmiyor', txt:'Bilinmiyor'}], this.state.newReport.foot, "app.updateRep('foot', this.value)")}
+                        ${this.createInput('rep-height', t('height'), '185', 'number', this.state.newReport.height, "app.updateRep('height', this.value)")}
+                        ${this.createSelect('rep-foot', t('foot'), [{val:'Sağ', txt:t('foot_right')||'Sağ'}, {val:'Sol', txt:t('foot_left')||'Sol'}, {val:'Her İkisi', txt:t('foot_both')||'Her İkisi'}, {val:'Bilinmiyor', txt:t('unknown')||'Bilinmiyor'}], this.state.newReport.foot, "app.updateRep('foot', this.value)")}
                     </div>
 
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-400 ml-1">Potansiyel Durumu</label>
+                        <label class="text-xs font-bold text-slate-400 ml-1">${t('potential')}</label>
                         <div class="relative">
                             <select onchange="app.updateRep('potential', this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none appearance-none text-sm cursor-pointer">
-                                <option value="Düşük" ${this.state.newReport.potential === 'Düşük' ? 'selected' : ''}>Düşük (Standart)</option>
-                                <option value="Yüksek" ${this.state.newReport.potential === 'Yüksek' ? 'selected' : ''}>Yüksek (Gelişime Açık)</option>
+                                <option value="Düşük" ${this.state.newReport.potential === 'Düşük' ? 'selected' : ''}>${t('potential_low')}</option>
+                                <option value="Yüksek" ${this.state.newReport.potential === 'Yüksek' ? 'selected' : ''}>${t('potential_high')}</option>
                             </select>
                             <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
                         </div>
                     </div>
-                    ${this.createInput('rep-source', 'Keşif Kaynağı', 'Örn: Altyapı', 'text', this.state.newReport.source, "app.updateRep('source', this.value)")}
+                    ${this.createInput('rep-source', t('source'), 'Örn: Altyapı', 'text', this.state.newReport.source, "app.updateRep('source', this.value)")}
                 </div>
                 
                 <div class="bg-dark-900 p-6 rounded-2xl border border-dark-800 space-y-4">
-                    <h3 class="text-lg font-bold text-white mb-4 flex gap-2"><i data-lucide="link" class="text-scout-400 w-5 h-5"></i> Bağlantılar</h3>
+                    <h3 class="text-lg font-bold text-white mb-4 flex gap-2"><i data-lucide="link" class="text-scout-400 w-5 h-5"></i> ${t('links')}</h3>
                     ${this.createInput('rep-tm', 'Transfermarkt URL', 'https://...', 'text', this.state.newReport.tmUrl, "app.updateRep('tmUrl', this.value)")}
                     ${this.createInput('rep-sofa', 'Sofascore URL', 'https://...', 'text', this.state.newReport.sofaUrl, "app.updateRep('sofaUrl', this.value)")}
                 </div>
                 
                 <div class="bg-dark-900 p-6 rounded-2xl border border-dark-800">
-                    <h3 class="text-lg font-bold text-white mb-4 flex gap-2"><i data-lucide="image" class="text-scout-400 w-5 h-5"></i> Medya (Fotoğraf)</h3>
-                    <div class="flex gap-2 items-end"><div class="flex-1">${this.createInput('rep-img', 'Foto URL', 'https://...', 'text', this.state.newReport.image, "app.updateRep('image', this.value)")}</div></div>
+                    <h3 class="text-lg font-bold text-white mb-4 flex gap-2"><i data-lucide="image" class="text-scout-400 w-5 h-5"></i> ${t('media')}</h3>
+                    <div class="flex gap-2 items-end"><div class="flex-1">${this.createInput('rep-img', t('photo_url'), 'https://...', 'text', this.state.newReport.image, "app.updateRep('image', this.value)")}</div></div>
                 </div>
             </div>
 
             <!-- SAĞ KOLON -->
             <div class="lg:col-span-8 bg-dark-900 p-8 rounded-2xl border border-dark-800 flex flex-col h-full relative overflow-hidden">
                 <div class="flex justify-between items-center sticky top-0 bg-dark-900 z-50 py-4 border-b border-dark-800/50 mb-4">
-                    <h3 class="text-xl font-bold text-white">Yetenek Analizi</h3>
+                    <h3 class="text-xl font-bold text-white">${t('skill_analysis')}</h3>
                     <div class="bg-dark-950 px-4 py-2 rounded-lg border border-dark-800 flex items-center gap-3">
-                        <span class="text-slate-400 text-sm">Genel Puan:</span>
+                        <span class="text-slate-400 text-sm">${t('overall_grade')}</span>
                         <div id="rep-avg-badge" class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 bg-dark-900 text-slate-500 border-slate-700">-</div>
                     </div>
                 </div>
                 
                 <div id="attribute-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 mb-8 max-h-[600px] overflow-y-auto custom-scrollbar pr-2 pb-4">
-                    <div class="text-slate-500 text-sm text-center col-span-2 py-10 italic">Lütfen sol taraftan bir mevki seçiniz...</div>
+                    <div class="text-slate-500 text-sm text-center col-span-2 py-10 italic">${t('select_position_prompt')}</div>
                 </div>
 
                 <div class="mt-auto border-t border-dark-800 pt-6 z-40 relative bg-dark-900">
                      <div id="report-radar" class="w-full h-72 flex justify-center"></div>
                      <button onclick="app.submitReport()" class="w-full mt-6 py-4 bg-scout-600 hover:bg-scout-500 text-white font-bold rounded-xl shadow-lg shadow-scout-500/20 flex items-center justify-center gap-2 transition-all group">
                         <i data-lucide="save" class="w-5 h-5 group-hover:scale-110 transition-transform"></i> 
-                        Oyuncuyu Havuza Ekle
+                        ${t('add_to_pool')}
                      </button>
                 </div>
             </div>
@@ -248,7 +248,7 @@ ScoutApp.prototype.updateBirthDate = function(val) {
                         <p class="text-xs text-slate-300 italic mb-3 border-l-2 border-scout-500 pl-2">"${data.focus}"</p>
                         <ul class="space-y-2 mb-4">${data.kpis.map(k => `<li class="flex items-start gap-2 text-[11px] text-slate-400"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-scout-500 shrink-0"></span><span>${k}</span></li>`).join('')}</ul>
                         <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-2 flex gap-2 items-start text-[10px] text-red-300 mb-4"><i data-lucide="alert-triangle" class="w-3 h-3 mt-0.5 shrink-0"></i>${data.warning}</div>
-                        <button onclick="document.getElementById('age-specific-tips').classList.add('closing'); setTimeout(()=>document.getElementById('age-specific-tips').classList.add('hidden'), 400);" class="w-full py-2 bg-scout-600 hover:bg-scout-500 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-scout-900/20 flex items-center justify-center gap-2 group"><i data-lucide="check-circle" class="w-3 h-3 group-hover:scale-110 transition-transform"></i> Okudum, Anladım</button>
+                        <button onclick="document.getElementById('age-specific-tips').classList.add('closing'); setTimeout(()=>document.getElementById('age-specific-tips').classList.add('hidden'), 400);" class="w-full py-2 bg-scout-600 hover:bg-scout-500 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-scout-900/20 flex items-center justify-center gap-2 group"><i data-lucide="check-circle" class="w-3 h-3 group-hover:scale-110 transition-transform"></i> ${t('read_understood') || 'Okudum, Anladım'}</button>
                     </div>
                 </div>`;
             tipsBox.className = "bg-dark-950 border border-scout-500/30 rounded-2xl p-5 mb-4 tips-container relative overflow-hidden";
@@ -303,8 +303,8 @@ ScoutApp.prototype.updateRadarChart = function() {
 
 ScoutApp.prototype.submitReport = function() {
     const r = this.state.newReport;
-    if(!r.name || !r.teamId) return alert("İsim ve Takım zorunlu.");
-    if(!r.birthDate) return alert("Doğum tarihi giriniz.");
+    if(!r.name || !r.teamId) return alert(t('err_incomplete'));
+    if(!r.birthDate) return alert(t('err_incomplete'));
 
     const stats = Object.values(r.stats);
     const avg = stats.length > 0 ? Math.round(stats.reduce((a,b)=>a+b,0)/stats.length) : 50;
@@ -328,7 +328,7 @@ ScoutApp.prototype.initReportRadar = function(labels = [], data = []) {
     if (!chartEl) return;
     if(this.reportRadarChart) this.reportRadarChart.destroy();
     const options = {
-        series: [{ name: 'Analiz', data: data }],
+        series: [{ name: t('analysis'), data: data }],
         chart: { height: 300, type: 'radar', toolbar: { show: false }, background: 'transparent', animations: { enabled: true } },
         labels: labels,
         stroke: { width: 2, colors: ['#22c55e'] },

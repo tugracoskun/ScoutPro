@@ -3,9 +3,12 @@
 const translations = {
     tr: {
         // --- Sidebar & Layout ---
+        section_operation: "Operasyon",
+        section_database: "Veritabanı",
+        section_scouting: "İzleme",
         menu_dashboard: "Genel Bakış",
         menu_new_report: "Yeni Rapor",
-        menu_database: "Veritabanı",
+        menu_database: "Takım Şablonları",
         menu_players: "Oyuncu Havuzu",
         menu_watchlist: "Aday Havuzu",
         menu_matches: "Maç Takvimi",
@@ -27,6 +30,10 @@ const translations = {
         loading: "Yükleniyor...",
         not_found: "Bulunamadı.",
         choose: "Seçiniz",
+        success: "İşlem başarılı.",
+        err_incomplete: "Gerekli alanları doldurunuz.",
+        confirm_delete: "Silmek istediğinize emin misiniz?",
+        deleted_success: "Başarıyla silindi.",
 
         // --- Settings ---
         settings_title: "Ayarlar",
@@ -63,17 +70,25 @@ const translations = {
         pos_lw: "Sol Kanat",
         pos_st: "Santrafor",
 
+        cat_teknik: "Teknik",
+        cat_fiziksel: "Fiziksel",
+        cat_psikolojik: "Psikolojik",
+        cat_sosyolojik: "Sosyolojik",
+        cat_taktik: "Taktik",
+        cat_mental: "Mental",
+        cat_psiko_sosyal: "Psiko-Sosyal",
+
         // --- Database ---
-        db_title: "Veritabanı Yapısı",
+        db_title: "Takım Şablonları",
         db_subtitle: "Ülke > Lig > Takım > Oyuncu",
-        db_empty: "Veritabanı boş. Ülke ekleyerek başlayınız.",
+        db_empty: "Şablon boş. Ülke ekleyerek başlayınız.",
         add_league: "Lig Ekle",
         add_team: "Takım Ekle",
         no_leagues: "Lig bulunamadı.",
         no_teams: "Takım yok.",
         players_count: "Oyuncu",
         team_detail: "Takım Detayı",
-        return_db: "Veritabanına Dön",
+        return_db: "Şablonlara Dön",
 
         // --- Players Pool ---
         players_pool: "Oyuncu Havuzu",
@@ -118,7 +133,7 @@ const translations = {
         dash_pool_desc: "Takip listesindeki potansiyeller",
         dash_schedule: "Maç Programı",
         dash_schedule_desc: "Planlanan izleme görevleri",
-        dash_db_status: "Veritabanı Durumu",
+        dash_db_status: "Takım Şablonları Durumu",
         dash_manage: "Yönet",
         dash_country: "Ülke",
         dash_league: "Lig",
@@ -143,13 +158,39 @@ const translations = {
         match_status: "Durum",
         status_upcoming: "Yaklaşan",
         status_watched: "İzlendi",
-        no_matches: "Kayıtlı maç bulunamadı."
+        no_matches: "Kayıtlı maç bulunamadı.",
+
+        // --- Report Modal/Page ---
+        identity: "Kimlik",
+        birth_date: "Doğum Tarihi",
+        height: "Boy (cm)",
+        foot: "Kullandığı Ayak",
+        foot_right: "Sağ",
+        foot_left: "Sol",
+        foot_both: "Her İkisi",
+        potential: "Potansiyel Durumu",
+        potential_low: "Düşük (Standart)",
+        potential_high: "Yüksek (Gelişime Açık)",
+        links: "Bağlantılar",
+        media: "Medya (Fotoğraf)",
+        skill_analysis: "Yetenek Analizi",
+        overall_grade: "Genel Puan:",
+        select_position_prompt: "Lütfen sol taraftan bir mevki seçiniz...",
+        add_to_pool: "Oyuncuyu Havuza Ekle",
+        analysis: "Analiz",
+        new_report: "Yeni Rapor Ekle",
+        standard: "Standart",
+        open_to_dev: "Gelişime Açık",
+        read_understood: "Okudum, Anladım"
     },
     en: {
         // --- Sidebar & Layout ---
+        section_operation: "Operation",
+        section_database: "Database",
+        section_scouting: "Scouting",
         menu_dashboard: "Dashboard",
         menu_new_report: "New Report",
-        menu_database: "Database",
+        menu_database: "Team Templates",
         menu_players: "Player Pool",
         menu_watchlist: "Watchlist",
         menu_matches: "Match Calendar",
@@ -208,16 +249,16 @@ const translations = {
         pos_st: "Striker",
 
         // --- Database ---
-        db_title: "Database Structure",
+        db_title: "Team Templates",
         db_subtitle: "Country > League > Team > Player",
-        db_empty: "Database is empty. Start by adding a country.",
+        db_empty: "Templates are empty. Start by adding a country.",
         add_league: "Add League",
         add_team: "Add Team",
         no_leagues: "No leagues found.",
         no_teams: "No teams.",
         players_count: "Players",
-        team_detail: "Team Detail",
-        return_db: "Return to Database",
+        team_detail: "Team Details",
+        return_db: "Return to Templates",
 
         // --- Players Pool ---
         players_pool: "Player Pool",
@@ -261,8 +302,8 @@ const translations = {
         dash_pool: "Watchlist",
         dash_pool_desc: "Potentials in follow list",
         dash_schedule: "Match Schedule",
-        dash_schedule_desc: "Planned scouting missions",
-        dash_db_status: "Database Status",
+        dash_schedule_desc: "Planned scouting assignments",
+        dash_db_status: "Team Templates Status",
         dash_manage: "Manage",
         dash_country: "Country",
         dash_league: "League",
@@ -277,17 +318,44 @@ const translations = {
         dash_quick_team: "Quick Add Team",
 
         // --- Matches ---
-        match_calendar: "Match Calendar",
+        match_calendar: "Match Scouting Calendar",
         add_match: "Add New Match",
         match_date: "Date",
         match_home: "Home",
         match_away: "Away",
-        match_comp: "Competition",
+        match_comp: "Tournament / League",
         match_watch: "Players to Watch",
         match_status: "Status",
         status_upcoming: "Upcoming",
         status_watched: "Watched",
-        no_matches: "No matches recorded."
+        no_matches: "No scheduled matches found.",
+
+        // --- Report Modal/Page ---
+        identity: "Identity",
+        birth_date: "Birth Date",
+        height: "Height (cm)",
+        foot: "Preferred Foot",
+        foot_right: "Right",
+        foot_left: "Left",
+        foot_both: "Both",
+        potential: "Potential Status",
+        potential_low: "Low (Standard)",
+        potential_high: "High (High Ceiling)",
+        links: "Links",
+        media: "Media (Photo)",
+        skill_analysis: "Skill Analysis",
+        overall_grade: "Overall Grade:",
+        select_position_prompt: "Please select a position from the left...",
+        add_to_pool: "Add Player to Pool",
+        analysis: "Analysis",
+        new_report: "Add New Report",
+        standard: "Standard",
+        open_to_dev: "High Ceiling",
+        success: "Success.",
+        err_incomplete: "Please fill the required fields.",
+        confirm_delete: "Are you sure you want to delete?",
+        deleted_success: "Deleted successfully.",
+        read_understood: "I've Read & Understood"
     }
 };
 
