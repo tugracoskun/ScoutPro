@@ -1,6 +1,6 @@
-# ScoutPro License and Contributor Agreement (v1.0)
+# ScoutPro License and Contributor Agreement (v1.1)
 
-**Copyright © 2025 Tugra Coskun. All rights reserved.**
+**Copyright © 2026 Tugra Coskun. All rights reserved.**
 
 #### 1. Scope of License
 This software (“ScoutPro”) is proprietary and closed-source. The code, documentation, or any derivative works may not be copied, distributed, modified, or made publicly available without the prior written consent of the license holder.
@@ -17,7 +17,7 @@ Modification of the software, creation of derivative works, or distribution of s
 - A “Contribution” means any code, documentation, suggestion, bug fix, or enhancement submitted to the ScoutPro project.
 - The contributor irrevocably assigns all copyrights and intellectual property rights in their contribution to Tugra Coskun.
 - The contributor may not assert independent rights over their contribution.
-- Contributions will be governed under the ScoutPro License (v1.0). By submitting a contribution, the contributor agrees to these terms.
+- Contributions will be governed under the ScoutPro License (v1.1). By submitting a contribution, the contributor agrees to these terms.
 - Tugra Coskun reserves the right to modify, distribute, keep proprietary, or otherwise use contributions at his sole discretion.
 - Contributions are provided “as is.” The contributor assumes no liability for their use.
 
