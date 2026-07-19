@@ -141,8 +141,8 @@ ScoutApp.prototype.renderTeamDetail = function(c, teamId) {
                             </div>
                         </div>
                         <div class="flex flex-wrap justify-center md:justify-start gap-3">
-                            ${team.tmUrl && team.tmUrl !== '#' ? `<a href="${team.tmUrl}" target="_blank" class="px-4 py-2 bg-[#1a3150] text-white rounded-lg text-sm flex items-center gap-2"><i data-lucide="globe" class="w-4 h-4"></i> TM</a>` : ''}
-                            ${team.sofaUrl && team.sofaUrl !== '#' ? `<a href="${team.sofaUrl}" target="_blank" class="px-4 py-2 bg-[#2c3e50] text-white rounded-lg text-sm flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4"></i> Sofa</a>` : ''}
+                            ${team.tmUrl && team.tmUrl !== '#' ? `<button onclick="app.openExternal('${team.tmUrl}')" class="px-4 py-2 bg-[#1a3150] text-white rounded-lg text-sm flex items-center gap-2"><i data-lucide="globe" class="w-4 h-4"></i> TM</button>` : ''}
+                            ${team.sofaUrl && team.sofaUrl !== '#' ? `<button onclick="app.openExternal('${team.sofaUrl}')" class="px-4 py-2 bg-[#2c3e50] text-white rounded-lg text-sm flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4"></i> Sofa</button>` : ''}
                         </div>
                     </div>
                     <div class="bg-dark-800/50 p-4 rounded-2xl border border-dark-700 min-w-[160px] text-center">

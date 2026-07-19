@@ -24,4 +24,10 @@ ScoutApp.prototype.closeWebBrowser = function() {
     }
 };
 
-ScoutApp.prototype.openExternal = function(url) { };
+ScoutApp.prototype.openExternal = function(url) {
+    if (window.electronAPI && window.electronAPI.openExternal) {
+        window.electronAPI.openExternal(url);
+    } else {
+        window.open(url, '_blank');
+    }
+};

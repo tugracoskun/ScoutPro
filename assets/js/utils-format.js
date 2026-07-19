@@ -40,7 +40,7 @@ ScoutApp.prototype.getGrade = function(score) {
 // Link Formatlayıcı
 ScoutApp.prototype.formatLinks = function(text) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.replace(urlRegex, url => `<a href="${url}" target="_blank" class="text-blue-400 hover:text-blue-300 hover:underline break-all font-medium transition-colors relative z-20">${url}</a>`);
+    return text.replace(urlRegex, url => `<span onclick="app.openExternal('${url.replace(/'/g, "\\'")}')" class="text-blue-400 hover:text-blue-300 hover:underline break-all font-medium transition-colors relative z-20 cursor-pointer">${url}</span>`);
 };
 
 // Takım İsmi Getirici

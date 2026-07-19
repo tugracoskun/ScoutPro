@@ -126,7 +126,7 @@ ScoutApp.prototype.renderMatches = function(c) {
                                 `}
                             </div>
 
-                            ${m.sofaUrl ? `<button onclick="app.openWebBrowser('${m.sofaUrl}', '${t('match_plan')}')" class="p-2 hover:bg-dark-700 rounded-lg text-slate-400 transition-colors"><i data-lucide="external-link" class="w-5 h-5"></i></button>` : ''}
+                            ${m.sofaUrl ? `<button onclick="app.openExternal('${m.sofaUrl}')" class="p-2 hover:bg-dark-700 rounded-lg text-slate-400 transition-colors"><i data-lucide="external-link" class="w-5 h-5"></i></button>` : ''}
                         </div>
                     `;
                 }).join('')}

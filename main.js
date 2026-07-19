@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -106,4 +106,9 @@ ipcMain.handle('import-backup', async () => {
         }
     }
     return { success: false, cancelled: true };
+});
+
+// 5. Harici Tarayıcıda Link Açma
+ipcMain.handle('open-external', async (event, url) => {
+    shell.openExternal(url);
 });

@@ -84,5 +84,5 @@ ScoutApp.prototype.addSocialNote = function(playerId, currentTab='notes') {
 
 ScoutApp.prototype.formatLinks = function(text) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.replace(urlRegex, url => `<a href="${url}" target="_blank" class="text-blue-400 hover:text-blue-300 hover:underline break-all font-medium transition-colors">${url}</a>`);
+    return text.replace(urlRegex, url => `<span onclick="app.openExternal('${url.replace(/'/g, "\\'")}')" class="text-blue-400 hover:text-blue-300 hover:underline break-all font-medium transition-colors cursor-pointer">${url}</span>`);
 };
