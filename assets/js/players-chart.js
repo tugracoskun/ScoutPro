@@ -16,10 +16,11 @@ ScoutApp.prototype.initComparisonRadar = function(p, currentReport, prevReport) 
         // --- KATEGORİLİ YAPI (Defans, Orta Saha, Forvet vb.) ---
         // Burada her kategorinin (Teknik, Fiziksel vb.) ortalamasını alacağız.
         
-        labels = Object.keys(attributeGroup); // ['Teknik', 'Taktik', 'Fiziksel', 'Mental']
+        const cats = Object.keys(attributeGroup); // ['Teknik', 'Taktik', 'Fiziksel', 'Mental']
+        labels = cats.map(c => window.tAttr ? window.tAttr(c) : c);
         
         // Mevcut Rapor Ortalamaları
-        currentData = labels.map(cat => {
+        currentData = cats.map(cat => {
             const attrs = attributeGroup[cat]; // Bu kategorideki özellikler listesi
             let sum = 0;
             let count = 0;
@@ -36,7 +37,7 @@ ScoutApp.prototype.initComparisonRadar = function(p, currentReport, prevReport) 
 
         // Önceki Rapor Ortalamaları (Varsa)
         if (prevReport) {
-            prevData = labels.map(cat => {
+            prevData = cats.map(cat => {
                 const attrs = attributeGroup[cat];
                 let sum = 0;
                 let count = 0;
@@ -52,7 +53,7 @@ ScoutApp.prototype.initComparisonRadar = function(p, currentReport, prevReport) 
     } else {
         // --- VARSAYILAN YAPI (Eski/Basit) ---
         const s = attributeGroup['Genel'];
-        labels = s.map(item => item.name);
+        labels = s.map(item => window.tAttr ? window.tAttr(item.name) : item.name);
         currentData = s.map(item => currentReport.stats[item.name] || 50);
         if (prevReport) {
             prevData = s.map(item => prevReport.stats[item.name] || 50);

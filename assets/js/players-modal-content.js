@@ -25,7 +25,7 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
         categories.forEach((cat, index) => {
             const isActive = index === 0;
             // Translating category names
-            const displayCat = t(`cat_${cat.toLowerCase().replace(/ /g, '_')}`) || cat;
+            const displayCat = window.tAttr ? window.tAttr(cat) : cat;
             categoriesHTML += `
                 <button 
                     onclick="app.switchAttrTab('${cat}')" 
@@ -57,11 +57,11 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
                 contentHTML += `
                     <div class="bg-dark-950/60 px-4 py-3 rounded-xl border border-dark-800 hover:border-scout-500/30 transition-all group flex flex-col justify-center">
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-xs text-slate-300 font-bold uppercase tracking-wide truncate mr-2" title="${attr.name}">${attr.name}</span>
+                            <span class="text-xs text-slate-300 font-bold uppercase tracking-wide truncate mr-2" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</span>
                             ${diffHtml}
                         </div>
                         <div class="flex justify-between items-end">
-                             <span class="text-[10px] text-slate-500 truncate max-w-[70%]">${attr.sub}</span>
+                             <span class="text-[10px] text-slate-500 truncate max-w-[70%]" title="${attr.sub}">${window.tSub ? window.tSub(attr.sub) : attr.sub}</span>
                              <span class="font-mono font-black text-lg ${val >= 85 ? 'text-green-400' : (val >= 70 ? 'text-green-600' : (val >= 50 ? 'text-yellow-500' : 'text-red-500'))}">${val}</span>
                         </div>
                     </div>

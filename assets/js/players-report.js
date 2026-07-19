@@ -141,7 +141,8 @@ ScoutApp.prototype.renderAttributeInputs = function(set, weightKey) {
             const clr = {'Teknik':'text-red-400','Fiziksel':'text-yellow-400','Psikolojik':'text-green-400','Sosyolojik':'text-blue-400','Taktik':'text-purple-400','Mental':'text-pink-400','Psiko-Sosyal':'text-indigo-400'}[cat] || 'text-white';
             const borderClr = {'Teknik':'border-red-400','Fiziksel':'border-yellow-400','Psikolojik':'border-green-400','Sosyolojik':'border-blue-400','Taktik':'border-purple-400','Mental':'border-pink-400','Psiko-Sosyal':'border-indigo-400'}[cat] || 'border-slate-600';
             
-            html += `<div class="col-span-1 md:col-span-2 mt-6 mb-3 pb-1 border-b border-dark-800 font-bold text-sm uppercase tracking-wider ${clr} category-header" style="border-left-color: var(--tw-border-opacity, 1) ${borderClr}">${cat}</div>`;
+            const tCat = window.tAttr ? window.tAttr(cat) : cat;
+            html += `<div class="col-span-1 md:col-span-2 mt-6 mb-3 pb-1 border-b border-dark-800 font-bold text-sm uppercase tracking-wider ${clr} category-header" style="border-left-color: var(--tw-border-opacity, 1) ${borderClr}">${tCat}</div>`;
             
             set[cat].forEach(attr => { 
                 const val = this.state.newReport.stats[attr.name] || 50;
@@ -180,10 +181,10 @@ ScoutApp.prototype.createDetailedSlider = function(label, sub, val, styleClass) 
                     <!-- Üst Satır: İkon + İsim -->
                     <div class="flex items-center gap-2">
                         ${iconHtml}
-                        <span class="text-xs font-bold text-slate-200 truncate attr-label">${label}</span>
+                        <span class="text-xs font-bold text-slate-200 truncate attr-label" title="${label}">${window.tAttr ? window.tAttr(label) : label}</span>
                     </div>
                     <!-- Alt Satır: Açıklama (Soldan hizalı olsun diye padding veriyoruz) -->
-                    <span class="text-[10px] text-slate-500 leading-tight mt-1 line-clamp-1 group-hover:text-slate-400 transition-colors pl-[22px]">${sub}</span>
+                    <span class="text-[10px] text-slate-500 leading-tight mt-1 line-clamp-1 group-hover:text-slate-400 transition-colors pl-[22px]" title="${sub}">${window.tSub ? window.tSub(sub) : sub}</span>
                 </div>
                 <span id="val-${safeKey}" class="text-sm font-black bg-dark-900 px-2 py-0.5 rounded border border-dark-800 min-w-[36px] text-center" style="color: ${color}">${val}</span>
             </div>
@@ -261,11 +262,13 @@ ScoutApp.prototype.updateBirthDate = function(val) {
 };
 
 ScoutApp.prototype.calculateAverage = function() {
-    const stats = Object.values(this.state.newReport.stats);
-    if(stats.length===0) return;
-    const avg = Math.round(stats.reduce((a,b)=>a+b,0)/stats.length);
+    const stats = this.state.newReport.stats;
+    const values = Object.values(stats);
+    if(values.length===0) return;
+    const avg = Math.round(values.reduce((a,b)=>a+b,0)/values.length);
     const grade = this.getGrade(avg);
     const badge = document.getElementById('rep-avg-badge');
+    
     if(badge) { 
         badge.innerText = grade.letter; 
         badge.className = `w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold border-2 bg-dark-900 transition-all ${grade.color} ${grade.border} ${grade.shadow}`; 
@@ -280,8 +283,9 @@ ScoutApp.prototype.updateRadarChart = function() {
     const attributeGroup = ATTRIBUTE_GROUPS[mapping.group];
 
     if (mapping.group !== 'Default') {
-        labels = Object.keys(attributeGroup);
-        data = labels.map(cat => {
+        const cats = Object.keys(attributeGroup);
+        labels = cats.map(c => window.tAttr ? window.tAttr(c) : c);
+        data = cats.map(cat => {
             const attrs = attributeGroup[cat];
             let sum = 0;
             let count = 0;

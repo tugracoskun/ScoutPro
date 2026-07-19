@@ -93,8 +93,8 @@ ScoutApp.prototype.renderWatchlist = function(c, skipAnimation = false) {
                 <div class="flex gap-2 overflow-x-auto pb-1 max-w-full custom-scrollbar">
                     <button onclick="app.filterWatchlist('category', 'All')" class="wl-filter-btn px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${filter.category === 'All' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('all')} (${totalCount})</button>
                     <button onclick="app.filterWatchlist('category', 'Kaleci')" class="wl-filter-btn px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${filter.category === 'Kaleci' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('pos_gk')}</button>
-                    <button onclick="app.filterWatchlist('category', 'Defans')" class="wl-filter-btn px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${filter.category === 'Defans' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Defans</button>
-                    <button onclick="app.filterWatchlist('category', 'OrtaSaha')" class="wl-filter-btn px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${filter.category === 'OrtaSaha' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Orta Saha</button>
+                    <button onclick="app.filterWatchlist('category', 'Defans')" class="wl-filter-btn px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${filter.category === 'Defans' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('cat_def')}</button>
+                    <button onclick="app.filterWatchlist('category', 'OrtaSaha')" class="wl-filter-btn px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${filter.category === 'OrtaSaha' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('cat_mid')}</button>
                     <button onclick="app.filterWatchlist('category', 'Forvet')" class="wl-filter-btn px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${filter.category === 'Forvet' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('pos_st')}</button>
                 </div>
 
@@ -114,11 +114,11 @@ ScoutApp.prototype.renderWatchlist = function(c, skipAnimation = false) {
                         <!-- AKSİYON BUTONLARI -->
                         <div class="absolute top-4 right-4 flex gap-2 z-20">
                             <!-- Favori -->
-                            <button onclick="app.toggleFavorite(${w.id}, 'watchlist')" class="p-2 rounded-lg transition-all ${w.isFavorite ? 'text-red-500 bg-red-500/10' : 'text-slate-500 hover:bg-dark-800 hover:text-white'}" title="Favori">
+                            <button onclick="app.toggleFavorite(${w.id}, 'watchlist')" class="p-2 rounded-lg transition-all ${w.isFavorite ? 'text-red-500 bg-red-500/10' : 'text-slate-500 hover:bg-dark-800 hover:text-white'}" title="${t('region_favorites')}">
                                 <i data-lucide="heart" class="w-4 h-4 ${w.isFavorite ? 'fill-red-500' : ''}"></i>
                             </button>
                             <!-- Raporla -->
-                            <button onclick="app.transferToReport(${w.id})" class="p-2 bg-scout-500/10 text-scout-400 hover:bg-scout-500 hover:text-white rounded-lg transition-all" title="Raporla">
+                            <button onclick="app.transferToReport(${w.id})" class="p-2 bg-scout-500/10 text-scout-400 hover:bg-scout-500 hover:text-white rounded-lg transition-all" title="${t('dash_create_report')}">
                                 <i data-lucide="clipboard-list" class="w-4 h-4"></i>
                             </button>
                             <!-- Sil -->
@@ -132,7 +132,7 @@ ScoutApp.prototype.renderWatchlist = function(c, skipAnimation = false) {
                             <div class="overflow-hidden min-w-0">
                                 <div class="flex items-center gap-2"><h4 class="font-bold text-white text-lg truncate">${w.name}</h4></div>
                                 <div class="text-xs text-slate-400 mt-0.5 truncate flex items-center gap-1"><i data-lucide="shield" class="w-3 h-3"></i> ${this.getTeamName(w.teamId)}</div>
-                                <div class="text-xs text-scout-400 font-medium mt-0.5 truncate">${w.position || '-'} • ${w.age || '-'} ${t('age')}</div>
+                                <div class="text-xs text-scout-400 font-medium mt-0.5 truncate">${tPos(w.position) || '-'} • ${w.age || '-'} ${t('age')}</div>
                             </div>
                         </div>
                         <div class="bg-dark-950/50 p-3 rounded-xl border border-dark-800/50 text-sm text-slate-300 line-clamp-3 mb-4 text-xs flex-1">${w.notes || ''}</div>

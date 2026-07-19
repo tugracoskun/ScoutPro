@@ -63,7 +63,7 @@ ScoutApp.prototype.getSliderHTMLForUpdate = function(attributeGroup, currentStat
     if (isCategorized) {
         Object.keys(attributeGroup).forEach(cat => {
             const clr = {'Teknik':'text-red-400','Fiziksel':'text-yellow-400','Psikolojik':'text-green-400','Sosyolojik':'text-blue-400','Taktik':'text-purple-400','Mental':'text-pink-400','Psiko-Sosyal':'text-indigo-400'}[cat] || 'text-white';
-            const displayCat = t(`cat_${cat.toLowerCase().replace(/ /g, '_')}`) || cat;
+            const displayCat = window.tAttr ? window.tAttr(cat) : cat;
             
             html += `<div class="col-span-2 mt-4 mb-2 pb-1 border-b border-dark-800 font-bold text-sm uppercase tracking-wider ${clr}">${displayCat}</div>`;
             
@@ -75,8 +75,8 @@ ScoutApp.prototype.getSliderHTMLForUpdate = function(attributeGroup, currentStat
                     <div class="${styleClass} px-4 py-3 rounded-xl border mb-2 transition-all">
                         <div class="flex justify-between mb-2">
                             <div class="flex flex-col">
-                                <span class="text-xs font-bold text-slate-200">${attr.name}</span>
-                                <span class="text-[10px] text-slate-500">${attr.sub}</span>
+                                <span class="text-xs font-bold text-slate-200" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</span>
+                                <span class="text-[10px] text-slate-500" title="${attr.sub}">${window.tSub ? window.tSub(attr.sub) : attr.sub}</span>
                             </div>
                             <span id="val-new-${attr.name.replace(/\s+/g,'')}" class="text-sm font-black text-green-400">${val}</span>
                         </div>
@@ -93,7 +93,7 @@ ScoutApp.prototype.getSliderHTMLForUpdate = function(attributeGroup, currentStat
             html += `
                 <div class="bg-dark-950 px-4 py-3 rounded-xl border border-dark-800 mb-2">
                     <div class="flex justify-between mb-2">
-                        <span class="text-xs font-medium text-slate-300">${attr.name}</span>
+                        <span class="text-xs font-medium text-slate-300" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</span>
                         <span id="val-new-${attr.name.replace(/\s+/g,'')}" class="text-xs font-bold text-green-400">${val}</span>
                     </div>
                     <input type="range" min="0" max="100" value="${val}" 
