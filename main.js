@@ -20,7 +20,14 @@ function createWindow() {
 
     win.loadFile('index.html');
     win.setMenuBarVisibility(false); // Menü çubuğunu gizle
-    
+
+    // Mouse Geri/İleri tuşlarını yakala ve frontend'e ilet
+    win.on('app-command', (e, cmd) => {
+        if (cmd === 'browser-backward' || cmd === 'browser-forward') {
+            win.webContents.send('mouse-navigation', cmd);
+        }
+    });
+
     // Yeni pencere açılmasını engelle (Popup'lar uygulamanın dışına taşmasın)
     win.webContents.setWindowOpenHandler(({ url }) => {
         return { action: 'deny' };

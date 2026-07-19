@@ -6,17 +6,74 @@ class ScoutApp {
             data: DB, // data.js dosyasından geliyor
             searchTerm: '',
             newReport: this.resetReport(),
-            tempData: {}
+            tempData: {},
+            history: [] // Önceki sayfaları tutmak için
         };
+        this.init();
+    }
+
+    goBack() {
+        // Aynı anda mousedown, mouseup veya app-command tetiklendiğinde iki kez geri gitmeyi engellemek için 300ms gecikme (debounce)
+        const now = Date.now();
+        if (this.state.lastBackTime && now - this.state.lastBackTime < 300) return;
+        this.state.lastBackTime = now;
+
+        // 1. Önce modal açıksa onu kapat
+        const overlay = document.getElementById('modal-overlay');
+        if (overlay && !overlay.classList.contains('hidden')) {
+            this.closeModal();
+            return;
+        }
+
+        // 2. Modal kapalıysa ve geçmişte sayfa varsa oraya dön
+        if (this.state.history && this.state.history.length > 0) {
+            const prev = this.state.history.pop();
+            this.navigate(prev.page, prev.params, true); // true = isBack flag
+        }
     }
 
     init() {
-        // Sadece ESC tuşu dinleyicisi
+        // Klavye ve fare tuşları için kapsamlı dinleyici (ESC, BrowserBack, Alt+Left/Right)
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeModal();
+            } else if (e.key === 'BrowserBack' || (e.altKey && e.key === 'ArrowLeft')) {
+                e.preventDefault();
+                this.goBack();
             }
         });
+
+        // Mouse Geri (3) ve İleri (4) tuşları dinleyicisi (Hem mousedown hem mouseup)
+        const handleMouseNav = (e) => {
+            if (e.button === 3) { // 3 = Geri
+                e.preventDefault();
+                e.stopPropagation();
+                this.goBack();
+            } else if (e.button === 4) { // 4 = İleri
+                const overlay = document.getElementById('modal-overlay');
+                if (overlay && !overlay.classList.contains('hidden')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.closeModal();
+                }
+            }
+        };
+        document.addEventListener('mousedown', handleMouseNav, { capture: true });
+        document.addEventListener('mouseup', handleMouseNav, { capture: true });
+
+        // Electron native app-command dinleyicisi (Windows'ta mouse tuşları app-command tetikler)
+        if (window.electronAPI && window.electronAPI.onMouseNavigation) {
+            window.electronAPI.onMouseNavigation((cmd) => {
+                if (cmd === 'browser-backward') {
+                    this.goBack();
+                } else if (cmd === 'browser-forward') {
+                    const overlay = document.getElementById('modal-overlay');
+                    if (overlay && !overlay.classList.contains('hidden')) {
+                        this.closeModal();
+                    }
+                }
+            });
+        }
     }
     
     // --- MERKEZİ KAYIT FONKSİYONU ---
@@ -57,8 +114,14 @@ class ScoutApp {
         return { name: '', teamId: '', position: '', age: '', height: '', foot: 'Sağ', marketValue: '', image: '', source: '', tmUrl: '', sofaUrl: '', potential: 'Düşük', stats: {} };
     }
 
-    navigate(page, params = null) {
+    navigate(page, params = null, isBack = false) {
+        // Eğer geriye gitmiyorsak ve sayfa değişiyorsa geçmişe ekle
+        if (!isBack && this.state.activePage && this.state.activePage !== page) {
+            this.state.history.push({ page: this.state.activePage, params: this.state.lastParams });
+        }
+        
         this.state.activePage = page;
+        this.state.lastParams = params;
         this.updateSidebarUI();
         const c = document.getElementById('content-area');
         c.innerHTML = '';
