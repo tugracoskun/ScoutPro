@@ -28,6 +28,10 @@ ScoutApp.prototype.openNewReportMode = function(id) {
                         <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>${t('potential_high')} (${t('open_to_dev')})</option>
                     </select>
                 </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-slate-400 ml-1">${t('source')}</label>
+                    <input type="text" id="new-rep-source" placeholder="Örn: Canlı İzleme, WyScout..." class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white outline-none focus:border-green-500 text-sm">
+                </div>
             </div>
 
             <!-- Slider Alanı -->
@@ -111,6 +115,8 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
 
     const newStats = this.state.newReport.stats;
     const newPotential = document.getElementById('new-rep-potential').value;
+    const newSourceElement = document.getElementById('new-rep-source');
+    const newSource = newSourceElement ? newSourceElement.value : '';
     
     // Ortalama Hesapla
     const statsArr = Object.values(newStats);
@@ -122,7 +128,8 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
         date: today,
         rating: avg,
         stats: {...newStats},
-        potential: newPotential
+        potential: newPotential,
+        source: newSource
     };
 
     // Geçmişe ekle

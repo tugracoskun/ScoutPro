@@ -315,7 +315,7 @@ ScoutApp.prototype.submitReport = function() {
     const teamIdInt = parseInt(r.teamId);
     const reportDate = new Date().toLocaleDateString('tr-TR');
     
-    const historyEntry = { date: reportDate, rating: avg, stats: {...r.stats}, potential: r.potential };
+    const historyEntry = { date: reportDate, rating: avg, stats: {...r.stats}, potential: r.potential, source: r.source };
 
     this.state.data.players.push({
         id: Date.now(), ...r, teamId: teamIdInt, rating: avg, status: 'Scouted', dateAdded: reportDate, socialNotes: [], history: [historyEntry], videos: []

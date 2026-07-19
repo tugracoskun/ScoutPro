@@ -116,6 +116,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('height')}</span><span class="text-white font-mono font-bold">${p.height || '-'}</span></div>
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('foot')}</span><span class="text-white font-bold">${p.foot || '-'}</span></div>
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('report_date')}</span><span class="text-white font-mono text-xs opacity-70">${currentReport.date}</span></div>
+                                ${currentReport.source ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('source')}</span><span class="text-white text-xs text-right max-w-[60%] truncate" title="${currentReport.source}">${currentReport.source}</span></div>` : ''}
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
