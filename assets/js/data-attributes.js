@@ -110,7 +110,7 @@ const ATTRIBUTE_GROUPS = {
         ]
     },
 
-    // 3. KANAT GRUBU (GÜNCELLENDİ: SAĞ/SOL AÇIK)
+    // 3. KANAT GRUBU
     'Kanat': {
         'Teknik': [
             { name: '1v1 Dripling & Eksiltme', sub: 'Statik/Dinamik Geçiş, Body Feint, Rakibi Ekarte Etme' },
@@ -118,7 +118,8 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Bitiricilik & Şut', sub: 'Ters Ayakla Plase, Yakın Direk Sert Şut, Ceza Sahası Girişi' },
             { name: 'İlk Dokunuş (Progresif)', sub: 'Topu Koşu Yoluna Alma, Hız Kesmeden Kontrol' },
             { name: 'Ters Ayak Kullanımı', sub: 'İçe Kat Ederken Şut/Pas Tehdidi, Tahmin Edilemezlik' },
-            { name: 'Dar Alan Becerisi', sub: 'Çizgi Kenarında Sıkışınca Top Saklama' }
+            { name: 'Dar Alan Becerisi', sub: 'Çizgi Kenarında Sıkışınca Top Saklama' },
+            { name: 'Savunma Baskısı (Press)', sub: 'Top Kaybında Anında Geri Baskı, Gegenpress Katkısı' }
         ],
         'Taktik': [
             { name: 'Topsuz Koşu (Arka Direk)', sub: 'Ters Kanat Ortasında İkinci Forvet Gibi Girme (Kritik)' },
@@ -131,17 +132,19 @@ const ATTRIBUTE_GROUPS = {
             { name: 'İvmelenme (Acceleration)', sub: 'İlk 5-10 Metre Patlayıcılık, Ani Çıkış' },
             { name: 'Son Hız (Pace)', sub: 'Geniş Alanda Topa Yetişme, Kontra Atak Hızı' },
             { name: 'Çeviklik & Denge', sub: 'Yüksek Hızda Yön Değiştirme, Düşük Ağırlık Merkezi' },
-            { name: 'Dayanıklılık (RSA)', sub: 'Tekrarlı Sprint Yeteneği, Maç Boyu Git-Gel' }
+            { name: 'Dayanıklılık (RSA)', sub: 'Tekrarlı Sprint Yeteneği, Maç Boyu Git-Gel' },
+            { name: 'Güç (1v1)', sub: 'Omuz Omuza Durma, Rakibin Fiziksel Baskısına Dayanma' }
         ],
         'Psiko-Sosyal': [
             { name: 'Özgüven & Risk Alma', sub: 'Hata Yapsa Bile Tekrar Deneme Cesareti' },
             { name: 'Yaratıcılık (Flair)', sub: 'Beklenmedik Hamleler, Sihirli Dokunuşlar' },
             { name: 'Defansif Disiplin', sub: 'Bekini Takip Etme (Tracking Back), Takım Savunması' },
-            { name: 'Takım Oyunu', sub: 'Şut/Pas Dengesini Doğru Ayarlama (Bencillik Kontrolü)' }
+            { name: 'Takım Oyunu', sub: 'Şut/Pas Dengesini Doğru Ayarlama (Bencillik Kontrolü)' },
+            { name: 'Performans Tutarlılığı', sub: 'Büyük Maçlarda da Seviyeyi Koruma, Baskıda Kaybetmeme' }
         ]
     },
 
-    // 4. FORVET GRUBU (GÜNCELLENDİ: SANTRAFOR)
+    // 4. FORVET GRUBU
     'Forvet': {
         'Teknik': [
             { name: 'Bitiricilik', sub: 'Vuruş Kalitesi, Köşeleri Arama, Tek Vuruş (One-touch)' },
@@ -150,14 +153,16 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Kafa Vuruşu', sub: 'Zamanlama, Yönlendirme ve Sıçrama Tekniği' },
             { name: 'Zayıf Ayak', sub: 'Her İki Ayağı Şut/Pas İçin Kullanabilme' },
             { name: 'Dripling & Eksiltme', sub: 'Yüzü Dönükken Stoperin Üzerine Gitme, Çalım' },
-            { name: 'Uzaktan Şut', sub: 'Ceza Sahası Dışı Tehdit (Opsiyonel)' }
+            { name: 'Uzaktan Şut', sub: 'Ceza Sahası Dışı Tehdit (Opsiyonel)' },
+            { name: 'Kombine Oyun', sub: 'Hızlı İkili Kombineler, Dar Alanda Duvar Pası' }
         ],
         'Taktik': [
             { name: 'Kör Nokta Koşuları', sub: 'Stoperin Görüş Alanından Çıkıp Sızma (Blindside)' },
             { name: 'Ceza Sahası Sezgisi', sub: 'Topun Düşeceği Yeri Hissetme, Fırsatçılık (Poacher)' },
             { name: 'Kanal Koşuları', sub: 'Stoper-Bek Arasına Sızma (Runs into Depth)' },
             { name: 'Bağlantı Oyunu', sub: 'Orta Sahaya Yaklaşıp Pas İstasyonu Olma (False 9)' },
-            { name: 'Pres Yönlendirmesi', sub: 'Kavisli Koşuyla Rakip Stoperi Hataya Zorlama' }
+            { name: 'Pres Yönlendirmesi', sub: 'Kavisli Koşuyla Rakip Stoperi Hataya Zorlama' },
+            { name: 'Ofsayt Yönetimi', sub: 'Son Adımı Zamanlama, Ofsayt Tuzağından Kurtulma' }
         ],
         'Fiziksel': [
             { name: 'Patlayıcı Güç', sub: 'İlk 3-5 Metre Çıkış Hızı, Ofsayttan Kurtulma' },
@@ -175,43 +180,39 @@ const ATTRIBUTE_GROUPS = {
         ]
     },
 
-    // 6. KALECİ GRUBU
+    // 5. KALECİ GRUBU
     'Kaleci': {
         'Teknik': [
-            { name: 'Top Kontrolü', sub: 'Geri Pasları Alma, Ayakla Kontrol' },
             { name: 'Elle Kontrol', sub: 'Topu Tutma, Sektirmeme, Yapıştırma' },
-            { name: 'Elle Top Dağıtımı', sub: 'Hızlı ve İsabetli Elle Başlatma' },
-            { name: 'Ayak Hakimiyeti', sub: 'Baskı Altında Pas, Oyun Kurma' },
-            { name: 'Uzun Toplar', sub: 'Degaj ve Kale Vuruşu Mesafesi' },
-            { name: 'Refleks', sub: 'Çizgi Üzerinde Reaksiyon' },
-            { name: 'Yan Top', sub: 'Hava Toplarına Çıkış ve Yumruklama' },
-            { name: 'Birebir', sub: 'Karşı Karşıya Pozisyonlarda Başarı' },
-            { name: 'Kurtarışlar', sub: 'Zor Topları Çıkarma Kapasitesi' }
+            { name: 'Refleks', sub: 'Çizgi Üzerinde Reaksiyon, Ani Kurtarış' },
+            { name: 'Birebir (1v1)', sub: 'Karşı Karşıya Pozisyonlarda Rakibi Okuma ve Kapanma' },
+            { name: 'Yan Top (Cross)', sub: 'Hava Toplarına Çıkış, Yumruklama ve Kavrama' },
+            { name: 'Elle Top Dağıtımı', sub: 'Hızlı ve İsabetli Elle Başlatma, Kontra Atak' },
+            { name: 'Ayak Hakimiyeti', sub: 'Baskı Altında Pas, Oyun Kurma, Geri Pasları Alma' },
+            { name: 'Uzun Toplar', sub: 'Degaj ve Kale Vuruşu Mesafesi, İsabeti' },
+            { name: 'Sweeper-Keeper', sub: 'Ceza Alanı Dışına Çıkış, Savunma Arkası Topları Temizleme' }
+        ],
+        'Taktik': [
+            { name: 'Pozisyon Alma', sub: 'Açıyı Daraltma, Doğru Yerde Durma' },
+            { name: 'Hat Yönetimi', sub: 'Savunma Hattını İleri-Geri Yönetme, Ofsayt Tuzağı Koordinasyonu' },
+            { name: 'Baskıda Oyun Kurma', sub: 'Yüksek Baskı Altında Doğru Çıkış Kararı (Kısa mı, Uzun mu?)' },
+            { name: 'Kale Dışı Okuma', sub: 'Rakip Takımın Hareketini Önceden Sezme, Komut Verme' }
         ],
         'Fiziksel': [
             { name: 'Boy & Erişim', sub: 'Uzanma Mesafesi, Fiziksel Caydırıcılık' },
-            { name: 'Çeviklik', sub: 'Yere Yatıp Kalkma Hızı' },
-            { name: 'Kuvvet', sub: 'İkili Mücadelede Yıkılmama' },
+            { name: 'Çeviklik', sub: 'Yere Yatıp Kalkma Hızı, Lateral Hareket' },
             { name: 'Patlayıcı Kuvvet', sub: 'Ani Sıçrama ve Çıkış Hızı' },
-            { name: 'Denge', sub: 'Pozisyon Aldıktan Sonra Sabit Kalma' },
-            { name: 'Esneklik', sub: 'Zor Köşelere Uzanabilme' },
-            { name: 'Vücut Tipi', sub: 'Atletik Yapı ve Kilo Kontrolü' }
+            { name: 'Esneklik', sub: 'Zor Köşelere Uzanabilme, Bölünme' },
+            { name: 'Kuvvet', sub: 'İkili Mücadelede Yıkılmama, Ortalarda Güç' }
         ],
-        'Psikolojik (Mental)': [
-            { name: 'Pozisyon Alma', sub: 'Açıyı Daraltma, Doğru Yerde Durma' },
-            { name: 'Konsantrasyon', sub: '90 Dakika Boyunca Oyunda Kalma' },
-            { name: 'Cesaret', sub: 'Sakatlanma Pahasina Topa Çıkma' },
+        'Psiko-Sosyal': [
+            { name: 'Konsantrasyon', sub: '90 Dakika Boyunca Oyunda Kalma, Pasif Bekleme Dönemlerinde Hazır Olma' },
             { name: 'Soğukkanlılık', sub: 'Hata Sonrası Toparlanma, Paniklememe' },
-            { name: 'Kararlılık', sub: 'Kalesini Gole Kapatma Hırsı' },
-            { name: 'Disiplin', sub: 'Taktiksel Sadakat ve Ciddiyet' },
-            { name: 'Zorluklara Tepki', sub: 'Yenen Hatalı Golden Sonraki Tutum' }
-        ],
-        'Sosyolojik': [
+            { name: 'Liderlik', sub: 'Savunma Organizasyonunu Yönetme, Komuta Etme' },
             { name: 'İletişim', sub: 'Defans Hattını Uyarma ve Yönetme' },
-            { name: 'Kalede Güven', sub: 'Takım Arkadaşlarına Verdiği Güven' },
-            { name: 'Liderlik', sub: 'Savunma Organizasyonunu Yönetme' },
-            { name: 'Profesyonellik', sub: 'Saha İçi ve Dışı Duruş' },
-            { name: 'İlişkiler', sub: 'Takım Arkadaşlarıyla Uyumu' }
+            { name: 'Cesaret', sub: 'Sakatlanma Pahasina Topa Çıkma, Topun Üzerine Yatma' },
+            { name: 'Zorluklara Tepki', sub: 'Yenen Hatalı Golden Sonraki Tutum, Düşmeden Kalma' },
+            { name: 'Kararlılık', sub: 'Kalesini Gole Kapatma Hırsı, Her Topu Kurtarma İsteği' }
         ]
     },
 
