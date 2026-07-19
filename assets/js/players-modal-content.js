@@ -123,13 +123,17 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
                     <div id="social-list-${p.id}" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2 mb-3">
                         ${socialNotes.length === 0 ? '<div class="text-slate-600 text-xs italic text-center py-8">Henüz not yok.</div>' : socialNotes.map(n => `
                             <div class="bg-dark-950 p-3 rounded-xl border border-dark-800 text-sm group">
+                                ${n.title ? `<div class="font-bold text-white mb-1">${n.title}</div>` : ''}
                                 <div class="text-slate-200 break-words leading-relaxed">${this.formatLinks(n.text)}</div>
                                 <div class="text-[10px] text-slate-600 mt-2 text-right font-mono pt-1 border-t border-dark-800/50">${n.date}</div>
                             </div>`).join('')}
                     </div>
-                    <div class="flex gap-2 mt-auto pt-2 border-t border-dark-800/50 shrink-0">
-                        <input type="text" id="social-input-${p.id}" placeholder="Not ekle..." class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-4 py-2 text-xs text-white outline-none focus:border-blue-500">
-                        <button onclick="app.addSocialNote(${p.id})" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-xs font-bold"><i data-lucide="send" class="w-4 h-4"></i></button>
+                    <div class="flex flex-col gap-2 mt-auto pt-2 border-t border-dark-800/50 shrink-0">
+                        <input type="text" id="social-title-${p.id}" placeholder="Başlık (Opsiyonel)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2 text-xs text-white outline-none focus:border-blue-500">
+                        <div class="flex gap-2">
+                            <input type="text" id="social-input-${p.id}" placeholder="Not ekle..." class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-4 py-2 text-xs text-white outline-none focus:border-blue-500">
+                            <button onclick="app.addSocialNote(${p.id})" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-xs font-bold"><i data-lucide="send" class="w-4 h-4"></i></button>
+                        </div>
                     </div>
                 </div>
 

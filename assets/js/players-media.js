@@ -61,16 +61,23 @@ ScoutApp.prototype.deletePlayerVideo = function(playerId, index) {
 };
 
 ScoutApp.prototype.addSocialNote = function(playerId, currentTab='notes') {
+    const titleInput = document.getElementById(`social-title-${playerId}`);
     const input = document.getElementById(`social-input-${playerId}`);
+    const title = titleInput ? titleInput.value.trim() : '';
     const text = input.value.trim();
     if (!text) return;
     const player = this.state.data.players.find(p => p.id === playerId);
     if (!player) return;
     if (!player.socialNotes) player.socialNotes = [];
-    player.socialNotes.unshift({ id: Date.now(), text: text, date: new Date().toLocaleString('tr-TR') });
+    
+    const noteData = { id: Date.now(), text: text, date: new Date().toLocaleString('tr-TR') };
+    if (title) noteData.title = title;
+    
+    player.socialNotes.unshift(noteData);
     
     this.saveData(); // KAYIT
 
+    if (titleInput) titleInput.value = '';
     input.value = '';
     this.openPlayerModal(playerId, 0, currentTab);
 };
