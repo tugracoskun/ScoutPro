@@ -415,6 +415,15 @@ window.tPos = function(pos) {
     return pos;
 };
 
+// Ülke adı getirme yardımcısı
+ScoutApp.prototype.getCountryName = function(country) {
+    if (!country) return '';
+    if (this.currentLang === 'en' && country.nameEn) {
+        return country.nameEn;
+    }
+    return country.name;
+};
+
 window.setLang = function(lang) {
     if (translations[lang]) {
         currentLang = lang;

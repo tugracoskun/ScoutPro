@@ -462,7 +462,7 @@ class ScoutApp {
                             <div class="bg-dark-950/50 p-4 border-b border-dark-800 flex items-center justify-between group">
                                 <div class="flex items-center gap-3">
                                     <span class="text-2xl">${country.flag}</span>
-                                    <h3 class="text-lg font-bold text-white">${country.name}</h3>
+                                    <h3 class="text-lg font-bold text-white">${this.getCountryName(country)}</h3>
                                     <div class="edit-actions flex gap-1 ml-2">
                                         <button onclick="app.openEditCountryModal(${country.id})" class="p-1 hover:bg-dark-700 rounded text-slate-400 hover:text-white" title="Düzenle"><i data-lucide="pencil" class="w-3 h-3"></i></button>
                                         <button onclick="app.deleteCountry(${country.id})" class="p-1 hover:bg-red-900/30 rounded text-slate-400 hover:text-red-400" title="Sil"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
@@ -666,7 +666,7 @@ class ScoutApp {
     openQuickAddTeamModal() {
         const leagues = this.state.data.leagues.map(l => {
             const c = this.state.data.countries.find(x=>x.id===l.countryId);
-            return {val: l.id, txt: `${l.name} (${c ? c.name : '?'})`};
+            return {val: l.id, txt: `${l.name} (${c ? this.getCountryName(c) : '?'})`};
         });
         if(leagues.length===0) return alert("Önce veritabanından Ülke ve Lig ekleyiniz.");
         this.showModal(`
@@ -774,7 +774,7 @@ class ScoutApp {
                             <div>
                                 <h2 class="text-4xl font-bold text-white mb-1">${team.name}</h2>
                                 <div class="flex items-center justify-center md:justify-start gap-2 text-slate-400">
-                                    <span>${country.flag} ${country.name}</span><span class="w-1 h-1 bg-slate-600 rounded-full"></span><span>${league.name}</span>
+                                    <span>${country.flag} ${this.getCountryName(country)}</span><span class="w-1 h-1 bg-slate-600 rounded-full"></span><span>${league.name}</span>
                                 </div>
                             </div>
                             <div class="flex flex-wrap justify-center md:justify-start gap-3">

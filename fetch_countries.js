@@ -25,6 +25,7 @@ fetch('https://cdn.jsdelivr.net/npm/world-countries@3.0.0/dist/countries.json')
         const DB_COUNTRIES = countriesData.map((c, i) => ({
             id: i + 1,
             name: c.translations?.tur?.common || c.name.common,
+            nameEn: c.name.common,
             flag: c.cca2 ? `https://flagcdn.com/w80/${c.cca2.toLowerCase()}.png` : '',
             region: trRegions[c.region] || 'Diğer'
         }));

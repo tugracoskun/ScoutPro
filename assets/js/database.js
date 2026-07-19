@@ -44,7 +44,7 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                                                 <div class="w-8 h-6 overflow-hidden rounded shadow-sm flex items-center justify-center text-lg bg-dark-800">
                                                     ${this.getLogoDisplayHTML(country.flag)}
                                                 </div>
-                                                <h3 class="text-lg font-bold text-white">${country.name}</h3>
+                                                <h3 class="text-lg font-bold text-white">${this.getCountryName(country)}</h3>
                                                 <button onclick="app.toggleFavorite(${country.id}, 'country')" class="p-1 hover:bg-dark-700 rounded transition-colors ${country.isFavorite ? 'text-yellow-400' : 'text-slate-600 hover:text-yellow-400'}" title="Favorilere Ekle/Çıkar">
                                                     <i data-lucide="star" class="w-4 h-4 ${country.isFavorite ? 'fill-current' : ''}"></i>
                                                 </button>
@@ -135,7 +135,7 @@ ScoutApp.prototype.renderTeamDetail = function(c, teamId) {
                         <div>
                             <h2 class="text-4xl font-bold text-white mb-1">${team.name}</h2>
                             <div class="flex items-center justify-center md:justify-start gap-2 text-slate-400">
-                                <div class="w-5 h-4 flex items-center justify-center overflow-hidden">${this.getLogoDisplayHTML(country.flag)}</div> <span>${country.name}</span>
+                                <div class="w-5 h-4 flex items-center justify-center overflow-hidden">${this.getLogoDisplayHTML(country.flag)}</div> <span>${this.getCountryName(country)}</span>
                                 <span class="w-1 h-1 bg-slate-600 rounded-full"></span>
                                 <span>${league.name}</span>
                             </div>
