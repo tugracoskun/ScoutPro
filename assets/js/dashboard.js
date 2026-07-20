@@ -13,6 +13,7 @@ ScoutApp.prototype.renderDashboard = function(c) {
     
     const nextMatch = upcomingMatches.length > 0 ? upcomingMatches[0] : null;
     const getTeam = (id) => { const t = this.state.data.teams.find(x => x.id == id); return t ? t.name : '???'; };
+    const getTeamLogo = (id) => { const t = this.state.data.teams.find(x => x.id == id); return t ? t.logo : null; };
 
     const lang = window.getLang ? window.getLang() : 'tr';
     const l_days = lang === 'en' ? 'DAYS' : 'GÜN';
@@ -48,8 +49,10 @@ ScoutApp.prototype.renderDashboard = function(c) {
                 </div>
                 <div class="bg-gradient-to-br from-dark-900 via-dark-900 to-scout-900/20 border border-dark-800 rounded-2xl p-1 relative overflow-hidden shadow-xl flex flex-col group transition-all hover:border-scout-500/30 hover:shadow-scout-500/10">
                     ${nextMatch ? `
-                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-scout-400 via-blue-500 to-purple-500"></div>
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-scout-400 via-blue-500 to-purple-500 z-20"></div>
                         <div class="absolute -top-20 -right-20 w-40 h-40 bg-scout-500/10 rounded-full blur-3xl group-hover:bg-scout-500/20 transition-all duration-500 pointer-events-none"></div>
+                        <div class="absolute -left-12 -bottom-10 w-48 h-48 opacity-[0.04] pointer-events-none transform -rotate-12 blur-[1px] grayscale group-hover:grayscale-0 group-hover:opacity-[0.08] transition-all duration-500">${this.getLogoDisplayHTML(getTeamLogo(nextMatch.homeId))}</div>
+                        <div class="absolute -right-12 -bottom-10 w-48 h-48 opacity-[0.04] pointer-events-none transform rotate-12 blur-[1px] grayscale group-hover:grayscale-0 group-hover:opacity-[0.08] transition-all duration-500">${this.getLogoDisplayHTML(getTeamLogo(nextMatch.awayId))}</div>
                         <div class="p-5 flex flex-col h-full relative z-10">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2 drop-shadow-md"><div class="p-1.5 bg-scout-500/20 rounded-lg text-scout-400"><i data-lucide="zap" class="w-4 h-4"></i></div> ${t('dash_next_match')}</h3>
