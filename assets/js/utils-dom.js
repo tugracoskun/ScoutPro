@@ -59,6 +59,12 @@ ScoutApp.prototype.createInput = function(id, label, ph, type='text', val='', ev
     return `<div class="flex flex-col gap-1.5 relative z-10"><label class="text-xs font-bold text-slate-400 ml-1">${label}</label><input type="${type}" id="${id}" value="${safeVal}" oninput="${evt}" ${max ? `max="${max}"` : ''} placeholder="${ph}" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 focus:ring-1 focus:ring-scout-500 outline-none transition-all placeholder:text-slate-600 text-sm relative z-20" autocomplete="off"></div>`;
 };
 
+ScoutApp.prototype.createDatalistInput = function(id, listId, label, ph, options, val='', evt='') {
+    const safeVal = (val === undefined || val === null) ? '' : val;
+    const datalist = `<datalist id="${listId}">${options.map(o => `<option value="${o.txt}">`).join('')}</datalist>`;
+    return `<div class="flex flex-col gap-1.5 relative z-10"><label class="text-xs font-bold text-slate-400 ml-1">${label}</label><input list="${listId}" type="text" id="${id}" value="${safeVal}" oninput="${evt}" placeholder="${ph}" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 focus:ring-1 focus:ring-scout-500 outline-none transition-all placeholder:text-slate-600 text-sm relative z-20" autocomplete="off">${datalist}</div>`;
+};
+
 ScoutApp.prototype.createSelect = function(id, label, options, val='', evt='', isFull=false) {
     return `<div class="flex flex-col gap-1.5 w-full relative z-10">${label ? `<label class="text-xs font-bold text-slate-400 ml-1">${label}</label>` : ''}<div class="relative"><select id="${id}" onchange="${evt}" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none appearance-none text-sm relative z-20 cursor-pointer"><option value="" disabled ${!val?'selected':''}>Seçiniz</option>${options.map(o => `<option value="${o.val}" ${val==o.val?'selected':''}>${o.txt}</option>`).join('')}</select><div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 z-30"><i data-lucide="chevron-down" class="w-4 h-4"></i></div></div></div>`;
 };

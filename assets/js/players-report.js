@@ -18,11 +18,18 @@ ScoutApp.prototype.renderNewReport = function(c) {
                         ? this.createSelect('rep-team', t('team'), teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") 
                         : '<div class="p-3 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-xs">' + t('db_empty') + '</div>'}
                     
+                    ${this.createDatalistInput('rep-nationality', 'countries-datalist', t('nationality'), t('nat_search_ph'), [...this.state.data.countries].sort((a,b) => b.isFavorite - a.isFavorite || this.getCountryName(a).localeCompare(this.getCountryName(b))).map(c => ({val: c.id, txt: this.getCountryName(c)})), this.state.newReport.nationality, "app.updateRep('nationality', this.value)")}
+
+                    
                     <div class="grid grid-cols-2 gap-4">
                         ${this.createSelect('rep-pos', t('position'), POSITIONS.map(p=>({val:p, txt:tPos(p)})), currentPos, 'app.handlePositionChange(this.value)')}
                         <div class="flex flex-col gap-1.5 relative z-10">
                             <label class="text-xs font-bold text-slate-400 ml-1 flex justify-between">${t('birth_date')} <span id="calculated-age-display" class="text-scout-400 font-mono"></span></label>
                             <input type="date" id="rep-birth" value="${this.state.newReport.birthDate || ''}" onchange="app.updateBirthDate(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none transition-all text-sm relative z-20">
+                            <div id="u23-national-container" class="${(this.state.newReport.birthDate && this.calculateAge(this.state.newReport.birthDate) <= 23) ? 'flex' : 'hidden'} items-center gap-2 mt-1 ml-1 z-20 relative">
+                                <input type="checkbox" id="rep-u23-national" onchange="app.updateRep('u23National', this.checked)" ${this.state.newReport.u23National ? 'checked' : ''} class="w-4 h-4 accent-scout-500 rounded cursor-pointer">
+                                <label for="rep-u23-national" class="text-xs font-bold text-slate-300 cursor-pointer">${t('u23_national')}</label>
+                            </div>
                         </div>
                     </div>
 
@@ -230,8 +237,21 @@ ScoutApp.prototype.updateBirthDate = function(val) {
     const age = this.calculateAge(val);
     const display = document.getElementById('calculated-age-display');
     const tipsBox = document.getElementById('age-specific-tips');
+    const u23Container = document.getElementById('u23-national-container');
 
     if(display) display.innerText = `(${age} Yaş)`;
+    
+    if (u23Container) {
+        if (age <= 23) {
+            u23Container.classList.remove('hidden');
+            u23Container.classList.add('flex');
+        } else {
+            u23Container.classList.add('hidden');
+            u23Container.classList.remove('flex');
+            this.state.newReport.u23National = false;
+            document.getElementById('rep-u23-national').checked = false;
+        }
+    }
 
     if (tipsBox && typeof AGE_SPECIFIC_KPI !== 'undefined') {
         let groupKey = null;

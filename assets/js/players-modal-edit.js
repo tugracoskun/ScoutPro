@@ -26,19 +26,28 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
                     <!-- YAŞ YERİNE DOĞUM TARİHİ -->
                     <div class="flex flex-col gap-1.5 relative z-10">
                         <label class="text-xs font-bold text-slate-400 ml-1">${t('birth_date')}</label>
-                        <input type="date" id="edit-p-birth" value="${p.birthDate || ''}" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none text-sm relative z-20">
+                        <input type="date" id="edit-p-birth" value="${p.birthDate || ''}" onchange="app.handleEditBirthDateChange(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none text-sm relative z-20">
                     </div>
 
                     ${this.createInput('edit-p-height', t('height') + ' (cm)', '180', 'number', p.height)}
                     ${this.createSelect('edit-p-foot', t('foot'), [{val:'Sağ', txt:t('foot_right')||'Sağ'}, {val:'Sol', txt:t('foot_left')||'Sol'}, {val:'Her İkisi', txt:t('foot_both')||'Her İkisi'}, {val:'Bilinmiyor', txt:t('unknown')}], p.foot)}
                 </div>
                 
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-bold text-slate-400 ml-1">${t('potential')}</label>
-                    <select id="edit-p-potential" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none text-sm">
-                        <option value="Düşük" ${p.potential === 'Düşük' ? 'selected' : ''}>${t('potential_low')}</option>
-                        <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>${t('potential_high')}</option>
-                    </select>
+                <div class="grid grid-cols-2 gap-4">
+                    ${this.createDatalistInput('edit-p-nationality', 'countries-edit-datalist', t('nationality'), t('nat_search_ph'), [...this.state.data.countries].sort((a,b) => b.isFavorite - a.isFavorite || this.getCountryName(a).localeCompare(this.getCountryName(b))).map(c => ({val: c.id, txt: this.getCountryName(c)})), p.nationality)}
+                    
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-400 ml-1">${t('potential')}</label>
+                        <select id="edit-p-potential" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none text-sm">
+                            <option value="Düşük" ${p.potential === 'Düşük' ? 'selected' : ''}>${t('potential_low')}</option>
+                            <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>${t('potential_high')}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="edit-u23-national-container" class="${(p.birthDate && this.calculateAge(p.birthDate) <= 23) ? 'flex' : 'hidden'} items-center gap-2 ml-1">
+                    <input type="checkbox" id="edit-p-u23-national" ${p.u23National ? 'checked' : ''} class="w-4 h-4 accent-blue-500 rounded cursor-pointer">
+                    <label for="edit-p-u23-national" class="text-sm font-bold text-slate-300 cursor-pointer">${t('u23_national')}</label>
                 </div>
 
                 ${this.createInput('edit-p-img', t('photo_url'), 'https://...', 'text', p.image)}
@@ -57,7 +66,22 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
     lucide.createIcons();
 };
 
-// --- OYUNCU GÜNCELLEME (Otomatik Yaş Hesaplama) ---
+// --- OYUNCU DÜZENLEME (Otomatik Yaş Hesaplama ve U23) ---
+ScoutApp.prototype.handleEditBirthDateChange = function(val) {
+    const age = this.calculateAge(val);
+    const u23Container = document.getElementById('edit-u23-national-container');
+    if (u23Container) {
+        if (age <= 23) {
+            u23Container.classList.remove('hidden');
+            u23Container.classList.add('flex');
+        } else {
+            u23Container.classList.add('hidden');
+            u23Container.classList.remove('flex');
+            document.getElementById('edit-p-u23-national').checked = false;
+        }
+    }
+};
+
 ScoutApp.prototype.updatePlayer = function(id) {
     const p = this.state.data.players.find(x => x.id === id);
     if (!p) return;
@@ -73,7 +97,14 @@ ScoutApp.prototype.updatePlayer = function(id) {
     p.teamId = parseInt(teamId);
     p.position = document.getElementById('edit-p-pos').value;
     p.birthDate = birthDate; // Tarihi kaydet
-    p.age = this.calculateAge(birthDate); // Yaşı hesapla ve güncelle
+    
+    // Yeni eklenen alanlar
+    p.nationality = document.getElementById('edit-p-nationality').value.trim();
+    p.u23National = document.getElementById('edit-u23-national-container').classList.contains('hidden') ? false : document.getElementById('edit-p-u23-national').checked;
+
+    // Yaşı dinamik hesapla ve kaydet
+    p.age = this.calculateAge(birthDate);
+
     p.height = document.getElementById('edit-p-height').value;
     p.foot = document.getElementById('edit-p-foot').value;
     p.potential = document.getElementById('edit-p-potential').value;
