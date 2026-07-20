@@ -92,9 +92,13 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                                                             <button onclick="app.openAddTeamModal(${league.id})" class="text-[10px] bg-scout-500/10 hover:bg-scout-500/20 text-scout-400 px-2 py-1 rounded border border-scout-500/20 transition-colors flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> ${t('add_team')}</button>
                                                         </div>
                                                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-2">
-                                                            ${teams.map(team => {
-                            const playerCount = this.state.data.players.filter(p => p.teamId === team.id).length;
-                            return `
+                                                            ${(() => {
+                            const teamsWithCount = teams.map(team => ({
+                                team,
+                                playerCount: this.state.data.players.filter(p => p.teamId === team.id).length
+                            })).sort((a, b) => b.playerCount - a.playerCount || a.team.name.localeCompare(b.team.name));
+                            
+                            return teamsWithCount.map(({team, playerCount}) => `
                                                                     <div class="relative group/team">
                                                                         <div onclick="app.navigate('team-detail', ${team.id})" class="flex items-center gap-3 p-2 rounded-lg bg-dark-900 hover:bg-dark-800 cursor-pointer transition-colors border border-dark-800 hover:border-scout-500/30">
                                                                             <!-- Takım Logosu -->
@@ -111,8 +115,8 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                                                                                 <button onclick="app.deleteTeam(${team.id})" class="p-1 hover:text-red-400 text-slate-400"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
                                                                         </div>
                                                                     </div>
-                                                                `;
-                        }).join('')}
+                                                                `).join('');
+                        })()}
                                                             ${teams.length === 0 ? `<span class="text-xs text-slate-600 p-2">${t('no_teams')}</span>` : ''}
                                                         </div>
                                                     </div>
@@ -131,9 +135,12 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                                                 <div class="grid grid-cols-2 lg:grid-cols-3 gap-2">
                                                     ${(() => {
                             const nationalTeams = this.state.data.teams.filter(t => t.countryId === country.id && t.type === 'national');
-                            return nationalTeams.map(team => {
-                                const playerCount = this.state.data.players.filter(p => p.nationalTeamId === team.id || p.teamId === team.id).length;
-                                return `
+                            const nationalTeamsWithCount = nationalTeams.map(team => ({
+                                team,
+                                playerCount: this.state.data.players.filter(p => p.nationalTeamId === team.id || p.teamId === team.id).length
+                            })).sort((a, b) => b.playerCount - a.playerCount || a.team.name.localeCompare(b.team.name));
+                            
+                            return nationalTeamsWithCount.map(({team, playerCount}) => `
                                                                 <div class="relative group/team">
                                                                     <div onclick="app.navigate('team-detail', ${team.id})" class="flex items-center gap-3 p-2 rounded-lg bg-dark-900 hover:bg-dark-800 cursor-pointer transition-colors border border-dark-800 hover:border-scout-500/30">
                                                                         <div class="w-8 h-8 rounded-full flex items-center justify-center text-lg relative overflow-hidden">
@@ -149,8 +156,7 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                                                                             <button onclick="app.deleteTeam(${team.id})" class="p-1 hover:text-red-400 text-slate-400"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
                                                                     </div>
                                                                 </div>
-                                                            `;
-                            }).join('') + (nationalTeams.length === 0 ? `<span class="text-xs text-slate-600 p-2">Milli takım yok.</span>` : '');
+                                                            `).join('') + (nationalTeams.length === 0 ? `<span class="text-xs text-slate-600 p-2">Milli takım yok.</span>` : '');
                         })()}
                                                 </div>
                                             </div>
