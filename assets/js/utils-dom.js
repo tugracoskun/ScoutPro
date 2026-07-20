@@ -65,7 +65,7 @@ ScoutApp.prototype.createDatalistInput = function(id, listId, label, ph, options
     return `<div class="flex flex-col gap-1.5 relative z-10"><label class="text-xs font-bold text-slate-400 ml-1">${label}</label><input list="${listId}" type="text" id="${id}" value="${safeVal}" oninput="${evt}" placeholder="${ph}" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 focus:ring-1 focus:ring-scout-500 outline-none transition-all placeholder:text-slate-600 text-sm relative z-20" autocomplete="off">${datalist}</div>`;
 };
 
-ScoutApp.prototype.createCustomSearchSelect = function(id, label, ph, options, val='', evt='') {
+ScoutApp.prototype.createCustomSearchSelect = function(id, label, ph, options, val='', evt='', disabled=false) {
     const safeVal = (val === undefined || val === null) ? '' : val;
     const selectedOpt = options.find(o => o.txt === safeVal || o.val == safeVal);
     const displayValue = selectedOpt ? selectedOpt.txt : safeVal;
@@ -91,10 +91,12 @@ ScoutApp.prototype.createCustomSearchSelect = function(id, label, ph, options, v
                 
                 <input type="text" id="${id}-input" value="${displayValue}" placeholder="${ph}" 
                     autocomplete="off"
+                    ${disabled ? 'disabled' : `
                     onfocus="document.getElementById('${id}-dropdown').classList.remove('hidden'); document.getElementById('${id}-container').classList.replace('z-30', 'z-50');"
                     onblur="setTimeout(() => { document.getElementById('${id}-dropdown').classList.add('hidden'); document.getElementById('${id}-container').classList.replace('z-50', 'z-30'); }, 200)"
                     oninput="app.filterCustomSelect('${id}', this.value, \`${evt}\`)"
-                    class="w-full bg-dark-950 border border-dark-700 rounded-xl ${displayIcon ? 'pl-11' : 'pl-10'} pr-10 py-3 text-white focus:border-scout-500 focus:ring-1 focus:ring-scout-500 outline-none transition-all placeholder:text-slate-600 text-sm">
+                    `}
+                    class="w-full bg-dark-950 border border-dark-700 rounded-xl ${displayIcon ? 'pl-11' : 'pl-10'} pr-10 py-3 text-white focus:border-scout-500 focus:ring-1 focus:ring-scout-500 outline-none transition-all placeholder:text-slate-600 text-sm ${disabled ? 'opacity-50 cursor-not-allowed' : ''}">
                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
                     <i data-lucide="chevron-down" class="w-4 h-4"></i>
                 </div>

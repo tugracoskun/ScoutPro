@@ -19,7 +19,7 @@ ScoutApp.prototype.renderNewReport = function(c) {
 
                     <div class="grid grid-cols-2 gap-4">
                         ${teams.length > 0 ? this.createCustomSearchSelect('rep-team', 'Kulüp Takımı', 'Ara...', teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") : ''}
-                        ${this.createCustomSearchSelect('rep-national-team', 'Milli Takımı', 'Önce uyruk seçin...', nationalTeams, this.state.newReport.nationalTeamId, "app.updateRep('nationalTeamId', this.value)")}
+                        ${this.createCustomSearchSelect('rep-national-team', 'Milli Takımı', this.state.newReport.nationality ? 'Ara...' : 'Seçilemez', nationalTeams, this.state.newReport.nationalTeamId, "app.updateRep('nationalTeamId', this.value)", !this.state.newReport.nationality)}
                     </div>
                     ${teams.length === 0 ? '<div class="p-3 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-xs">' + t('db_empty') + '</div>' : ''}
 
@@ -237,7 +237,23 @@ ScoutApp.prototype.updateRep = function(k, v) {
     this.state.newReport[k] = v; 
     if (k === 'nationality') {
         this.state.newReport.nationalTeamId = ''; // Reset national team when nationality changes
-        this.renderNewReport(document.getElementById('content-area')); // Re-render to update the dropdown filter
+        
+        const container = document.getElementById('rep-national-team-container');
+        if (container) {
+            const nationalTeams = this.state.data.teams
+                .filter(t => t.type === 'national' && (!this.state.newReport.nationality || t.countryId == this.state.newReport.nationality))
+                .map(t => ({val: t.id, txt: this.getTeamName(t.id), icon: t.logo}));
+                
+            container.outerHTML = this.createCustomSearchSelect(
+                'rep-national-team', 
+                'Milli Takımı', 
+                this.state.newReport.nationality ? 'Ara...' : 'Seçilemez', 
+                nationalTeams, 
+                '', 
+                "app.updateRep('nationalTeamId', this.value)",
+                !this.state.newReport.nationality
+            );
+        }
     }
 };
 
