@@ -85,13 +85,12 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                                                                     <div class="relative group/team">
                                                                         <div onclick="app.navigate('team-detail', ${team.id})" class="flex items-center gap-3 p-2 rounded-lg bg-dark-900 hover:bg-dark-800 cursor-pointer transition-colors border border-dark-800 hover:border-scout-500/30">
                                                                             <!-- Takım Logosu -->
-                                                                            <div class="w-8 h-8 rounded-full bg-dark-950 flex items-center justify-center text-lg shadow-sm border border-dark-700 relative overflow-hidden">
-                                                                                ${this.getLogoDisplayHTML(team.logo, "w-full h-full object-cover")}
-                                                                                ${playerCount > 0 ? `<span class="absolute -top-1 -right-1 w-3 h-3 bg-scout-500 rounded-full border border-dark-900"></span>` : ''}
+                                                                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-lg relative overflow-hidden">
+                                                                                ${this.getLogoDisplayHTML(team.logo, "w-full h-full object-contain")}
                                                                             </div>
                                                                             <div class="flex flex-col min-w-0">
                                                                                 <span class="text-sm text-slate-300 group-hover:text-white truncate font-medium">${team.name}</span>
-                                                                                <span class="text-[10px] text-slate-500">${playerCount} ${t('players_count')}</span>
+                                                                                <span class="text-[10px] ${playerCount > 0 ? 'text-scout-400 font-bold' : 'text-slate-500'}">${playerCount} ${t('players_count')}</span>
                                                                             </div>
                                                                         </div>
                                                                         <div class="absolute top-1 right-1 hidden group-hover/team:flex gap-1 bg-dark-950 rounded-lg p-1 border border-dark-700 z-10">
@@ -124,13 +123,12 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                                 return `
                                                                 <div class="relative group/team">
                                                                     <div onclick="app.navigate('team-detail', ${team.id})" class="flex items-center gap-3 p-2 rounded-lg bg-dark-900 hover:bg-dark-800 cursor-pointer transition-colors border border-dark-800 hover:border-scout-500/30">
-                                                                        <div class="w-8 h-8 rounded-full bg-dark-950 flex items-center justify-center text-lg shadow-sm border border-dark-700 relative overflow-hidden">
-                                                                            ${this.getLogoDisplayHTML(team.logo, "w-full h-full object-cover")}
-                                                                            ${playerCount > 0 ? `<span class="absolute -top-1 -right-1 w-3 h-3 bg-scout-500 rounded-full border border-dark-900"></span>` : ''}
+                                                                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-lg relative overflow-hidden">
+                                                                            ${this.getLogoDisplayHTML(team.logo, "w-full h-full object-contain")}
                                                                         </div>
                                                                         <div class="flex flex-col min-w-0">
                                                                             <span class="text-sm text-slate-300 group-hover:text-white truncate font-medium">${team.name}</span>
-                                                                            <span class="text-[10px] text-slate-500">${playerCount} ${t('players_count')}</span>
+                                                                            <span class="text-[10px] ${playerCount > 0 ? 'text-scout-400 font-bold' : 'text-slate-500'}">${playerCount} ${t('players_count')}</span>
                                                                         </div>
                                                                     </div>
                                                                     <div class="absolute top-1 right-1 hidden group-hover/team:flex gap-1 bg-dark-950 rounded-lg p-1 border border-dark-700 z-10">
