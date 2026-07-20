@@ -12,7 +12,7 @@ ScoutApp.prototype.renderMatches = function(c) {
     }
 
     const allLeagues = this.state.data.leagues.map(l => ({val: l.name, txt: l.name, icon: l.logo}));
-    const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:t.name, icon: t.logo}));
+    const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:this.getTeamName(t.id), icon: t.logo}));
 
     const reportedPlayers = this.state.data.players.map(p => ({val: p.id, txt: `★ ${p.name} (${t('reported')})`}));
     const watchlistPlayers = this.state.data.watchlist.map(w => ({val: w.id, txt: `○ ${w.name} (${t('candidate')})`}));
@@ -425,7 +425,7 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
 
 ScoutApp.prototype.openCalendarAddMatchModal = function() {
     const allLeagues = this.state.data.leagues.map(l => ({val: l.name, txt: l.name, icon: l.logo}));
-    const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:t.name, icon:t.logo}));
+    const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:this.getTeamName(t.id), icon:t.logo}));
     const reportedPlayers = this.state.data.players.map(p => ({val: p.id, txt: `★ ${p.name}`}));
     const watchlistPlayers = this.state.data.watchlist.map(w => ({val: w.id, txt: `○ ${w.name}`}));
     const allTargetPlayers = [{val:'', txt:`- ${t('general_tracking')} -`}, ...reportedPlayers, ...watchlistPlayers];
@@ -547,7 +547,7 @@ ScoutApp.prototype.openEditMatchModal = function(id) {
     if(!m) return;
     
     const allLeagues = this.state.data.leagues.map(l => ({val: l.name, txt: l.name, icon: l.logo}));
-    const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:t.name, icon: t.logo}));
+    const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:this.getTeamName(t.id), icon: t.logo}));
     
     const reportedPlayers = this.state.data.players.map(p => ({val: p.id, txt: `★ ${p.name} (${t('reported')})`}));
     const watchlistPlayers = this.state.data.watchlist.map(w => ({val: w.id, txt: `○ ${w.name} (${t('candidate')})`}));

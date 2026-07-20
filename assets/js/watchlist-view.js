@@ -40,7 +40,7 @@ ScoutApp.prototype.renderWatchlist = function(c, skipAnimation = false) {
     else if (filter.sort === 'az') filtered.sort((a, b) => a.name.localeCompare(b.name));
     else if (filter.sort === 'za') filtered.sort((a, b) => b.name.localeCompare(a.name));
 
-    const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:t.name}));
+    const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:this.getTeamName(t.id)}));
     const totalCount = this.state.data.watchlist.length;
     const favBtnClass = filter.favoritesOnly ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-500/20" : "bg-dark-900 text-slate-400 border-dark-700 hover:text-white";
 

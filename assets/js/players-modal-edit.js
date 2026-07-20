@@ -4,8 +4,8 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
     const p = this.state.data.players.find(x => x.id === id);
     if (!p) return;
 
-    const teams = this.state.data.teams.filter(t => t.type !== 'national').map(t=>({val:t.id, txt:t.name, icon: t.logo}));
-    const nationalTeams = this.state.data.teams.filter(t => t.type === 'national').map(t=>({val:t.id, txt:t.name, icon: t.logo}));
+    const teams = this.state.data.teams.filter(t => t.type !== 'national').map(t=>({val:t.id, txt:this.getTeamName(t.id), icon: t.logo}));
+    const nationalTeams = this.state.data.teams.filter(t => t.type === 'national').map(t=>({val:t.id, txt:this.getTeamName(t.id), icon: t.logo}));
     const container = document.getElementById('modal-content-body');
     
     container.innerHTML = `

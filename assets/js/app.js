@@ -368,7 +368,7 @@ class ScoutApp {
         }
         filtered = filtered.sort((a, b) => b.id - a.id);
 
-        const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:t.name}));
+        const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:this.getTeamName(t.id)}));
 
         c.innerHTML = `
             <div class="max-w-6xl mx-auto space-y-8 fade-in">
@@ -524,7 +524,7 @@ class ScoutApp {
     // --- MAÇ PLANLAMA ---
 
     renderMatches(c) {
-        const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:t.name}));
+        const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:this.getTeamName(t.id)}));
 
         c.innerHTML = `
             <div class="space-y-6 fade-in max-w-5xl mx-auto">
@@ -622,7 +622,7 @@ class ScoutApp {
         const m = this.state.data.matches.find(x => x.id === id);
         if(!m) return;
         
-        const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:t.name}));
+        const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:this.getTeamName(t.id)}));
         const allPlayers = [{val:'', txt:'- Genel Takip / Yeni Oyuncu -'}, ...this.state.data.players.map(p=>({val:p.id, txt:p.name}))];
 
         this.showModal(`
@@ -800,7 +800,7 @@ class ScoutApp {
     }
 
     renderNewReport(c) {
-        const teams = this.state.data.teams.map(t=>({val:t.id, txt:t.name}));
+        const teams = this.state.data.teams.map(t=>({val:t.id, txt:this.getTeamName(t.id)}));
         
         // Varsayılan mevki veya seçili mevki
         const currentPos = this.state.newReport.position;

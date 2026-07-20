@@ -1,6 +1,6 @@
 // --- VERİTABANI GÖRÜNTÜLEME MODÜLÜ ---
 
-ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
+ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
     c.innerHTML = `
         <div class="space-y-6 ${skipAnimation ? '' : 'fade-in'} max-w-5xl mx-auto">
             <div class="flex justify-between items-center bg-dark-900 p-4 rounded-xl border border-dark-800">
@@ -10,24 +10,24 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                 </div>
             </div>
             
-            ${this.state.data.countries.length === 0 ? 
-                `<div class="text-center py-12 border-2 border-dashed border-dark-800 rounded-2xl text-slate-500">${t('db_empty')}</div>` : ''}
+            ${this.state.data.countries.length === 0 ?
+            `<div class="text-center py-12 border-2 border-dashed border-dark-800 rounded-2xl text-slate-500">${t('db_empty')}</div>` : ''}
             
             ${['Favoriler', 'Avrupa', 'Afrika', 'Amerika', 'Asya', 'Okyanusya', 'Diğer'].map(regionKey => {
-                const regionCountries = regionKey === 'Favoriler' 
+                const regionCountries = regionKey === 'Favoriler'
                     ? this.state.data.countries.filter(c => c.isFavorite)
                     : this.state.data.countries.filter(c => c.region === regionKey);
-                if(regionCountries.length === 0) return '';
-                
+                if (regionCountries.length === 0) return '';
+
                 const regionIcon = regionKey === 'Favoriler' ? 'star' : 'map-pin';
                 const regionColor = regionKey === 'Favoriler' ? 'text-yellow-400' : 'text-scout-400';
-                
+
                 const displayRegionMap = {
                     'Favoriler': t('region_favorites'), 'Avrupa': t('region_europe'), 'Afrika': t('region_africa'),
                     'Amerika': t('region_americas'), 'Asya': t('region_asia'), 'Okyanusya': t('region_oceania'), 'Diğer': t('region_other')
                 };
                 const displayRegion = displayRegionMap[regionKey] || regionKey;
-                
+
                 return `
                     <div class="mb-8 bg-dark-950/30 p-6 rounded-3xl border border-dark-800">
                         <h3 class="text-2xl font-bold ${regionColor} mb-6 flex items-center gap-2">
@@ -35,8 +35,8 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                         </h3>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             ${regionCountries.map(country => {
-                                const leagues = this.state.data.leagues.filter(l => l.countryId === country.id);
-                                return `
+                    const leagues = this.state.data.leagues.filter(l => l.countryId === country.id);
+                    return `
                                     <div class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden hover-trigger relative">
                                         <div class="bg-dark-950/50 p-4 border-b border-dark-800 flex items-center justify-between group">
                                             <div class="flex items-center gap-3">
@@ -61,8 +61,8 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                                                 <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2"><i data-lucide="building-2" class="w-3.5 h-3.5"></i> Kulüp Takımları</h4>
                                                 <div class="grid grid-cols-1 gap-4">
                                                     ${leagues.map(league => {
-                                                        const teams = this.state.data.teams.filter(t => t.leagueId === league.id && t.type !== 'national');
-                                                return `
+                        const teams = this.state.data.teams.filter(t => t.leagueId === league.id && t.type !== 'national');
+                        return `
                                                     <div class="border border-dark-800 rounded-xl bg-dark-800/20 p-4 hover-trigger">
                                                         <div class="flex items-center justify-between mb-3">
                                                             <div class="flex items-center gap-2 text-scout-400 font-semibold text-sm uppercase tracking-wider">
@@ -80,8 +80,8 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                                                         </div>
                                                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-2">
                                                             ${teams.map(team => {
-                                                                const playerCount = this.state.data.players.filter(p => p.teamId === team.id).length;
-                                                                return `
+                            const playerCount = this.state.data.players.filter(p => p.teamId === team.id).length;
+                            return `
                                                                     <div class="relative group/team">
                                                                         <div onclick="app.navigate('team-detail', ${team.id})" class="flex items-center gap-3 p-2 rounded-lg bg-dark-900 hover:bg-dark-800 cursor-pointer transition-colors border border-dark-800 hover:border-scout-500/30">
                                                                             <!-- Takım Logosu -->
@@ -100,12 +100,12 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                                                                         </div>
                                                                     </div>
                                                                 `;
-                                                            }).join('')}
+                        }).join('')}
                                                             ${teams.length === 0 ? `<span class="text-xs text-slate-600 p-2">${t('no_teams')}</span>` : ''}
                                                         </div>
                                                     </div>
                                                 `;
-                                            }).join('')}
+                    }).join('')}
                                                     ${leagues.length === 0 ? `<span class="text-xs text-slate-600">${t('no_leagues')}</span>` : ''}
                                                 </div>
                                             </div>
@@ -118,10 +118,10 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                                                 </div>
                                                 <div class="grid grid-cols-2 lg:grid-cols-3 gap-2">
                                                     ${(() => {
-                                                        const nationalTeams = this.state.data.teams.filter(t => t.countryId === country.id && t.type === 'national');
-                                                        return nationalTeams.map(team => {
-                                                            const playerCount = this.state.data.players.filter(p => p.nationalTeamId === team.id || p.teamId === team.id).length;
-                                                            return `
+                            const nationalTeams = this.state.data.teams.filter(t => t.countryId === country.id && t.type === 'national');
+                            return nationalTeams.map(team => {
+                                const playerCount = this.state.data.players.filter(p => p.nationalTeamId === team.id || p.teamId === team.id).length;
+                                return `
                                                                 <div class="relative group/team">
                                                                     <div onclick="app.navigate('team-detail', ${team.id})" class="flex items-center gap-3 p-2 rounded-lg bg-dark-900 hover:bg-dark-800 cursor-pointer transition-colors border border-dark-800 hover:border-scout-500/30">
                                                                         <div class="w-8 h-8 rounded-full bg-dark-950 flex items-center justify-center text-lg shadow-sm border border-dark-700 relative overflow-hidden">
@@ -139,14 +139,14 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
                                                                     </div>
                                                                 </div>
                                                             `;
-                                                        }).join('') + (nationalTeams.length === 0 ? `<span class="text-xs text-slate-600 p-2">Milli takım yok.</span>` : '');
-                                                    })()}
+                            }).join('') + (nationalTeams.length === 0 ? `<span class="text-xs text-slate-600 p-2">Milli takım yok.</span>` : '');
+                        })()}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 `;
-                            }).join('')}
+                }).join('')}
                         </div>
                     </div>
                 `;
@@ -155,10 +155,10 @@ ScoutApp.prototype.renderDatabase = function(c, skipAnimation = false) {
     `;
 };
 
-ScoutApp.prototype.renderTeamDetail = function(c, teamId) {
+ScoutApp.prototype.renderTeamDetail = function (c, teamId) {
     const team = this.state.data.teams.find(t => t.id === teamId);
-    if(!team) { this.navigate('database'); return; }
-    
+    if (!team) { this.navigate('database'); return; }
+
     const league = this.state.data.leagues.find(l => l.id === team.leagueId);
     const country = this.state.data.countries.find(co => co.id === league.countryId);
     const teamPlayers = this.state.data.players.filter(p => p.teamId === teamId);
@@ -193,10 +193,10 @@ ScoutApp.prototype.renderTeamDetail = function(c, teamId) {
             </div>
             <div>
                 <h3 class="text-xl font-bold text-white mb-4">Raporlanan Oyuncular</h3>
-                ${teamPlayers.length > 0 
-                    ? `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${teamPlayers.map(p => this.getPlayerCardHTML(p)).join('')}</div>`
-                    : `<div class="text-center text-slate-500 py-10 border border-dashed border-dark-800 rounded-xl">Henüz raporlanan oyuncu yok.</div>`
-                }
+                ${teamPlayers.length > 0
+            ? `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${teamPlayers.map(p => this.getPlayerCardHTML(p)).join('')}</div>`
+            : `<div class="text-center text-slate-500 py-10 border border-dashed border-dark-800 rounded-xl">Henüz raporlanan oyuncu yok.</div>`
+        }
             </div>
         </div>
     `;
@@ -204,7 +204,7 @@ ScoutApp.prototype.renderTeamDetail = function(c, teamId) {
 
 // --- MODAL AÇMA FONKSİYONLARI (EKLEME) ---
 
-ScoutApp.prototype.openAddCountryModal = function() { 
+ScoutApp.prototype.openAddCountryModal = function () {
     this.showModal(`
         <div class="p-6">
             <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-white">Ülke Ekle</h3><button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400"></i></button></div>
@@ -214,11 +214,11 @@ ScoutApp.prototype.openAddCountryModal = function() {
                 <button onclick="app.saveCountry()" class="w-full bg-scout-600 hover:bg-scout-500 text-white py-3 rounded-xl font-bold mt-2">Kaydet</button>
             </div>
         </div>
-    `); 
+    `);
 };
 
-ScoutApp.prototype.openAddLeagueModal = function(cId) { 
-    this.state.tempData.countryId = cId; 
+ScoutApp.prototype.openAddLeagueModal = function (cId) {
+    this.state.tempData.countryId = cId;
     this.showModal(`
         <div class="p-6">
             <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-white">Lig Ekle</h3><button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400"></i></button></div>
@@ -228,12 +228,12 @@ ScoutApp.prototype.openAddLeagueModal = function(cId) {
                 <button onclick="app.saveLeague()" class="w-full bg-scout-600 hover:bg-scout-500 text-white py-3 rounded-xl font-bold mt-2">Kaydet</button>
             </div>
         </div>
-    `); 
+    `);
 };
 
-ScoutApp.prototype.openAddTeamModal = function(lId) { 
-    if(!lId) return this.openQuickAddTeamModal(); 
-    this.state.tempData.leagueId = lId; 
+ScoutApp.prototype.openAddTeamModal = function (lId) {
+    if (!lId) return this.openQuickAddTeamModal();
+    this.state.tempData.leagueId = lId;
     this.showModal(`
         <div class="p-6">
             <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-white">Takım Ekle</h3><button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400"></i></button></div>
@@ -245,28 +245,27 @@ ScoutApp.prototype.openAddTeamModal = function(lId) {
                 <button onclick="app.saveTeam()" class="w-full bg-scout-600 hover:bg-scout-500 text-white py-3 rounded-xl font-bold mt-2">Kaydet</button>
             </div>
         </div>
-    `); 
+    `);
 };
 
-ScoutApp.prototype.openAddNationalTeamModal = function(cId) { 
-    this.state.tempData.countryIdForNational = cId; 
+ScoutApp.prototype.openAddNationalTeamModal = function (cId) {
+    this.state.tempData.countryIdForNational = cId;
     this.showModal(`
         <div class="p-6">
             <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-white">Milli Takım Ekle</h3><button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400"></i></button></div>
             <div class="space-y-4">
-                ${this.createInput('modal-national-team-name', 'Milli Takım Adı', 'Örn: Türkiye U19')}
-                ${this.createImageUploadControl('modal-national-team-logo', 'Takım Logosu (URL veya Dosya)')}
+                ${this.createInput('modal-national-team-name', 'Takım Kategorisi (Sadece U19, A Milli vs. yazmanız önerilir)', 'Örn: A Milli, U19...')}
                 ${this.createInput('modal-national-team-tm', 'Transfermarkt Link', 'https://...')}
                 ${this.createInput('modal-national-team-sofa', 'Sofascore Link', 'https://...')}
                 <button onclick="app.saveNationalTeam()" class="w-full bg-scout-600 hover:bg-scout-500 text-white py-3 rounded-xl font-bold mt-2">Kaydet</button>
             </div>
         </div>
-    `); 
+    `);
 };
 
-ScoutApp.prototype.openQuickAddTeamModal = function() { 
-    const lgs = this.state.data.leagues.map(l => ({val: l.id, txt: l.name})); 
-    if(lgs.length===0) return alert("Önce veritabanından Ülke ve Lig ekleyiniz."); 
+ScoutApp.prototype.openQuickAddTeamModal = function () {
+    const lgs = this.state.data.leagues.map(l => ({ val: l.id, txt: l.name }));
+    if (lgs.length === 0) return alert("Önce veritabanından Ülke ve Lig ekleyiniz.");
     this.showModal(`
         <div class="p-6">
             <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-white">Hızlı Takım Ekle</h3><button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400"></i></button></div>
@@ -279,14 +278,14 @@ ScoutApp.prototype.openQuickAddTeamModal = function() {
                 <button onclick="app.saveQuickTeam()" class="w-full bg-scout-600 hover:bg-scout-500 text-white py-3 rounded-xl font-bold mt-2">Kaydet</button>
             </div>
         </div>
-    `); 
+    `);
 };
 
 // --- MODAL AÇMA VE CRUD (DÜZENLEME) ---
 
-ScoutApp.prototype.openEditCountryModal = function(id) { 
-    const c = this.state.data.countries.find(x=>x.id===id); 
-    if(!c) return; 
+ScoutApp.prototype.openEditCountryModal = function (id) {
+    const c = this.state.data.countries.find(x => x.id === id);
+    if (!c) return;
     this.showModal(`
         <div class="p-6">
             <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-white">Ülke Düzenle</h3><button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400"></i></button></div>
@@ -296,12 +295,12 @@ ScoutApp.prototype.openEditCountryModal = function(id) {
                 <button onclick="app.updateCountry(${id})" class="w-full bg-scout-600 hover:bg-scout-500 text-white py-3 rounded-xl font-bold mt-2">Güncelle</button>
             </div>
         </div>
-    `); 
+    `);
 };
 
-ScoutApp.prototype.openEditLeagueModal = function(id) { 
-    const l = this.state.data.leagues.find(x=>x.id===id); 
-    if(!l) return; 
+ScoutApp.prototype.openEditLeagueModal = function (id) {
+    const l = this.state.data.leagues.find(x => x.id === id);
+    if (!l) return;
     this.showModal(`
         <div class="p-6">
             <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-white">Lig Düzenle</h3><button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400"></i></button></div>
@@ -311,12 +310,12 @@ ScoutApp.prototype.openEditLeagueModal = function(id) {
                 <button onclick="app.updateLeague(${id})" class="w-full bg-scout-600 hover:bg-scout-500 text-white py-3 rounded-xl font-bold mt-2">Güncelle</button>
             </div>
         </div>
-    `); 
+    `);
 };
 
-ScoutApp.prototype.openEditTeamModal = function(id) { 
-    const t = this.state.data.teams.find(x=>x.id===id); 
-    if(!t) return; 
+ScoutApp.prototype.openEditTeamModal = function (id) {
+    const t = this.state.data.teams.find(x => x.id === id);
+    if (!t) return;
     this.showModal(`
         <div class="p-6">
             <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-white">Takım Düzenle</h3><button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400"></i></button></div>
@@ -328,41 +327,41 @@ ScoutApp.prototype.openEditTeamModal = function(id) {
                 <button onclick="app.updateTeam(${id})" class="w-full bg-scout-600 hover:bg-scout-500 text-white py-3 rounded-xl font-bold mt-2">Güncelle</button>
             </div>
         </div>
-    `); 
+    `);
 };
 
 // --- KAYDETME VE GÜNCELLEME MANTIĞI ---
 
-ScoutApp.prototype.saveCountry = function() { 
-    const n=document.getElementById('modal-country-name').value; 
-    const f=document.getElementById('modal-country-flag').value; 
-    if(!n) return alert("Ad girin."); 
-    this.state.data.countries.push({id:Date.now(), name:n, flag:f}); 
-    this.saveData(); 
-    this.closeModal(); 
-    this.renderDatabase(document.getElementById('content-area')); 
+ScoutApp.prototype.saveCountry = function () {
+    const n = document.getElementById('modal-country-name').value;
+    const f = document.getElementById('modal-country-flag').value;
+    if (!n) return alert("Ad girin.");
+    this.state.data.countries.push({ id: Date.now(), name: n, flag: f });
+    this.saveData();
+    this.closeModal();
+    this.renderDatabase(document.getElementById('content-area'));
     this.notify("Ülke eklendi.");
 };
 
-ScoutApp.prototype.saveLeague = function() { 
-    const n=document.getElementById('modal-league-name').value; 
-    const l=document.getElementById('modal-league-logo').value; 
-    if(!n) return alert("Ad girin."); 
-    this.state.data.leagues.push({id:Date.now(), countryId:this.state.tempData.countryId, name:n, logo:l}); 
+ScoutApp.prototype.saveLeague = function () {
+    const n = document.getElementById('modal-league-name').value;
+    const l = document.getElementById('modal-league-logo').value;
+    if (!n) return alert("Ad girin.");
+    this.state.data.leagues.push({ id: Date.now(), countryId: this.state.tempData.countryId, name: n, logo: l });
     this.saveData();
-    this.closeModal(); 
-    this.renderDatabase(document.getElementById('content-area')); 
+    this.closeModal();
+    this.renderDatabase(document.getElementById('content-area'));
     this.notify("Lig eklendi.");
 };
 
-ScoutApp.prototype.saveQuickTeam = function() {
+ScoutApp.prototype.saveQuickTeam = function () {
     const lgSelect = document.getElementById('modal-quick-league');
     if (lgSelect && !lgSelect.value) return alert("Lütfen bir lig seçiniz.");
     if (lgSelect) this.state.tempData.leagueId = parseInt(lgSelect.value);
     this.saveTeam();
 };
 
-ScoutApp.prototype.saveTeam = function() {
+ScoutApp.prototype.saveTeam = function () {
     const name = document.getElementById('modal-team-name').value.trim();
     const logo = document.getElementById('modal-team-logo').value;
     const tmUrl = document.getElementById('modal-team-tm').value;
@@ -370,126 +369,128 @@ ScoutApp.prototype.saveTeam = function() {
 
     if (!name) return alert("Takım adı zorunludur.");
     if (!this.state.tempData.leagueId) return alert("Lig bilgisi bulunamadı.");
-    
+
     this.state.data.teams.push({
-        id: Date.now(), 
-        leagueId: this.state.tempData.leagueId, 
-        name: name, 
+        id: Date.now(),
+        leagueId: this.state.tempData.leagueId,
+        name: name,
         logo: logo,
-        tmUrl: tmUrl, 
+        tmUrl: tmUrl,
         sofaUrl: sofaUrl,
         type: 'club'
     });
 
     this.saveData();
     this.closeModal();
-    
+
     // Navigasyona göre render
-    if(this.state.activePage === 'watchlist') this.renderWatchlist(document.getElementById('content-area'));
-    else if(this.state.activePage === 'matches') this.renderMatches(document.getElementById('content-area'));
+    if (this.state.activePage === 'watchlist') this.renderWatchlist(document.getElementById('content-area'));
+    else if (this.state.activePage === 'matches') this.renderMatches(document.getElementById('content-area'));
     else this.renderDatabase(document.getElementById('content-area'));
-    
+
     this.notify("Takım başarıyla eklendi.");
 };
 
-ScoutApp.prototype.saveNationalTeam = function() {
+ScoutApp.prototype.saveNationalTeam = function () {
     const name = document.getElementById('modal-national-team-name').value.trim();
-    const logo = document.getElementById('modal-national-team-logo').value;
     const tmUrl = document.getElementById('modal-national-team-tm').value;
     const sofaUrl = document.getElementById('modal-national-team-sofa').value;
 
     if (!name) return alert("Takım adı zorunludur.");
     if (!this.state.tempData.countryIdForNational) return alert("Ülke bilgisi bulunamadı.");
-    
+
+    const country = this.state.data.countries.find(c => c.id === this.state.tempData.countryIdForNational);
+    const logo = country ? country.flag : '';
+
     this.state.data.teams.push({
-        id: Date.now(), 
-        countryId: this.state.tempData.countryIdForNational, 
-        name: name, 
+        id: Date.now(),
+        countryId: this.state.tempData.countryIdForNational,
+        name: name,
         logo: logo,
-        tmUrl: tmUrl, 
+        tmUrl: tmUrl,
         sofaUrl: sofaUrl,
         type: 'national'
     });
 
     this.saveData();
     this.closeModal();
-    
-    if(this.state.activePage === 'watchlist') this.renderWatchlist(document.getElementById('content-area'));
-    else if(this.state.activePage === 'matches') this.renderMatches(document.getElementById('content-area'));
+
+    if (this.state.activePage === 'watchlist') this.renderWatchlist(document.getElementById('content-area'));
+    else if (this.state.activePage === 'matches') this.renderMatches(document.getElementById('content-area'));
     else this.renderDatabase(document.getElementById('content-area'));
-    
+
     this.notify("Milli takım başarıyla eklendi.");
 };
 
-ScoutApp.prototype.updateCountry = function(id) { 
-    const c=this.state.data.countries.find(x=>x.id===id); 
-    if(c) { 
-        c.name=document.getElementById('edit-country-name').value; 
-        c.flag=document.getElementById('edit-country-flag').value; 
+ScoutApp.prototype.updateCountry = function (id) {
+    const c = this.state.data.countries.find(x => x.id === id);
+    if (c) {
+        c.name = document.getElementById('edit-country-name').value;
+        c.flag = document.getElementById('edit-country-flag').value;
         this.saveData();
-        this.closeModal(); 
-        this.renderDatabase(document.getElementById('content-area')); 
+        this.closeModal();
+        this.renderDatabase(document.getElementById('content-area'));
         this.notify("Ülke güncellendi.");
-    } 
+    }
 };
 
-ScoutApp.prototype.updateLeague = function(id) { 
-    const l=this.state.data.leagues.find(x=>x.id===id); 
-    if(l) { 
-        l.name=document.getElementById('edit-league-name').value; 
-        l.logo=document.getElementById('edit-league-logo').value; 
+ScoutApp.prototype.updateLeague = function (id) {
+    const l = this.state.data.leagues.find(x => x.id === id);
+    if (l) {
+        l.name = document.getElementById('edit-league-name').value;
+        l.logo = document.getElementById('edit-league-logo').value;
         this.saveData();
-        this.closeModal(); 
-        this.renderDatabase(document.getElementById('content-area')); 
+        this.closeModal();
+        this.renderDatabase(document.getElementById('content-area'));
         this.notify("Lig güncellendi.");
-    } 
+    }
 };
 
-ScoutApp.prototype.updateTeam = function(id) { 
-    const t=this.state.data.teams.find(x=>x.id===id); 
-    if(t) { 
-        t.name=document.getElementById('edit-team-name').value; 
-        t.logo=document.getElementById('edit-team-logo').value; 
-        t.tmUrl=document.getElementById('edit-team-tm').value; 
-        t.sofaUrl=document.getElementById('edit-team-sofa').value; 
+ScoutApp.prototype.updateTeam = function (id) {
+    const t = this.state.data.teams.find(x => x.id === id);
+    if (t) {
+        t.name = document.getElementById('edit-team-name').value;
+        t.logo = document.getElementById('edit-team-logo').value;
+        t.tmUrl = document.getElementById('edit-team-tm').value;
+        t.sofaUrl = document.getElementById('edit-team-sofa').value;
         this.saveData();
-        this.closeModal(); 
-        this.renderDatabase(document.getElementById('content-area')); 
+        this.closeModal();
+        this.renderDatabase(document.getElementById('content-area'));
         this.notify("Takım güncellendi.");
-    } 
+    }
 };
 
 // --- SİLME İŞLEMLERİ (CUSTOM CONFIRM İLE) ---
 
-ScoutApp.prototype.deleteCountry = function(id) { 
+ScoutApp.prototype.deleteCountry = function (id) {
     this.confirmAction("Bu ülkeyi ve bağlı tüm verileri silmek istediğinize emin misiniz?", () => {
         this.state.data.countries = this.state.data.countries.filter(x => x.id !== id);
         const leaguesToDelete = this.state.data.leagues.filter(l => l.countryId === id).map(l => l.id);
         this.state.data.leagues = this.state.data.leagues.filter(l => l.countryId !== id);
         this.state.data.teams = this.state.data.teams.filter(t => !leaguesToDelete.includes(t.leagueId));
-        
-        this.saveData(); 
-        this.renderDatabase(document.getElementById('content-area')); 
+
+        this.saveData();
+        this.renderDatabase(document.getElementById('content-area'));
         this.notify("Ülke ve bağlı veriler silindi.");
     });
 };
 
-ScoutApp.prototype.deleteLeague = function(id) { 
+ScoutApp.prototype.deleteLeague = function (id) {
     this.confirmAction("Bu ligi ve takımlarını silmek istediğinize emin misiniz?", () => {
         this.state.data.leagues = this.state.data.leagues.filter(x => x.id !== id);
         this.state.data.teams = this.state.data.teams.filter(t => t.leagueId !== id);
-        
-        this.saveData(); 
-        this.renderDatabase(document.getElementById('content-area')); 
+
+        this.saveData();
+        this.renderDatabase(document.getElementById('content-area'));
         this.notify("Lig ve takımları silindi.");
     });
 };
 
-ScoutApp.prototype.deleteTeam = function(id) { 
+ScoutApp.prototype.deleteTeam = function (id) {
     this.confirmAction("Bu takımı silmek istediğinize emin misiniz?", () => {
         this.state.data.teams = this.state.data.teams.filter(x => x.id !== id);
-        this.saveData(); 
-        this.renderDatabase(document.getElementById('content-area')); 
+        this.saveData();
+        this.renderDatabase(document.getElementById('content-area'));
         this.notify("Takım silindi.");
     });
 };

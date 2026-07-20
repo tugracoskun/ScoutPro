@@ -46,5 +46,14 @@ ScoutApp.prototype.formatLinks = function(text) {
 // Takım İsmi Getirici
 ScoutApp.prototype.getTeamName = function(id) {
     const t = this.state.data.teams.find(team => team.id == id);
-    return t ? t.name : 'Bilinmiyor';
+    if (!t) return 'Bilinmiyor';
+    
+    if (t.type === 'national' && t.countryId) {
+        const c = this.state.data.countries.find(x => x.id === t.countryId);
+        if (c) {
+            return `${this.getCountryName(c)} ${t.name}`;
+        }
+    }
+    
+    return t.name;
 };
