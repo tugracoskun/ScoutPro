@@ -157,9 +157,16 @@ ScoutApp.prototype.renderTeamDetail = function (c, teamId) {
     const team = this.state.data.teams.find(t => t.id === teamId);
     if (!team) { this.navigate('database'); return; }
 
-    const league = this.state.data.leagues.find(l => l.id === team.leagueId);
-    const country = this.state.data.countries.find(co => co.id === league.countryId);
-    const teamPlayers = this.state.data.players.filter(p => p.teamId === teamId);
+    let country, leagueName;
+    if (team.type === 'national') {
+        country = this.state.data.countries.find(co => co.id === team.countryId);
+        leagueName = 'Milli Takım';
+    } else {
+        const league = this.state.data.leagues.find(l => l.id === team.leagueId);
+        country = this.state.data.countries.find(co => co.id === (league ? league.countryId : team.countryId));
+        leagueName = league ? league.name : 'Lig Belirsiz';
+    }
+    const teamPlayers = this.state.data.players.filter(p => p.teamId === teamId || p.nationalTeamId === teamId);
 
     c.innerHTML = `
         <div class="space-y-8 fade-in max-w-6xl mx-auto">
@@ -167,15 +174,15 @@ ScoutApp.prototype.renderTeamDetail = function (c, teamId) {
             <div class="bg-dark-900 border border-dark-800 rounded-3xl p-8 relative overflow-hidden">
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-8 relative z-10">
                     <div class="w-32 h-32 rounded-2xl bg-dark-950 flex items-center justify-center text-6xl shadow-2xl border border-dark-800 overflow-hidden">
-                        ${this.getLogoDisplayHTML(team.logo, "w-full h-full object-cover")}
+                        ${this.getLogoDisplayHTML(team.logo, "w-full h-full object-contain p-2")}
                     </div>
                     <div class="flex-1 text-center md:text-left space-y-4">
                         <div>
                             <h2 class="text-4xl font-bold text-white mb-1">${team.name}</h2>
                             <div class="flex items-center justify-center md:justify-start gap-2 text-slate-400">
-                                <div class="w-5 h-4 flex items-center justify-center overflow-hidden">${this.getLogoDisplayHTML(country.flag)}</div> <span>${this.getCountryName(country)}</span>
+                                <div class="w-5 h-4 flex items-center justify-center overflow-hidden">${country ? this.getLogoDisplayHTML(country.flag) : ''}</div> <span>${country ? this.getCountryName(country) : 'Bilinmeyen Ülke'}</span>
                                 <span class="w-1 h-1 bg-slate-600 rounded-full"></span>
-                                <span>${league.name}</span>
+                                <span>${leagueName}</span>
                             </div>
                         </div>
                         <div class="flex flex-wrap justify-center md:justify-start gap-3">
