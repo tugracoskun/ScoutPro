@@ -24,6 +24,18 @@ body {
     to { opacity: 1; transform: translateY(0); } 
 }
 
+.slide-in-left { animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.slide-in-right { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
 /* Sidebar Transitions */
 #sidebar { transition: width 0.3s ease; }
 .sidebar-text { transition: opacity 0.2s; white-space: nowrap; overflow: hidden; }
