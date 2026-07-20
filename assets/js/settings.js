@@ -24,14 +24,26 @@ ScoutApp.prototype.renderSettings = function(c) {
                 <div class="p-6 border-b border-dark-800"><h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="globe" class="text-scout-500"></i> ${t('language')}</h3></div>
                 <div class="p-6 space-y-4">
                     <p class="text-sm text-slate-400 mb-4">${t('language_desc')}</p>
-                    <select id="lang-select" onchange="app.changeLanguage(this.value)" class="w-full bg-dark-950 border border-dark-800 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none appearance-none text-sm cursor-pointer">
-                        <option value="tr" ${window.getLang() === 'tr' ? 'selected' : ''}>Türkçe</option>
-                        <option value="en" ${window.getLang() === 'en' ? 'selected' : ''}>English</option>
-                    </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button onclick="app.changeLanguage('tr')" class="p-4 rounded-xl border flex items-center justify-between transition-colors ${window.getLang() === 'tr' ? 'bg-scout-500/10 border-scout-500 text-scout-400' : 'bg-dark-950 border-dark-800 text-slate-400 hover:border-scout-500/50 hover:bg-dark-800'}">
+                            <div class="flex items-center gap-3">
+                                <img src="https://flagcdn.com/w40/tr.png" class="w-6 h-4 rounded-sm shadow-sm object-cover" alt="TR">
+                                <span class="font-bold text-white">Türkçe</span>
+                            </div>
+                            ${window.getLang() === 'tr' ? '<i data-lucide="check-circle-2" class="w-5 h-5"></i>' : ''}
+                        </button>
+                        <button onclick="app.changeLanguage('en')" class="p-4 rounded-xl border flex items-center justify-between transition-colors ${window.getLang() === 'en' ? 'bg-scout-500/10 border-scout-500 text-scout-400' : 'bg-dark-950 border-dark-800 text-slate-400 hover:border-scout-500/50 hover:bg-dark-800'}">
+                            <div class="flex items-center gap-3">
+                                <img src="https://flagcdn.com/w40/gb.png" class="w-6 h-4 rounded-sm shadow-sm object-cover" alt="GB">
+                                <span class="font-bold text-white">English</span>
+                            </div>
+                            ${window.getLang() === 'en' ? '<i data-lucide="check-circle-2" class="w-5 h-5"></i>' : ''}
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <button onclick="window.location.reload()" class="w-full p-4 bg-red-900/10 border border-red-900/30 rounded-xl hover:bg-red-900/20 text-red-400 transition-colors flex items-center justify-center gap-2"><i data-lucide="refresh-cw" class="w-5 h-5"></i> Uygulamayı Yeniden Başlat</button>
+            <button id="restart-app-btn" onclick="app.restartApp()" class="w-full p-4 bg-red-900/10 border border-red-900/30 rounded-xl hover:bg-red-900/20 text-red-400 transition-all duration-300 flex items-center justify-center gap-2"><i data-lucide="refresh-cw" class="w-5 h-5"></i> Uygulamayı Yeniden Başlat</button>
         </div>
     `;
 };
@@ -54,4 +66,44 @@ ScoutApp.prototype.restoreData = async function() {
             this.notify("Yükleme hatası: " + result.error);
         }
     });
+};
+
+ScoutApp.prototype.changeLanguage = function(lang) {
+    if (window.setLang) {
+        window.setLang(lang);
+        this.navigate(this.state.activePage, this.state.lastParams);
+        this.updateSidebarUI();
+        
+        setTimeout(() => {
+            const restartBtn = document.getElementById('restart-app-btn');
+            if (restartBtn) {
+                restartBtn.classList.add('animate-pulse', 'ring-4', 'ring-red-500/50');
+                setTimeout(() => restartBtn.classList.remove('animate-pulse', 'ring-4', 'ring-red-500/50'), 1500);
+            }
+        }, 50);
+    }
+};
+
+ScoutApp.prototype.restartApp = function() {
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-dark-950 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500 opacity-0 backdrop-blur-sm';
+    overlay.innerHTML = `
+        <div class="w-16 h-16 border-4 border-scout-500/20 border-t-scout-500 rounded-full animate-spin mb-6"></div>
+        <div class="text-white font-bold text-xl drop-shadow-md">${window.getLang() === 'en' ? 'Restarting...' : 'Yeniden Başlatılıyor...'}</div>
+        <div class="text-slate-500 text-sm mt-2">${window.getLang() === 'en' ? 'Please wait' : 'Lütfen bekleyin'}</div>
+    `;
+    document.body.appendChild(overlay);
+    
+    // Trigger fade in animation
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            overlay.classList.remove('opacity-0');
+            overlay.classList.add('opacity-100');
+        });
+    });
+    
+    // Hard reload after transition completes
+    setTimeout(() => {
+        window.location.reload();
+    }, 600);
 };
