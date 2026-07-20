@@ -25,10 +25,10 @@ ScoutApp.prototype.renderMatches = function(c) {
             </h2>
             <div class="flex bg-dark-950 border border-dark-800 rounded-xl p-1.5 shadow-xl">
                 <button onclick="app.setMatchesView('list')" class="px-5 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${this.state.matchesViewMode === 'list' ? 'bg-scout-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-dark-800'}">
-                    <i data-lucide="list" class="w-4 h-4"></i> Liste
+                    <i data-lucide="list" class="w-4 h-4"></i> ${t('view_list')}
                 </button>
                 <button onclick="app.setMatchesView('calendar')" class="px-5 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${this.state.matchesViewMode === 'calendar' ? 'bg-scout-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-dark-800'}">
-                    <i data-lucide="calendar" class="w-4 h-4"></i> Takvim
+                    <i data-lucide="calendar" class="w-4 h-4"></i> ${t('view_calendar')}
                 </button>
             </div>
         </div>
@@ -84,7 +84,7 @@ ScoutApp.prototype.renderMatchesList = function(c, headerHtml, allTeams, allTarg
                             <button onclick="app.openQuickAddTeamModal()" class="h-[46px] w-[46px] bg-dark-950 hover:bg-dark-800 rounded-xl border border-dark-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors shrink-0" title="${t('add_team')}"><i data-lucide="plus"></i></button>
                         </div>
                         <div class="flex items-end gap-2">
-                            <div class="flex-1">${this.createCustomSearchSelect('m-league', 'Lig / Turnuva', 'Lig Seçin...', allLeagues)}</div>
+                            <div class="flex-1">${this.createCustomSearchSelect('m-league', t('league_tournament'), t('select_league'), allLeagues)}</div>
                             <button onclick="app.navigate('database')" class="h-[46px] w-[46px] bg-dark-950 hover:bg-dark-800 rounded-xl border border-dark-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors shrink-0" title="Yeni Lig Ekle (Veritabanına Git)"><i data-lucide="plus-square"></i></button>
                         </div>
                     </div>
@@ -97,11 +97,11 @@ ScoutApp.prototype.renderMatchesList = function(c, headerHtml, allTeams, allTarg
                     <div class="md:col-span-2 bg-dark-950/50 p-4 rounded-2xl border border-dark-800 transition-all">
                         <div class="flex items-center gap-3">
                             <input type="checkbox" id="m-is-stadium" class="w-5 h-5 accent-scout-500 cursor-pointer" onchange="app.toggleStadiumFields('m')">
-                            <label for="m-is-stadium" class="text-white font-bold cursor-pointer select-none">Stadyumda (Canlı) İzleyeceğim</label>
+                            <label for="m-is-stadium" class="text-white font-bold cursor-pointer select-none">${t('watch_live_stadium')}</label>
                         </div>
                         <div id="m-stadium-fields" class="hidden grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-dark-800">
-                            ${this.createInput('m-stadium-name', 'Stadyum Adı', 'Örn: Vodafone Park')}
-                            ${this.createInput('m-stadium-link', 'Maps Linki', 'https://maps.app.goo.gl/...')}
+                            ${this.createInput('m-stadium-name', t('stadium_name'), t('ex_stadium'))}
+                            ${this.createInput('m-stadium-link', t('maps_link'), 'https://maps.app.goo.gl/...')}
                         </div>
                     </div>
                     
@@ -123,7 +123,7 @@ ScoutApp.prototype.renderMatchesList = function(c, headerHtml, allTeams, allTarg
                 </div>
             </div>
 
-            <!-- Maç Listesi -->
+            <!-- Maç ${t('view_list')}si -->
             <div class="flex justify-between items-center mt-10 mb-4">
                 <h3 class="text-2xl font-bold text-white flex items-center gap-2"><i data-lucide="calendar-check" class="text-scout-400 w-6 h-6"></i> ${t('watchlist_title')}</h3>
                 <span class="text-xs font-bold text-slate-400 bg-dark-900 px-3 py-1.5 rounded-lg border border-dark-800">${this.state.data.matches.length} Maç</span>
@@ -159,11 +159,11 @@ ScoutApp.prototype.renderMatchesCalendar = function(c, headerHtml, allTeams, all
         matchMap[dateKey].push(m);
     });
 
-    const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-    const dayNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+    const monthNames = t('month_names').split(',');
+    const dayNames = t('day_names').split(',');
 
     let selectedDateStr = null;
-    let selectedMatchesHtml = `<div class="flex flex-col items-center justify-center py-24 text-slate-500 gap-4"><i data-lucide="calendar-days" class="w-16 h-16 text-dark-700/50"></i><span class="font-medium text-slate-400">Takvimden bir gün seçin</span></div>`;
+    let selectedMatchesHtml = `<div class="flex flex-col items-center justify-center py-24 text-slate-500 gap-4"><i data-lucide="calendar-days" class="w-16 h-16 text-dark-700/50"></i><span class="font-medium text-slate-400">${t('select_day_calendar')}</span></div>`;
     
     if (this.state.matchesSelectedDate) {
         const sdParts = this.state.matchesSelectedDate.split('-');
@@ -187,7 +187,7 @@ ScoutApp.prototype.renderMatchesCalendar = function(c, headerHtml, allTeams, all
 
     let daysHtml = '';
     for(let i=0; i<adjustedFirstDay; i++) {
-        daysHtml += `<div class="p-2 border border-dark-800/10 bg-transparent rounded-xl"></div>`;
+        daysHtml += `<div class="aspect-square min-h-[70px] p-2 border border-dark-800/10 bg-transparent rounded-xl"></div>`;
     }
     
     for(let day=1; day<=daysInMonth; day++) {
@@ -201,7 +201,7 @@ ScoutApp.prototype.renderMatchesCalendar = function(c, headerHtml, allTeams, all
         const indicators = hasMatch ? `<div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">${matchMap[currentKey].map((_, idx) => idx<3 ? `<div class="w-1.5 h-1.5 rounded-full bg-scout-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]"></div>` : (idx===3 ? `<div class="w-1 h-1 rounded-full bg-scout-500 opacity-50"></div>` : '')).join('')}</div>` : '';
         
         daysHtml += `
-            <div onclick="app.selectCalendarDate('${currentKey}')" class="relative min-h-[90px] p-2 border ${isSelected ? 'border-scout-500 bg-scout-500/10 shadow-[0_0_15px_rgba(34,197,94,0.1)]' : (isToday ? 'border-slate-500 bg-dark-800' : 'border-dark-800 bg-dark-900')} hover:bg-dark-800 rounded-xl cursor-pointer transition-all flex flex-col hover:border-scout-500/50 group ${isSelected?'z-10 scale-[1.03]':''}">
+            <div onclick="app.selectCalendarDate('${currentKey}')" class="relative aspect-square min-h-[70px] p-2 border ${isSelected ? 'border-scout-500 bg-scout-500/10 shadow-[0_0_15px_rgba(34,197,94,0.1)]' : (isToday ? 'border-slate-500 bg-dark-800' : 'border-dark-800 bg-dark-900')} hover:bg-dark-800 rounded-xl cursor-pointer transition-all flex flex-col hover:border-scout-500/50 group ${isSelected?'z-10 scale-[1.03]':''}">
                 <span class="text-sm font-black ${isToday ? 'text-white' : 'text-slate-400'} group-hover:text-white transition-colors ${isSelected?'text-scout-400':''} ml-1">${day}</span>
                 ${indicators}
             </div>
@@ -240,7 +240,7 @@ ScoutApp.prototype.renderMatchesCalendar = function(c, headerHtml, allTeams, all
                 <div class="bg-dark-900 border border-dark-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
                     
-                    <!-- Takvim Başlığı -->
+                    <!-- ${t('view_calendar')} Başlığı -->
                     <div class="flex justify-between items-center mb-8 relative z-10">
                         <h3 class="text-3xl font-black text-white capitalize">${monthNames[month]} ${year}</h3>
                         <div class="flex gap-2 bg-dark-950 p-1 rounded-xl border border-dark-800">
@@ -249,7 +249,7 @@ ScoutApp.prototype.renderMatchesCalendar = function(c, headerHtml, allTeams, all
                         </div>
                     </div>
                     
-                    <!-- Takvim Grid -->
+                    <!-- ${t('view_calendar')} Grid -->
                     <div class="grid grid-cols-7 gap-3 relative z-10">
                         ${dayNames.map(d => `<div class="text-center text-sm font-bold text-slate-500 mb-2 uppercase">${d}</div>`).join('')}
                         ${daysHtml}
@@ -446,7 +446,7 @@ ScoutApp.prototype.openCalendarAddMatchModal = function() {
                 </div>
                 
                 <div class="flex items-end gap-2">
-                    <div class="flex-1">${this.createCustomSearchSelect('modal-m-league', 'Lig / Turnuva', 'Lig Seçin...', allLeagues)}</div>
+                    <div class="flex-1">${this.createCustomSearchSelect('modal-m-league', t('league_tournament'), t('select_league'), allLeagues)}</div>
                     <button onclick="app.closeModal(); app.navigate('database');" class="h-[46px] w-[46px] bg-dark-950 hover:bg-dark-800 rounded-xl border border-dark-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors shrink-0" title="Yeni Lig Ekle (Veritabanına Git)"><i data-lucide="plus-square"></i></button>
                 </div>
 
@@ -460,11 +460,11 @@ ScoutApp.prototype.openCalendarAddMatchModal = function() {
                 <div class="bg-dark-950 p-4 rounded-xl border border-dark-800 transition-all">
                     <div class="flex items-center gap-3">
                         <input type="checkbox" id="modal-m-is-stadium" class="w-5 h-5 accent-scout-500 cursor-pointer" onchange="app.toggleStadiumFields('modal-m')">
-                        <label for="modal-m-is-stadium" class="text-white font-bold cursor-pointer select-none">Stadyumda (Canlı) İzleyeceğim</label>
+                        <label for="modal-m-is-stadium" class="text-white font-bold cursor-pointer select-none">${t('watch_live_stadium')}</label>
                     </div>
                     <div id="modal-m-stadium-fields" class="hidden grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-dark-800">
-                        ${this.createInput('modal-m-stadium-name', 'Stadyum Adı', 'Örn: Vodafone Park')}
-                        ${this.createInput('modal-m-stadium-link', 'Maps Linki', 'https://maps.app.goo.gl/...')}
+                        ${this.createInput('modal-m-stadium-name', t('stadium_name'), t('ex_stadium'))}
+                        ${this.createInput('modal-m-stadium-link', t('maps_link'), 'https://maps.app.goo.gl/...')}
                     </div>
                 </div>
 
@@ -566,7 +566,7 @@ ScoutApp.prototype.openEditMatchModal = function(id) {
                 </div>
                 
                 <div class="flex items-end gap-2">
-                    <div class="flex-1">${this.createCustomSearchSelect('edit-m-league', 'Lig / Turnuva', 'Lig Seçin...', allLeagues, m.league || '')}</div>
+                    <div class="flex-1">${this.createCustomSearchSelect('edit-m-league', t('league_tournament'), t('select_league'), allLeagues, m.league || '')}</div>
                     <button onclick="app.closeModal(); app.navigate('database');" class="h-[46px] w-[46px] bg-dark-950 hover:bg-dark-800 rounded-xl border border-dark-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors shrink-0" title="Yeni Lig Ekle (Veritabanına Git)"><i data-lucide="plus-square"></i></button>
                 </div>
 
@@ -579,11 +579,11 @@ ScoutApp.prototype.openEditMatchModal = function(id) {
                 <div class="bg-dark-950 p-4 rounded-xl border border-dark-800 transition-all">
                     <div class="flex items-center gap-3">
                         <input type="checkbox" id="edit-m-is-stadium" class="w-5 h-5 accent-scout-500 cursor-pointer" onchange="app.toggleStadiumFields('edit-m')" ${m.isStadium ? 'checked':''}>
-                        <label for="edit-m-is-stadium" class="text-white font-bold cursor-pointer select-none">Stadyumda (Canlı) İzleyeceğim</label>
+                        <label for="edit-m-is-stadium" class="text-white font-bold cursor-pointer select-none">${t('watch_live_stadium')}</label>
                     </div>
                     <div id="edit-m-stadium-fields" class="${m.isStadium ? 'grid' : 'hidden'} grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-dark-800">
-                        ${this.createInput('edit-m-stadium-name', 'Stadyum Adı', 'Örn: Vodafone Park', 'text', m.stadiumName || '')}
-                        ${this.createInput('edit-m-stadium-link', 'Maps Linki', 'https://maps.app.goo.gl/...', 'text', m.stadiumLink || '')}
+                        ${this.createInput('edit-m-stadium-name', t('stadium_name'), t('ex_stadium'), 'text', m.stadiumName || '')}
+                        ${this.createInput('edit-m-stadium-link', t('maps_link'), 'https://maps.app.goo.gl/...', 'text', m.stadiumLink || '')}
                     </div>
                 </div>
                 

@@ -2,6 +2,18 @@
 
 const translations = {
     tr: {
+        view_list: "Liste",
+        view_calendar: "Takvim",
+        league_tournament: "Lig / Turnuva",
+        select_league: "Lig Seçin...",
+        watch_live_stadium: "Stadyumda (Canlı) İzleyeceğim",
+        stadium_name: "Stadyum Adı",
+        ex_stadium: "Örn: Vodafone Park",
+        maps_link: "Maps Linki",
+        select_day_calendar: "Takvimden bir gün seçin",
+        add_new_league: "Yeni Lig Ekle (Veritabanına Git)",
+        month_names: "Ocak,Şubat,Mart,Nisan,Mayıs,Haziran,Temmuz,Ağustos,Eylül,Ekim,Kasım,Aralık",
+        day_names: "Pzt,Sal,Çar,Per,Cum,Cmt,Paz",
         // --- Sidebar & Layout ---
         section_operation: "Operasyon",
         section_database: "Veritabanı",
@@ -215,6 +227,18 @@ const translations = {
         read_understood: "Okudum, Anladım"
     },
     en: {
+        view_list: "List",
+        view_calendar: "Calendar",
+        league_tournament: "League / Tournament",
+        select_league: "Select League...",
+        watch_live_stadium: "I will watch at the stadium (Live)",
+        stadium_name: "Stadium Name",
+        ex_stadium: "e.g. Anfield",
+        maps_link: "Maps Link",
+        select_day_calendar: "Select a day from the calendar",
+        add_new_league: "Add New League (Go to Database)",
+        month_names: "January,February,March,April,May,June,July,August,September,October,November,December",
+        day_names: "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
         // --- Sidebar & Layout ---
         section_operation: "Operation",
         section_database: "Database",
