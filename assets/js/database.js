@@ -60,11 +60,24 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                                             <div>
                                                 <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2"><i data-lucide="building-2" class="w-3.5 h-3.5"></i> Kulüp Takımları</h4>
                                                 <div class="grid grid-cols-1 gap-4">
-                                                    ${leagues.map(league => {
+                                                    ${[...leagues].sort((a, b) => (a.sortOrder ?? 9999) - (b.sortOrder ?? 9999)).map(league => {
                         const teams = this.state.data.teams.filter(t => t.leagueId === league.id && t.type !== 'national');
                         return `
-                                                    <div class="border border-dark-800 rounded-xl bg-dark-800/20 p-4 hover-trigger">
-                                                        <div class="flex items-center justify-between mb-3">
+                                                    <div class="border border-dark-800 rounded-xl bg-dark-800/20 p-4 hover-trigger relative group/league"
+                                                         draggable="true" 
+                                                         ondragstart="app.handleLeagueDragStart(event, ${league.id})"
+                                                         ondragover="app.handleLeagueDragOver(event)"
+                                                         ondragleave="app.handleLeagueDragLeave(event)"
+                                                         ondrop="app.handleLeagueDrop(event, ${league.id})"
+                                                         ondragend="app.handleLeagueDragEnd(event)"
+                                                         data-league-id="${league.id}">
+                                                        
+                                                        <!-- Sürükle Bırak Tutamacı -->
+                                                        <div class="absolute top-1/2 right-0 -translate-y-1/2 text-slate-600 hover:text-scout-400 opacity-0 group-hover/league:opacity-100 transition-colors cursor-grab active:cursor-grabbing flex items-center justify-center z-10 p-1 pr-2">
+                                                            <i data-lucide="grip-vertical" class="w-5 h-5"></i>
+                                                        </div>
+
+                                                        <div class="flex items-center justify-between mb-3 mt-1">
                                                             <div class="flex items-center gap-2 text-scout-400 font-semibold text-sm uppercase tracking-wider">
                                                                 <!-- Lig Logosu -->
                                                                 <div class="w-6 h-6 flex items-center justify-center">
@@ -151,6 +164,7 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
             }).join('')}
         </div>
     `;
+    setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 10);
 };
 
 ScoutApp.prototype.renderTeamDetail = function (c, teamId) {
@@ -498,4 +512,126 @@ ScoutApp.prototype.deleteTeam = function (id) {
         this.renderDatabase(document.getElementById('content-area'));
         this.notify("Takım silindi.");
     });
+};
+
+// --- LEAGUE DRAG AND DROP HANDLERS ---
+let activeLeagueDropTarget = null;
+let activeLeagueDropPosition = null;
+
+ScoutApp.prototype.handleLeagueDragStart = function(e, leagueId) {
+    e.dataTransfer.setData('text/plain', leagueId);
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => {
+        e.currentTarget.classList.add('opacity-40');
+        e.currentTarget.classList.add('scale-[0.98]');
+    }, 0);
+};
+
+ScoutApp.prototype.handleLeagueDragOver = function(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    
+    const target = e.target.closest('.group\\/league');
+    if (!target) return;
+
+    const rect = target.getBoundingClientRect();
+    const midPoint = rect.top + rect.height / 2;
+    const isTop = e.clientY < midPoint;
+    const newPos = isTop ? 'top' : 'bottom';
+    
+    if (activeLeagueDropTarget !== target || activeLeagueDropPosition !== newPos) {
+        if (activeLeagueDropTarget) {
+            activeLeagueDropTarget.style.boxShadow = '';
+            activeLeagueDropTarget.style.transform = '';
+        }
+        
+        activeLeagueDropTarget = target;
+        activeLeagueDropPosition = newPos;
+        
+        // Spotify style green line insertion indicator
+        activeLeagueDropTarget.style.boxShadow = isTop 
+            ? '0 -3px 0 0 #22c55e, 0 -8px 15px -3px rgba(34, 197, 94, 0.3)'
+            : '0 3px 0 0 #22c55e, 0 8px 15px -3px rgba(34, 197, 94, 0.3)';
+            
+        // Subtle push effect on target
+        activeLeagueDropTarget.style.transform = isTop ? 'translateY(4px)' : 'translateY(-4px)';
+        activeLeagueDropTarget.style.transition = 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
+    }
+};
+
+ScoutApp.prototype.handleLeagueDragLeave = function(e) {
+    const target = e.target.closest('.group\\/league');
+    if (target && e.relatedTarget && !target.contains(e.relatedTarget)) {
+        if (activeLeagueDropTarget === target) {
+            activeLeagueDropTarget.style.boxShadow = '';
+            activeLeagueDropTarget.style.transform = '';
+            activeLeagueDropTarget = null;
+            activeLeagueDropPosition = null;
+        }
+    }
+};
+
+ScoutApp.prototype.handleLeagueDrop = function(e, targetLeagueId) {
+    e.preventDefault();
+    
+    let insertPosition = 'top';
+    if (activeLeagueDropTarget) {
+        insertPosition = activeLeagueDropPosition;
+        activeLeagueDropTarget.style.boxShadow = '';
+        activeLeagueDropTarget.style.transform = '';
+        activeLeagueDropTarget = null;
+        activeLeagueDropPosition = null;
+    }
+    
+    const draggedLeagueId = parseInt(e.dataTransfer.getData('text/plain'));
+    if (!draggedLeagueId || draggedLeagueId === targetLeagueId) return;
+
+    const draggedLeague = this.state.data.leagues.find(l => l.id === draggedLeagueId);
+    const targetLeague = this.state.data.leagues.find(l => l.id === targetLeagueId);
+    
+    if (!draggedLeague || !targetLeague || draggedLeague.countryId !== targetLeague.countryId) return;
+
+    let countryLeagues = this.state.data.leagues
+        .filter(l => l.countryId === draggedLeague.countryId)
+        .sort((a, b) => (a.sortOrder ?? 9999) - (b.sortOrder ?? 9999));
+        
+    countryLeagues = countryLeagues.filter(l => l.id !== draggedLeagueId);
+    
+    let targetIndex = countryLeagues.findIndex(l => l.id === targetLeagueId);
+    
+    if (insertPosition === 'bottom') {
+        targetIndex += 1;
+    }
+    
+    countryLeagues.splice(targetIndex, 0, draggedLeague);
+    
+    countryLeagues.forEach((l, index) => {
+        const masterL = this.state.data.leagues.find(x => x.id === l.id);
+        if (masterL) masterL.sortOrder = index;
+    });
+
+    this.saveData();
+    
+    // Instead of re-rendering the whole page and causing a flash, we just move the DOM element natively
+    const draggedEl = document.querySelector(`[data-league-id="${draggedLeagueId}"]`);
+    const targetEl = document.querySelector(`[data-league-id="${targetLeagueId}"]`);
+    
+    if (draggedEl && targetEl) {
+        if (insertPosition === 'bottom') {
+            targetEl.after(draggedEl);
+        } else {
+            targetEl.before(draggedEl);
+        }
+    }
+};
+
+ScoutApp.prototype.handleLeagueDragEnd = function(e) {
+    e.currentTarget.classList.remove('opacity-40');
+    e.currentTarget.classList.remove('scale-[0.98]');
+    if (activeLeagueDropTarget) {
+        activeLeagueDropTarget.style.boxShadow = '';
+        activeLeagueDropTarget.style.transform = '';
+        activeLeagueDropTarget = null;
+        activeLeagueDropPosition = null;
+    }
 };
