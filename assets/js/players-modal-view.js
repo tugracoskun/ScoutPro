@@ -33,9 +33,17 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
         currentAge = p.age || '?';
     }
 
-    // Uyruk Bayrağı Bulma
-    const natObj = p.nationality ? this.state.data.countries.find(c => this.getCountryName(c) === p.nationality) : null;
-    const natFlag = natObj ? natObj.flag : '';
+    // Uyruk Bayrağı Bulma ve Dil Desteği
+    let natObj = null;
+    if (p.nationality) {
+        if (typeof p.nationality === 'number' || !isNaN(p.nationality)) {
+            natObj = this.state.data.countries.find(c => c.id == p.nationality);
+        } else {
+            natObj = this.state.data.countries.find(c => this.getCountryName(c) === p.nationality || c.name === p.nationality || c.nameEn === p.nationality);
+        }
+    }
+    const natFlag = natObj ? `<img src="${natObj.flag}" class="w-5 h-3.5 object-cover rounded-[2px] shadow-sm">` : '';
+    const natName = natObj ? this.getCountryName(natObj) : (p.nationality || '-');
 
     // Diğer kolonların içeriğini al (players-modal-content.js dosyasından gelir)
     // Bu sayede dosya boyutu yönetilebilir kalır.
@@ -120,7 +128,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('birth_date')}</span><span class="text-white text-xs">${birthDatePretty}</span></div>
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('height')}</span><span class="text-white font-mono font-bold">${p.height || '-'}</span></div>
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('foot')}</span><span class="text-white font-bold">${p.foot || '-'}</span></div>
-                                ${p.nationality ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('nationality')}</span><span class="text-white flex items-center gap-1.5">${natFlag} <span class="font-bold">${p.nationality}</span></span></div>` : ''}
+                                ${p.nationality ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('nationality')}</span><span class="text-white flex items-center gap-1.5">${natFlag} <span class="font-bold">${natName}</span></span></div>` : ''}
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('report_date')}</span><span class="text-white font-mono text-xs opacity-70">${currentReport.date}</span></div>
                                 ${currentReport.source ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('source')}</span><span class="text-white text-xs text-right max-w-[60%] truncate" title="${currentReport.source}">${currentReport.source}</span></div>` : ''}
                             </div>

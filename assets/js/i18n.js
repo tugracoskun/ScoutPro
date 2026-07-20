@@ -450,7 +450,7 @@ window.tPos = function(pos) {
 // Ülke adı getirme yardımcısı
 ScoutApp.prototype.getCountryName = function(country) {
     if (!country) return '';
-    if (this.currentLang === 'en' && country.nameEn) {
+    if (window.getLang() === 'en' && country.nameEn) {
         return country.nameEn;
     }
     return country.name;

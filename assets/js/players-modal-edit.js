@@ -34,7 +34,7 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">
-                    ${this.createDatalistInput('edit-p-nationality', 'countries-edit-datalist', t('nationality'), t('nat_search_ph'), [...this.state.data.countries].sort((a,b) => b.isFavorite - a.isFavorite || this.getCountryName(a).localeCompare(this.getCountryName(b))).map(c => ({val: c.id, txt: this.getCountryName(c)})), p.nationality)}
+                    ${this.createDatalistInput('edit-p-nationality', 'countries-edit-datalist', t('nationality'), t('nat_search_ph'), [...this.state.data.countries].sort((a,b) => b.isFavorite - a.isFavorite || this.getCountryName(a).localeCompare(this.getCountryName(b))).map(c => ({val: c.id, txt: this.getCountryName(c)})), p.nationality ? this.getCountryName(this.state.data.countries.find(c => c.name === p.nationality || c.nameEn === p.nationality || c.id == p.nationality) || {name: p.nationality}) : '')}
                     
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-slate-400 ml-1">${t('potential')}</label>
