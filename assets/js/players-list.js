@@ -15,7 +15,8 @@ ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
         const term = this.state.searchTerm.toLowerCase();
         filtered = filtered.filter(p => 
             p.name.toLowerCase().includes(term) || 
-            this.getTeamName(p.teamId).toLowerCase().includes(term)
+            (p.teamId && this.getTeamName(p.teamId).toLowerCase().includes(term)) ||
+            (p.nationalTeamId && this.getTeamName(p.nationalTeamId).toLowerCase().includes(term))
         );
     }
 
@@ -85,7 +86,7 @@ ScoutApp.prototype.getPlayerCardHTML = function(p) {
                     <div class="flex-1 min-w-0 pr-8">
                         <h4 class="font-bold text-white text-lg leading-tight truncate">${p.name}</h4>
                         <div class="text-xs text-scout-400 font-medium mt-1">${p.position}</div>
-                        <div class="text-xs text-slate-500 mt-0.5 truncate">${this.getTeamName(p.teamId)}</div>
+                        <div class="text-xs text-slate-500 mt-0.5 truncate">${p.teamId ? this.getTeamName(p.teamId) : ''}${p.teamId && p.nationalTeamId ? ' - ' : ''}${p.nationalTeamId ? this.getTeamName(p.nationalTeamId) : ''}</div>
                     </div>
                 </div>
                 

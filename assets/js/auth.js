@@ -20,6 +20,20 @@ class AuthManager {
                     });
                     this.saveUserData(); // Güncellenmiş listeyi kaydet
                 }
+
+                // MIGRATION: Takımlara type ekle (varsayılan: club)
+                let teamsUpdated = false;
+                if (this.app.state.data.teams) {
+                    this.app.state.data.teams.forEach(t => {
+                        if (!t.type) {
+                            t.type = 'club';
+                            teamsUpdated = true;
+                        }
+                    });
+                }
+                if (teamsUpdated) {
+                    this.saveUserData();
+                }
                 
                 console.log("Veriler dosyadan yüklendi.");
             } else {

@@ -4,7 +4,8 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
     const p = this.state.data.players.find(x => x.id === id);
     if (!p) return;
 
-    const teams = this.state.data.teams.map(t=>({val:t.id, txt:t.name, icon: t.logo}));
+    const teams = this.state.data.teams.filter(t => t.type !== 'national').map(t=>({val:t.id, txt:t.name, icon: t.logo}));
+    const nationalTeams = this.state.data.teams.filter(t => t.type === 'national').map(t=>({val:t.id, txt:t.name, icon: t.logo}));
     const container = document.getElementById('modal-content-body');
     
     container.innerHTML = `
@@ -18,13 +19,17 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
                 ${this.createInput('edit-p-name', t('player_name'), 'Ad Soyad', 'text', p.name)}
                 
                 <div class="grid grid-cols-2 gap-4">
-                    ${this.createCustomSearchSelect('edit-p-team', t('team'), t('team') + ' Ara...', teams, p.teamId)}
-                    ${this.createSelect('edit-p-pos', t('position'), POSITIONS.map(x=>({val:x, txt:tPos(x)})), p.position)}
+                    ${this.createCustomSearchSelect('edit-p-team', 'Kulüp Takımı', 'Kulüp Ara...', teams, p.teamId)}
+                    ${this.createCustomSearchSelect('edit-p-national-team', 'Milli Takımı', 'Milli Takım Ara...', nationalTeams, p.nationalTeamId)}
                 </div>
 
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-4 gap-4">
+                    <!-- POZİSYON -->
+                    <div class="col-span-1">
+                        ${this.createSelect('edit-p-pos', t('position'), POSITIONS.map(x=>({val:x, txt:tPos(x)})), p.position)}
+                    </div>
                     <!-- YAŞ YERİNE DOĞUM TARİHİ -->
-                    <div class="flex flex-col gap-1.5 relative z-10">
+                    <div class="col-span-1 flex flex-col gap-1.5 relative z-10">
                         <label class="text-xs font-bold text-slate-400 ml-1">${t('birth_date')}</label>
                         <input type="date" id="edit-p-birth" value="${p.birthDate || ''}" onchange="app.handleEditBirthDateChange(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none text-sm relative z-20">
                     </div>
@@ -88,13 +93,15 @@ ScoutApp.prototype.updatePlayer = function(id) {
 
     const name = document.getElementById('edit-p-name').value.trim();
     const teamId = document.getElementById('edit-p-team').value;
+    const nationalTeamId = document.getElementById('edit-p-national-team').value;
     const birthDate = document.getElementById('edit-p-birth').value;
     
-    if (!name || !teamId) return alert(t('err_incomplete'));
+    if (!name || (!teamId && !nationalTeamId)) return alert("Oyuncuya en az bir kulüp veya milli takım atanmalıdır.");
     if (!birthDate) return alert(t('err_incomplete'));
 
     p.name = name;
-    p.teamId = parseInt(teamId);
+    p.teamId = teamId ? parseInt(teamId) : null;
+    p.nationalTeamId = nationalTeamId ? parseInt(nationalTeamId) : null;
     p.position = document.getElementById('edit-p-pos').value;
     p.birthDate = birthDate; // Tarihi kaydet
     
