@@ -4,7 +4,7 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
     const p = this.state.data.players.find(x => x.id === id);
     if (!p) return;
 
-    const teams = this.state.data.teams.map(t=>({val:t.id, txt:t.name}));
+    const teams = this.state.data.teams.map(t=>({val:t.id, txt:t.name, icon: t.logo}));
     const container = document.getElementById('modal-content-body');
     
     container.innerHTML = `
@@ -18,7 +18,7 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
                 ${this.createInput('edit-p-name', t('player_name'), 'Ad Soyad', 'text', p.name)}
                 
                 <div class="grid grid-cols-2 gap-4">
-                    ${this.createSelect('edit-p-team', t('team'), teams, p.teamId)}
+                    ${this.createCustomSearchSelect('edit-p-team', t('team'), t('team') + ' Ara...', teams, p.teamId)}
                     ${this.createSelect('edit-p-pos', t('position'), POSITIONS.map(x=>({val:x, txt:tPos(x)})), p.position)}
                 </div>
 

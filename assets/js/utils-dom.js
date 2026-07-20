@@ -91,8 +91,8 @@ ScoutApp.prototype.createCustomSearchSelect = function(id, label, ph, options, v
                 
                 <input type="text" id="${id}-input" value="${displayValue}" placeholder="${ph}" 
                     autocomplete="off"
-                    onfocus="document.getElementById('${id}-dropdown').classList.remove('hidden')"
-                    onblur="setTimeout(() => document.getElementById('${id}-dropdown').classList.add('hidden'), 200)"
+                    onfocus="document.getElementById('${id}-dropdown').classList.remove('hidden'); document.getElementById('${id}-container').classList.replace('z-30', 'z-50');"
+                    onblur="setTimeout(() => { document.getElementById('${id}-dropdown').classList.add('hidden'); document.getElementById('${id}-container').classList.replace('z-50', 'z-30'); }, 200)"
                     oninput="app.filterCustomSelect('${id}', this.value, \`${evt}\`)"
                     class="w-full bg-dark-950 border border-dark-700 rounded-xl ${displayIcon ? 'pl-11' : 'pl-10'} pr-10 py-3 text-white focus:border-scout-500 focus:ring-1 focus:ring-scout-500 outline-none transition-all placeholder:text-slate-600 text-sm">
                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
@@ -116,7 +116,7 @@ ScoutApp.prototype.handleCustomSelect = function(id, val, text, icon, evtCode) {
     const textInput = document.getElementById(`${id}-input`);
     const iconContainer = document.getElementById(`${id}-icon-container`);
     
-    hiddenInput.value = text; // or val, keeping text to match previous saving format
+    hiddenInput.value = val; // Set the actual ID/value
     textInput.value = text;
     
     if (icon) {
@@ -132,27 +132,19 @@ ScoutApp.prototype.handleCustomSelect = function(id, val, text, icon, evtCode) {
     document.getElementById(`${id}-dropdown`).classList.add('hidden');
     
     if (evtCode) {
-        const dummyInput = { value: text }; // Simulate standard input for the callback
+        const dummyInput = { value: val }; // Pass the actual ID/value to callback
         const callbackFn = new Function('value', evtCode.replace('this.value', 'value'));
-        callbackFn.call(dummyInput, text);
+        callbackFn.call(dummyInput, val);
     }
 };
 
 ScoutApp.prototype.filterCustomSelect = function(id, query, evtCode) {
     const list = document.getElementById(`${id}-list`);
     const empty = document.getElementById(`${id}-empty`);
-    const hiddenInput = document.getElementById(id);
     const iconContainer = document.getElementById(`${id}-icon-container`);
     const textInput = document.getElementById(`${id}-input`);
     
     if(!list) return;
-
-    // Trigger update logic so user can also type a new country
-    hiddenInput.value = query;
-    if (evtCode) {
-        const callbackFn = new Function('value', evtCode.replace('this.value', 'value'));
-        callbackFn.call({ value: query }, query);
-    }
 
     const items = list.children;
     let hasVisible = false;

@@ -2,7 +2,7 @@
 
 // 1. ANA GÖRÜNÜM (RENDER)
 ScoutApp.prototype.renderNewReport = function(c) {
-    const teams = this.state.data.teams.map(t=>({val:t.id, txt:t.name}));
+    const teams = this.state.data.teams.map(t=>({val:t.id, txt:t.name, icon: t.logo}));
     const currentPos = this.state.newReport.position;
 
     c.innerHTML = `
@@ -15,7 +15,7 @@ ScoutApp.prototype.renderNewReport = function(c) {
                     ${this.createInput('rep-name', t('player_name'), 'Örn: Semih', 'text', this.state.newReport.name, "app.updateRep('name', this.value)")}
                     
                     ${teams.length > 0 
-                        ? this.createSelect('rep-team', t('team'), teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") 
+                        ? this.createCustomSearchSelect('rep-team', t('team'), t('team') + ' Ara...', teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") 
                         : '<div class="p-3 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-xs">' + t('db_empty') + '</div>'}
                     
                     ${this.createCustomSearchSelect('rep-nationality', t('nationality'), t('nat_search_ph'), [...this.state.data.countries].sort((a,b) => b.isFavorite - a.isFavorite || this.getCountryName(a).localeCompare(this.getCountryName(b))).map(c => ({val: c.id, txt: this.getCountryName(c), icon: c.flag})), this.state.newReport.nationality, "app.updateRep('nationality', this.value)")}
