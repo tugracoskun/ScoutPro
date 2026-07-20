@@ -361,14 +361,14 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                         <div class="w-7 h-7 rounded-full bg-dark-900 border border-dark-800 flex items-center justify-center"><i data-lucide="eye" class="w-3.5 h-3.5 text-slate-600"></i></div>
                         <span class="text-xs font-medium text-slate-500 italic w-full">${t('general_tracking')}</span>
                     `}
-                    ${m.sofaUrl ? `<button onclick="app.openExternal('${m.sofaUrl}'); event.stopPropagation();" class="text-blue-400 hover:text-blue-300 transition-colors text-xs flex items-center gap-1 bg-dark-950 px-2 py-1 rounded-md border border-dark-800"><i data-lucide="external-link" class="w-3 h-3"></i> SofaScore</button>` : ''}
+                    ${m.sofaUrl ? `<button onclick="app.openExternal('${m.sofaUrl}'); event.stopPropagation();" class="text-blue-400 hover:text-blue-300 transition-colors text-xs flex items-center gap-1 bg-dark-950 px-2 py-1 rounded-md border border-dark-800"><i data-lucide="external-link" class="w-3 h-3"></i> ${t('match_link')}</button>` : ''}
                 </div>
             </div>
         `;
     }
 
     return `
-        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-5 flex flex-col md:flex-row items-center gap-6 relative group hover:border-scout-500/50 hover:bg-dark-800/30 transition-all shadow-lg hover:shadow-scout-900/10">
+        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-5 flex flex-col xl:flex-row items-center gap-6 relative group hover:border-scout-500/50 hover:bg-dark-800/30 transition-all shadow-lg hover:shadow-scout-900/10">
             <div class="absolute top-3 right-3 hidden group-hover:flex gap-2 bg-dark-950 p-1.5 rounded-xl border border-dark-700 z-10 shadow-xl">
                 <button onclick="app.openEditMatchModal(${m.id})" class="p-1.5 hover:bg-dark-800 hover:text-white rounded-lg text-slate-400 transition-colors" title="${t('edit')}"><i data-lucide="pencil" class="w-4 h-4"></i></button>
                 <button onclick="app.deleteMatch(${m.id})" class="p-1.5 hover:bg-red-900/30 hover:text-red-400 rounded-lg text-slate-400 transition-colors" title="${t('delete')}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
@@ -382,10 +382,10 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                 ${countdownBadge}
             </div>
 
-            <div class="flex-1 flex flex-col justify-center gap-2 w-full md:w-auto">
+            <div class="flex-1 flex flex-col justify-center gap-2 w-full xl:w-auto">
                 <div class="flex items-center justify-center gap-4 w-full">
                     <div class="flex items-center gap-3 w-[40%] justify-end">
-                        <span class="font-bold text-white text-right hidden md:block truncate text-lg">${h?.name || '?'}</span>
+                        <span class="font-bold text-white text-right hidden sm:block truncate text-lg">${h?.name || '?'}</span>
                         <div class="w-10 h-10 rounded-full bg-dark-950 flex items-center justify-center border-2 border-dark-700 overflow-hidden shrink-0 shadow-sm">${this.getLogoDisplayHTML(h?.logo)}</div>
                     </div>
                     <div class="flex flex-col items-center justify-center shrink-0">
@@ -394,13 +394,13 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                     </div>
                     <div class="flex items-center gap-3 w-[40%] justify-start">
                         <div class="w-10 h-10 rounded-full bg-dark-950 flex items-center justify-center border-2 border-dark-700 overflow-hidden shrink-0 shadow-sm">${this.getLogoDisplayHTML(a?.logo)}</div>
-                        <span class="font-bold text-white hidden md:block truncate text-lg">${a?.name || '?'}</span>
+                        <span class="font-bold text-white hidden sm:block truncate text-lg">${a?.name || '?'}</span>
                     </div>
                 </div>
                 ${stadiumBadge}
             </div>
             
-            <div class="w-full md:w-64 flex flex-col gap-2 shrink-0">
+            <div class="w-full xl:w-64 flex flex-col gap-2 shrink-0">
                 <div class="w-full bg-dark-950/80 rounded-xl p-3 border border-dark-800 flex items-center gap-3 ${p ? 'cursor-pointer hover:bg-dark-800 hover:border-scout-500/50 transition-colors' : ''}" 
                      ${clickAction}>
                     ${p ? `
@@ -417,7 +417,7 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                         <span class="text-sm font-medium text-slate-500 italic w-full">${t('general_tracking')}</span>
                     `}
                 </div>
-                ${m.sofaUrl ? `<button onclick="app.openExternal('${m.sofaUrl}')" class="w-full py-2 flex items-center justify-center gap-2 bg-blue-900/20 hover:bg-blue-600 border border-blue-900/50 rounded-xl text-blue-400 hover:text-white transition-colors" title="Linke Git"><i data-lucide="external-link" class="w-4 h-4"></i> SofaScore Maç Merkezi</button>` : ''}
+                ${m.sofaUrl ? `<button onclick="app.openExternal('${m.sofaUrl}')" class="w-full py-2 flex items-center justify-center gap-2 bg-blue-900/20 hover:bg-blue-600 border border-blue-900/50 rounded-xl text-blue-400 hover:text-white transition-colors" title="Linke Git"><i data-lucide="external-link" class="w-4 h-4"></i> ${t('match_link')}</button>` : ''}
             </div>
         </div>
     `;
