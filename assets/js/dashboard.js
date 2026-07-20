@@ -55,13 +55,13 @@ ScoutApp.prototype.renderDashboard = function(c) {
                         <div class="absolute -right-12 -bottom-10 w-48 h-48 opacity-[0.04] pointer-events-none transform rotate-12 blur-[1px] grayscale group-hover:grayscale-0 group-hover:opacity-[0.08] transition-all duration-500">${this.getLogoDisplayHTML(getTeamLogo(nextMatch.awayId))}</div>
                         <div class="p-5 flex flex-col h-full relative z-10">
                             <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2 drop-shadow-md"><div class="p-1.5 bg-scout-500/20 rounded-lg text-scout-400"><i data-lucide="zap" class="w-4 h-4"></i></div> ${t('dash_next_match')}</h3>
-                                <span class="px-2.5 py-1 bg-dark-950/80 border border-dark-700/50 rounded-md text-[10px] font-bold text-slate-300 font-mono backdrop-blur-sm">${new Date(nextMatch.date).toLocaleString(window.getLang()==='en'?'en-US':'tr-TR', {month:'short', day:'numeric'})}</span>
+                                <h3 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2 drop-shadow-md"><i data-lucide="calendar-days" class="w-4 h-4 text-scout-400"></i> ${t('dash_next_match')}</h3>
+                                <span class="px-2.5 py-1 bg-dark-800/50 rounded-md text-[10px] font-bold text-slate-300 font-mono">${new Date(nextMatch.date).toLocaleString(window.getLang()==='en'?'en-US':'tr-TR', {month:'short', day:'numeric'})}</span>
                             </div>
                             <div class="flex-1 flex flex-col items-center justify-center gap-5">
                                 <div class="flex items-center justify-center w-full gap-3 px-2">
                                     <div class="flex-1 text-right text-base font-black text-white truncate drop-shadow-sm">${getTeam(nextMatch.homeId)}</div>
-                                    <div class="w-7 h-7 rounded-full bg-dark-950 border border-dark-700 flex items-center justify-center text-[10px] font-bold text-slate-400 shadow-inner shrink-0">VS</div>
+                                    <div class="px-2.5 py-0.5 bg-dark-950/80 rounded text-[10px] font-black text-slate-500 shadow-inner shrink-0 tracking-wider">VS</div>
                                     <div class="flex-1 text-left text-base font-black text-white truncate drop-shadow-sm">${getTeam(nextMatch.awayId)}</div>
                                 </div>
                                 <div class="grid grid-cols-4 gap-2 w-full max-w-[220px]" id="dashboard-countdown">
