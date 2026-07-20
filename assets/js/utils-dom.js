@@ -65,6 +65,125 @@ ScoutApp.prototype.createDatalistInput = function(id, listId, label, ph, options
     return `<div class="flex flex-col gap-1.5 relative z-10"><label class="text-xs font-bold text-slate-400 ml-1">${label}</label><input list="${listId}" type="text" id="${id}" value="${safeVal}" oninput="${evt}" placeholder="${ph}" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 focus:ring-1 focus:ring-scout-500 outline-none transition-all placeholder:text-slate-600 text-sm relative z-20" autocomplete="off">${datalist}</div>`;
 };
 
+ScoutApp.prototype.createCustomSearchSelect = function(id, label, ph, options, val='', evt='') {
+    const safeVal = (val === undefined || val === null) ? '' : val;
+    const selectedOpt = options.find(o => o.txt === safeVal || o.val == safeVal);
+    const displayValue = selectedOpt ? selectedOpt.txt : safeVal;
+    const displayIcon = selectedOpt && selectedOpt.icon ? `<img src="${selectedOpt.icon}" class="w-5 h-3.5 object-cover rounded-sm">` : '';
+
+    const itemsHtml = options.map(o => `
+        <div class="px-4 py-2.5 hover:bg-dark-800 cursor-pointer flex items-center gap-3 transition-colors text-slate-300 hover:text-white"
+             onclick="app.handleCustomSelect('${id}', '${o.val}', '${o.txt.replace(/'/g, "\\'")}', '${o.icon || ''}', \`${evt}\`)">
+            ${o.icon ? `<img src="${o.icon}" class="w-5 h-3.5 object-cover rounded-sm shadow-sm">` : ''}
+            <span class="text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis">${o.txt}</span>
+        </div>
+    `).join('');
+
+    return `
+        <div class="flex flex-col gap-1.5 relative z-30" id="${id}-container" data-custom-select="true">
+            <label class="text-xs font-bold text-slate-400 ml-1">${label}</label>
+            <div class="relative">
+                <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" id="${id}-icon-container">
+                    ${displayIcon || '<i data-lucide="search" class="w-4 h-4 text-slate-500"></i>'}
+                </div>
+                <!-- Gizli input değeri tutar -->
+                <input type="hidden" id="${id}" value="${safeVal}">
+                
+                <input type="text" id="${id}-input" value="${displayValue}" placeholder="${ph}" 
+                    autocomplete="off"
+                    onfocus="document.getElementById('${id}-dropdown').classList.remove('hidden')"
+                    onblur="setTimeout(() => document.getElementById('${id}-dropdown').classList.add('hidden'), 200)"
+                    oninput="app.filterCustomSelect('${id}', this.value, \`${evt}\`)"
+                    class="w-full bg-dark-950 border border-dark-700 rounded-xl ${displayIcon ? 'pl-11' : 'pl-10'} pr-10 py-3 text-white focus:border-scout-500 focus:ring-1 focus:ring-scout-500 outline-none transition-all placeholder:text-slate-600 text-sm">
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                </div>
+            </div>
+            
+            <!-- Dropdown -->
+            <div id="${id}-dropdown" class="hidden absolute top-[calc(100%+4px)] left-0 right-0 bg-dark-950 border border-dark-700 rounded-xl shadow-2xl overflow-hidden z-50 max-h-56 overflow-y-auto custom-scrollbar">
+                <div id="${id}-list" class="flex flex-col py-1">
+                    ${itemsHtml}
+                </div>
+                <div id="${id}-empty" class="hidden px-4 py-3 text-center text-xs text-slate-500 italic">Sonuç bulunamadı.</div>
+            </div>
+        </div>
+    `;
+};
+
+ScoutApp.prototype.handleCustomSelect = function(id, val, text, icon, evtCode) {
+    const hiddenInput = document.getElementById(id);
+    const textInput = document.getElementById(`${id}-input`);
+    const iconContainer = document.getElementById(`${id}-icon-container`);
+    
+    hiddenInput.value = text; // or val, keeping text to match previous saving format
+    textInput.value = text;
+    
+    if (icon) {
+        iconContainer.innerHTML = `<img src="${icon}" class="w-5 h-3.5 object-cover rounded-sm">`;
+        textInput.classList.remove('pl-10');
+        textInput.classList.add('pl-11');
+    } else {
+        iconContainer.innerHTML = '<i data-lucide="search" class="w-4 h-4 text-slate-500"></i>';
+        textInput.classList.remove('pl-11');
+        textInput.classList.add('pl-10');
+    }
+    
+    document.getElementById(`${id}-dropdown`).classList.add('hidden');
+    
+    if (evtCode) {
+        const dummyInput = { value: text }; // Simulate standard input for the callback
+        const callbackFn = new Function('value', evtCode.replace('this.value', 'value'));
+        callbackFn.call(dummyInput, text);
+    }
+};
+
+ScoutApp.prototype.filterCustomSelect = function(id, query, evtCode) {
+    const list = document.getElementById(`${id}-list`);
+    const empty = document.getElementById(`${id}-empty`);
+    const hiddenInput = document.getElementById(id);
+    const iconContainer = document.getElementById(`${id}-icon-container`);
+    const textInput = document.getElementById(`${id}-input`);
+    
+    if(!list) return;
+
+    // Trigger update logic so user can also type a new country
+    hiddenInput.value = query;
+    if (evtCode) {
+        const callbackFn = new Function('value', evtCode.replace('this.value', 'value'));
+        callbackFn.call({ value: query }, query);
+    }
+
+    const items = list.children;
+    let hasVisible = false;
+    
+    const q = query.toLowerCase();
+    
+    for(let i=0; i<items.length; i++) {
+        const text = items[i].querySelector('span').innerText.toLowerCase();
+        if (text.includes(q)) {
+            items[i].classList.remove('hidden');
+            items[i].classList.add('flex');
+            hasVisible = true;
+        } else {
+            items[i].classList.add('hidden');
+            items[i].classList.remove('flex');
+        }
+    }
+    
+    if (hasVisible) {
+        empty.classList.add('hidden');
+    } else {
+        empty.classList.remove('hidden');
+    }
+    
+    if (!query) {
+        iconContainer.innerHTML = '<i data-lucide="search" class="w-4 h-4 text-slate-500"></i>';
+        textInput.classList.remove('pl-11');
+        textInput.classList.add('pl-10');
+    }
+};
+
 ScoutApp.prototype.createSelect = function(id, label, options, val='', evt='', isFull=false) {
     return `<div class="flex flex-col gap-1.5 w-full relative z-10">${label ? `<label class="text-xs font-bold text-slate-400 ml-1">${label}</label>` : ''}<div class="relative"><select id="${id}" onchange="${evt}" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none appearance-none text-sm relative z-20 cursor-pointer"><option value="" disabled ${!val?'selected':''}>Seçiniz</option>${options.map(o => `<option value="${o.val}" ${val==o.val?'selected':''}>${o.txt}</option>`).join('')}</select><div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 z-30"><i data-lucide="chevron-down" class="w-4 h-4"></i></div></div></div>`;
 };

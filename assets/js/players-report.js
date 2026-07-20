@@ -18,7 +18,7 @@ ScoutApp.prototype.renderNewReport = function(c) {
                         ? this.createSelect('rep-team', t('team'), teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") 
                         : '<div class="p-3 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-xs">' + t('db_empty') + '</div>'}
                     
-                    ${this.createDatalistInput('rep-nationality', 'countries-datalist', t('nationality'), t('nat_search_ph'), [...this.state.data.countries].sort((a,b) => b.isFavorite - a.isFavorite || this.getCountryName(a).localeCompare(this.getCountryName(b))).map(c => ({val: c.id, txt: this.getCountryName(c)})), this.state.newReport.nationality, "app.updateRep('nationality', this.value)")}
+                    ${this.createCustomSearchSelect('rep-nationality', t('nationality'), t('nat_search_ph'), [...this.state.data.countries].sort((a,b) => b.isFavorite - a.isFavorite || this.getCountryName(a).localeCompare(this.getCountryName(b))).map(c => ({val: c.id, txt: this.getCountryName(c), icon: c.flag})), this.state.newReport.nationality, "app.updateRep('nationality', this.value)")}
 
                     
                     <div class="grid grid-cols-2 gap-4">
