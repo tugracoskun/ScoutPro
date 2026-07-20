@@ -333,7 +333,7 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                 <!-- Takımlar -->
                 <div class="flex items-center justify-between w-full mb-2 mt-1">
                     <div class="flex flex-col items-center gap-2 w-[40%]">
-                        <div class="w-10 h-10 rounded-full bg-dark-900 flex items-center justify-center border border-dark-800 overflow-hidden">${this.getLogoDisplayHTML(h?.logo)}</div>
+                        <div class="w-12 h-12 flex items-center justify-center shrink-0 drop-shadow-md">${this.getLogoDisplayHTML(h?.logo)}</div>
                         <span class="font-bold text-white text-center text-xs w-full truncate" title="${h?.name}">${h?.name || '?'}</span>
                     </div>
                     <div class="flex flex-col items-center justify-center">
@@ -341,7 +341,7 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                         ${leagueBadge}
                     </div>
                     <div class="flex flex-col items-center gap-2 w-[40%]">
-                        <div class="w-10 h-10 rounded-full bg-dark-900 flex items-center justify-center border border-dark-800 overflow-hidden">${this.getLogoDisplayHTML(a?.logo)}</div>
+                        <div class="w-12 h-12 flex items-center justify-center shrink-0 drop-shadow-md">${this.getLogoDisplayHTML(a?.logo)}</div>
                         <span class="font-bold text-white text-center text-xs w-full truncate" title="${a?.name}">${a?.name || '?'}</span>
                     </div>
                 </div>
@@ -386,14 +386,14 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                 <div class="flex items-center justify-center gap-4 w-full">
                     <div class="flex items-center gap-3 w-[40%] justify-end">
                         <span class="font-bold text-white text-right hidden sm:block truncate text-lg">${h?.name || '?'}</span>
-                        <div class="w-10 h-10 rounded-full bg-dark-950 flex items-center justify-center border-2 border-dark-700 overflow-hidden shrink-0 shadow-sm">${this.getLogoDisplayHTML(h?.logo)}</div>
+                        <div class="w-14 h-14 flex items-center justify-center shrink-0 drop-shadow-lg">${this.getLogoDisplayHTML(h?.logo)}</div>
                     </div>
                     <div class="flex flex-col items-center justify-center shrink-0">
                         <div class="px-3 py-1 bg-dark-950 border border-dark-800 rounded-lg text-xs font-bold text-slate-500 mb-1">VS</div>
                         ${leagueBadge}
                     </div>
                     <div class="flex items-center gap-3 w-[40%] justify-start">
-                        <div class="w-10 h-10 rounded-full bg-dark-950 flex items-center justify-center border-2 border-dark-700 overflow-hidden shrink-0 shadow-sm">${this.getLogoDisplayHTML(a?.logo)}</div>
+                        <div class="w-14 h-14 flex items-center justify-center shrink-0 drop-shadow-lg">${this.getLogoDisplayHTML(a?.logo)}</div>
                         <span class="font-bold text-white hidden sm:block truncate text-lg">${a?.name || '?'}</span>
                     </div>
                 </div>
