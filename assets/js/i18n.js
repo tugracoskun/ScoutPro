@@ -107,6 +107,9 @@ const translations = {
         cat_taktik: "Taktik",
         cat_mental: "Mental",
         cat_psiko_sosyal: "Psiko-Sosyal",
+        strengths_weaknesses: "Güçlü Yönler & Geliştirme Alanları",
+        top: "En İyi",
+        needs_improvement: "Geliştirmeli",
 
         // --- Database ---
         db_title: "Takım Şablonları",
@@ -320,6 +323,9 @@ const translations = {
         pos_st: "Striker",
         cat_def: "Defender",
         cat_mid: "Midfielder",
+        strengths_weaknesses: "Strengths & Areas for Improvement",
+        top: "Top",
+        needs_improvement: "Needs Improvement",
 
         // --- Database ---
         db_title: "Team Templates",

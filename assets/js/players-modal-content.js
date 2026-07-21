@@ -21,7 +21,7 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
         firstCategory = categories[0];
 
         // Kategori Başlıkları (Tablar)
-        categoriesHTML = `<div class="flex gap-4 border-b border-dark-800 mb-4 overflow-x-auto custom-scrollbar">`;
+        categoriesHTML = `<div class="flex gap-4 border-b border-dark-800 mb-2 overflow-x-auto custom-scrollbar">`;
         categories.forEach((cat, index) => {
             const isActive = index === 0;
             // Translating category names
@@ -39,7 +39,10 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
         // Kategori İçerikleri
         categories.forEach((cat, index) => {
             const isHidden = index !== 0 ? 'hidden' : '';
-            contentHTML += `<div id="content-cat-${cat}" class="attr-content ${isHidden} grid grid-cols-1 sm:grid-cols-2 gap-3 fade-in">`;
+            contentHTML += `<div id="content-cat-${cat}" class="attr-content ${isHidden} flex flex-col gap-4 fade-in">`;
+            
+            // --- TÜM ÖZELLİKLER LİSTESİ ---
+            contentHTML += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">`;
             
             attributeGroup[cat].forEach(attr => {
                 const val = currentReport.stats[attr.name] || 50;
@@ -53,9 +56,8 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
                     else diffHtml = `<span class="text-[10px] font-bold text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded ml-auto">-</span>`;
                 }
 
-                // Sub translation could be complex, assuming it's okay for now or handled by a mapping if needed, but it's data
                 contentHTML += `
-                    <div class="bg-dark-950/60 px-4 py-3 rounded-xl border border-dark-800 hover:border-scout-500/30 transition-all group flex flex-col justify-center">
+                    <div class="bg-dark-950/60 px-3 py-2 rounded-xl border border-dark-800 hover:border-scout-500/30 transition-all group flex flex-col justify-center">
                         <div class="flex justify-between items-center mb-1">
                             <span class="text-xs text-slate-300 font-bold uppercase tracking-wide truncate mr-2" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</span>
                             ${diffHtml}
@@ -68,6 +70,71 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
                 `;
             });
             contentHTML += `</div>`;
+            
+            // --- GÜÇLÜ YÖNLER & GELİŞTİRME ALANLARI (ALT KISIM) ---
+            const attrsWithScores = attributeGroup[cat].map(attr => ({
+                name: attr.name,
+                sub: attr.sub,
+                val: currentReport.stats[attr.name] || 50
+            }));
+            
+            // Büyükten küçüğe sırala
+            attrsWithScores.sort((a, b) => b.val - a.val);
+            
+            const maxItems = Math.min(5, Math.ceil(attrsWithScores.length / 2));
+            const topAttrs = attrsWithScores.slice(0, maxItems);
+            // En düşükleri al ve ters çevir (en düşük en başta olsun)
+            const bottomAttrs = attrsWithScores.slice(-maxItems).reverse();
+            
+            contentHTML += `
+                <div class="bg-dark-950/60 p-4 rounded-2xl border border-dark-800">
+                    <h4 class="text-xs font-black text-scout-400 uppercase tracking-widest mb-3 flex items-center gap-2 border-l-2 border-scout-500 pl-2">
+                        ${t('strengths_weaknesses') || 'GÜÇLÜ YÖNLER & GELİŞTİRME ALANLARI'}
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- EN İYİ X -->
+                        <div>
+                            <div class="text-[10px] font-bold text-green-400 uppercase flex items-center gap-1.5 mb-3">
+                                <i data-lucide="trophy" class="w-3.5 h-3.5"></i> ${t('top') || 'EN İYİ'} ${maxItems}
+                            </div>
+                            <div class="space-y-2">
+                                ${topAttrs.map((attr, i) => `
+                                    <div class="bg-dark-900 px-3 py-1.5 rounded-xl border border-dark-800 flex items-center gap-3">
+                                        <div class="w-5 h-5 rounded-full bg-scout-500 text-dark-950 flex items-center justify-center text-[10px] font-black shrink-0">${i+1}</div>
+                                        <div class="text-xs font-bold text-white truncate flex-1" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</div>
+                                        <div class="w-24 h-1.5 bg-dark-950 rounded-full overflow-hidden shrink-0">
+                                            <div class="h-full bg-gradient-to-r from-blue-500 to-scout-400 rounded-full" style="width: ${attr.val}%"></div>
+                                        </div>
+                                        <div class="font-mono text-xs font-black text-scout-400 w-6 text-right">${attr.val}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- GELİŞTİRMELİ -->
+                        <div>
+                            <div class="text-[10px] font-bold text-red-400 uppercase flex items-center gap-1.5 mb-3">
+                                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> ${t('needs_improvement') || 'GELİŞTİRMELİ'}
+                            </div>
+                            <div class="space-y-2">
+                                ${bottomAttrs.map((attr, i) => `
+                                    <div class="bg-dark-900 px-3 py-1.5 rounded-xl border border-dark-800 flex items-center gap-3">
+                                        <div class="w-5 h-5 rounded-full bg-scout-500 text-dark-950 flex items-center justify-center text-[10px] font-black shrink-0">${i+1}</div>
+                                        <div class="text-xs font-bold text-white truncate flex-1" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</div>
+                                        <div class="w-24 h-1.5 bg-dark-950 rounded-full overflow-hidden shrink-0">
+                                            <div class="h-full bg-gradient-to-r from-red-600 to-orange-400 rounded-full" style="width: ${attr.val}%"></div>
+                                        </div>
+                                        <div class="font-mono text-xs font-black text-orange-400 w-6 text-right">${attr.val}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            contentHTML += `</div>`;
         });
     } else {
         // Varsayılan (Eski usul hepsi bir arada) - Yedek plan
@@ -77,8 +144,8 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
     return `
         <!-- 2. ORTA KOLON: 4 KÖŞE MODELİ (Özellikler) -->
         <div class="lg:col-span-5 flex flex-col h-full">
-            <div class="bg-dark-900/50 backdrop-blur rounded-3xl border border-dark-800 p-6 shadow-xl h-full flex flex-col">
-                <div class="flex justify-between items-center mb-4">
+            <div class="bg-dark-900/50 backdrop-blur rounded-3xl border border-dark-800 p-5 shadow-xl h-full flex flex-col">
+                <div class="flex justify-between items-center mb-2">
                     <h3 class="text-lg font-bold text-white flex items-center gap-2">
                         <i data-lucide="layout-grid" class="text-scout-400 w-5 h-5"></i> ${t('attr_details')}
                     </h3>
@@ -89,7 +156,7 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
                 ${categoriesHTML}
                 
                 <!-- TAB İÇERİKLERİ -->
-                <div class="overflow-y-auto custom-scrollbar pr-2 flex-1 relative">
+                <div class="flex-1 relative">
                     ${contentHTML}
                 </div>
             </div>
