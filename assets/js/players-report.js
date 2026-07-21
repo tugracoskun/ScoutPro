@@ -26,6 +26,10 @@ ScoutApp.prototype.renderNewReport = function(c) {
                     
                     <div class="grid grid-cols-2 gap-4">
                         ${this.createSelect('rep-pos', t('position'), POSITIONS.map(p=>({val:p, txt:tPos(p)})), currentPos, 'app.handlePositionChange(this.value)')}
+                        ${this.createSelect('rep-role', t('role'), currentPos && PLAYER_ROLES[currentPos] ? [{val:'', txt:t('role')}].concat(PLAYER_ROLES[currentPos].map(r=>({val:r, txt:t(r)}))) : [{val:'', txt:t('role')}], this.state.newReport.role || '', "app.updateRep('role', this.value)")}
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
                         <div class="flex flex-col gap-1.5 relative z-10">
                             <label class="text-xs font-bold text-slate-400 ml-1 flex justify-between">${t('birth_date')} <span id="calculated-age-display" class="text-scout-400 font-mono"></span></label>
                             <input type="date" id="rep-birth" value="${this.state.newReport.birthDate || ''}" onchange="app.updateBirthDate(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none transition-all text-sm relative z-20">
@@ -110,6 +114,9 @@ ScoutApp.prototype.renderNewReport = function(c) {
 // 2. İŞ MANTIĞI VE SLIDERLAR
 
 ScoutApp.prototype.handlePositionChange = function(pos, resetStats = true) {
+    if (this.state.newReport.position !== pos) {
+        this.state.newReport.role = ''; // Mevki değişince rolü sıfırla
+    }
     this.state.newReport.position = pos;
 
     const mapping = POSITION_MAPPING[pos] || { group: 'Default', weightKey: null };
@@ -128,6 +135,18 @@ ScoutApp.prototype.handlePositionChange = function(pos, resetStats = true) {
 
     this.renderAttributeInputs(attributeGroup, mapping.weightKey);
     this.updateRadarChart();
+
+    const roleSelect = document.getElementById('rep-role');
+    if (roleSelect) {
+        let html = `<option value="">${t('role')}</option>`;
+        if (PLAYER_ROLES[pos]) {
+            PLAYER_ROLES[pos].forEach(r => {
+                html += `<option value="${r}">${t(r)}</option>`;
+            });
+        }
+        roleSelect.innerHTML = html;
+        roleSelect.value = this.state.newReport.role || '';
+    }
     this.calculateAverage();
 };
 

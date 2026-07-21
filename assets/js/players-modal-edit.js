@@ -24,9 +24,12 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
                 </div>
 
                 <div class="grid grid-cols-4 gap-4">
-                    <!-- POZİSYON -->
+                    <!-- POZİSYON VE ROL -->
                     <div class="col-span-1">
-                        ${this.createSelect('edit-p-pos', t('position'), POSITIONS.map(x=>({val:x, txt:tPos(x)})), p.position)}
+                        ${this.createSelect('edit-p-pos', t('position'), POSITIONS.map(x=>({val:x, txt:tPos(x)})), p.position, 'app.handleEditPositionChange(this.value)')}
+                    </div>
+                    <div class="col-span-1">
+                        ${this.createSelect('edit-p-role', t('role'), p.position && PLAYER_ROLES[p.position] ? [{val:'', txt:t('role')}].concat(PLAYER_ROLES[p.position].map(r=>({val:r, txt:t(r)}))) : [{val:'', txt:t('role')}], p.role || '')}
                     </div>
                     <!-- YAŞ YERİNE DOĞUM TARİHİ -->
                     <div class="col-span-1 flex flex-col gap-1.5 relative z-10">
@@ -87,6 +90,19 @@ ScoutApp.prototype.handleEditBirthDateChange = function(val) {
     }
 };
 
+ScoutApp.prototype.handleEditPositionChange = function(val) {
+    const roleSelect = document.getElementById('edit-p-role');
+    if (roleSelect) {
+        let html = `<option value="">${t('role')}</option>`;
+        if (PLAYER_ROLES[val]) {
+            PLAYER_ROLES[val].forEach(r => {
+                html += `<option value="${r}">${t(r)}</option>`;
+            });
+        }
+        roleSelect.innerHTML = html;
+    }
+};
+
 ScoutApp.prototype.updatePlayer = function(id) {
     const p = this.state.data.players.find(x => x.id === id);
     if (!p) return;
@@ -103,6 +119,7 @@ ScoutApp.prototype.updatePlayer = function(id) {
     p.teamId = teamId ? parseInt(teamId) : null;
     p.nationalTeamId = nationalTeamId ? parseInt(nationalTeamId) : null;
     p.position = document.getElementById('edit-p-pos').value;
+    p.role = document.getElementById('edit-p-role').value;
     p.birthDate = birthDate; // Tarihi kaydet
     
     // Yeni eklenen alanlar

@@ -27,7 +27,7 @@ class ScoutApp {
 
     resetReport() { 
         return { 
-            name: '', teamId: '', position: '', age: '', height: '', 
+            name: '', teamId: '', position: '', role: '', age: '', height: '', 
             foot: 'Sağ', marketValue: '', image: '', source: '', 
             tmUrl: '', sofaUrl: '', 
             potential: 'Düşük',
@@ -818,6 +818,9 @@ class ScoutApp {
                         <div class="grid grid-cols-2 gap-4">
                             <!-- Mevki Seçimi: Değişince Sliderlar Yenilenecek -->
                             ${this.createSelect('rep-pos', 'Mevki', POSITIONS.map(p=>({val:p, txt:p})), currentPos, 'app.handlePositionChange(this.value)')}
+                            ${this.createSelect('rep-role', t('role'), currentPos && PLAYER_ROLES[currentPos] ? [{val:'', txt:t('role')}].concat(PLAYER_ROLES[currentPos].map(r=>({val:r, txt:t(r)}))) : [{val:'', txt:t('role')}], this.state.newReport.role || '', "app.updateRep('role', this.value)")}
+                        </div>
+                        <div class="grid grid-cols-1 gap-4">
                             ${this.createInput('rep-age', 'Yaş', '19', 'number', this.state.newReport.age, "app.updateRep('age', this.value)", 40)}
                         </div>
 

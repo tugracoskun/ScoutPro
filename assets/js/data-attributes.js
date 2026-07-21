@@ -1,3 +1,17 @@
+// --- OYUNCU ROLLERİ ---
+const PLAYER_ROLES = {
+    'Kaleci': ['Libero Kaleci', 'Geleneksel Kaleci'],
+    'Stoper': ['Pasör Stoper', 'Standart Stoper', 'Sınırlı Stoper', 'Libero'],
+    'Sağ Bek': ['Sahte Bek', 'Kanat Bek', 'Tam Kanat Bek', 'Klasik Bek'],
+    'Sol Bek': ['Sahte Bek', 'Kanat Bek', 'Tam Kanat Bek', 'Klasik Bek'],
+    'Defansif Orta Saha': ['Segundo Volante', 'Regista', 'Yarım Bek', 'Derin Oyun Kurucu', 'Savaşçı Orta Saha', 'Çapa'],
+    'Orta Saha': ['Mezzala', 'Merkez Kanat Oyuncusu', 'Carrilero', 'İki Yönlü Orta Saha', 'Klasik Merkez Orta Saha'],
+    'Ofansif Orta Saha': ['Gölge Forvet', 'Trequartista', 'Enganche', 'Ofansif Oyun Kurucu'],
+    'Sağ Kanat': ['Ters Kanat Oyuncusu', 'Raumdeuter', 'İç Forvet', 'Defansif Kanat', 'Klasik Kanat'],
+    'Sol Kanat': ['Ters Kanat Oyuncusu', 'Raumdeuter', 'İç Forvet', 'Defansif Kanat', 'Klasik Kanat'],
+    'Santrafor': ['Sahte 9', 'Komple Forvet', 'Çalışkan Forvet', 'Yaratıcı Forvet', 'Fırsatçı Forvet', 'Hedef Forvet', 'İleri Forvet']
+};
+
 // --- ÖZELLİK HAVUZU VE ALT DETAYLAR ---
 const ATTRIBUTE_GROUPS = {
     

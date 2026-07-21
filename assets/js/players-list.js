@@ -85,7 +85,7 @@ ScoutApp.prototype.getPlayerCardHTML = function(p) {
                     <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-14 h-14 rounded-xl object-cover bg-dark-950 border border-dark-700">
                     <div class="flex-1 min-w-0 pr-8">
                         <h4 class="font-bold text-white text-lg leading-tight truncate">${p.name}</h4>
-                        <div class="text-xs text-scout-400 font-medium mt-1">${p.position}</div>
+                        <div class="text-xs text-scout-400 font-medium mt-1">${p.position}${p.role ? ` - ${t(p.role)}` : ''}</div>
                         <div class="text-xs text-slate-500 mt-0.5 truncate">${p.teamId ? this.getTeamName(p.teamId) : ''}${p.teamId && p.nationalTeamId ? ' - ' : ''}${p.nationalTeamId ? this.getTeamName(p.nationalTeamId) : ''}</div>
                     </div>
                 </div>
