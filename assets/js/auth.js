@@ -23,6 +23,13 @@ class AuthManager {
 
                 // MIGRATION: Takımlara type ekle (varsayılan: club)
                 let teamsUpdated = false;
+                
+                // MIGRATION: Türkiye'yi Avrupa'ya al
+                const turkey = this.app.state.data.countries.find(c => c.id === 213 || c.nameEn === 'Turkey' || c.name === 'Turkey' || c.name === 'Türkiye');
+                if (turkey && turkey.region !== 'Avrupa') {
+                    turkey.region = 'Avrupa';
+                    this.saveUserData();
+                }
                 if (this.app.state.data.teams) {
                     this.app.state.data.teams.forEach(t => {
                         if (!t.type) {

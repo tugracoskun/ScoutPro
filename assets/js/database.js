@@ -14,15 +14,29 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
             `<div class="text-center py-12 border-2 border-dashed border-dark-800 rounded-2xl text-slate-500">${t('db_empty')}</div>` : ''}
             
             ${(() => {
-                const fifaRankings = ["İspanya", "Fransa", "İngiltere", "Portekiz", "Belçika", "Hollanda", "Almanya", "Hırvatistan", "İsviçre", "İtalya", "Norveç", "Danimarka", "Avusturya", "Türkiye", "Ukrayna", "Rusya", "Polonya", "İsveç", "Galler", "Macaristan", "Sırbistan", "İskoçya", "Slovakya", "Yunanistan", "Çekya", "Romanya", "İrlanda", "Slovenya", "Bosna-Hersek", "Arnavutluk", "Kuzey Makedonya", "Kuzey İrlanda", "Gürcistan", "İzlanda", "Finlandiya", "Kosova", "Karadağ", "Bulgaristan", "Belarus", "Lüksemburg", "Ermenistan", "Kazakistan", "Faroe Adaları", "Kıbrıs", "Azerbaycan", "Estonya", "Letonya", "Litvanya", "Moldova", "Malta", "Andorra", "Cebelitarık", "Lihtenştayn", "San Marino"];
+                const fifaRankings = [
+                    ["İspanya", "Spain"], ["Fransa", "France"], ["İngiltere", "England"], ["Portekiz", "Portugal"], ["Belçika", "Belgium"],
+                    ["Hollanda", "Netherlands"], ["Almanya", "Germany"], ["Hırvatistan", "Croatia"], ["İsviçre", "Switzerland"], ["İtalya", "Italy"],
+                    ["Norveç", "Norway"], ["Danimarka", "Denmark"], ["Avusturya", "Austria"], ["Türkiye", "Turkey"], ["Ukrayna", "Ukraine"],
+                    ["Rusya", "Russia"], ["Polonya", "Poland"], ["İsveç", "Sweden"], ["Galler", "Wales"], ["Macaristan", "Hungary"],
+                    ["Sırbistan", "Serbia"], ["İskoçya", "Scotland"], ["Slovakya", "Slovakia"], ["Yunanistan", "Greece"], ["Çekya", "Czechia"],
+                    ["Romanya", "Romania"], ["İrlanda", "Republic of Ireland", "Ireland"], ["Slovenya", "Slovenia"], ["Bosna-Hersek", "Bosnia and Herzegovina", "Bosnia"], ["Arnavutluk", "Albania"],
+                    ["Kuzey Makedonya", "North Macedonia"], ["Kuzey İrlanda", "Northern Ireland"], ["Gürcistan", "Georgia"], ["İzlanda", "Iceland"], ["Finlandiya", "Finland"],
+                    ["Kosova", "Kosovo"], ["Karadağ", "Montenegro"], ["Bulgaristan", "Bulgaria"], ["Belarus"], ["Lüksemburg", "Luxembourg"],
+                    ["Ermenistan", "Armenia"], ["Kazakistan", "Kazakhstan"], ["Faroe Adaları", "Faroe Islands"], ["Kıbrıs", "Cyprus"], ["Azerbaycan", "Azerbaijan"],
+                    ["Estonya", "Estonia"], ["Letonya", "Latvia"], ["Litvanya", "Lithuania"], ["Moldova"], ["Malta"], ["Andorra"],
+                    ["Cebelitarık", "Gibraltar"], ["Lihtenştayn", "Liechtenstein"], ["San Marino"]
+                ];
                 
                 const sortFn = (a, b) => {
-                    const idxA = fifaRankings.indexOf(a.name);
-                    const idxB = fifaRankings.indexOf(b.name);
+                    const findIndex = (c) => fifaRankings.findIndex(aliases => aliases.includes(c.name) || aliases.includes(c.nameEn) || aliases.includes(this.getCountryName(c)));
+                    const idxA = findIndex(a);
+                    const idxB = findIndex(b);
+                    
                     if (idxA !== -1 && idxB !== -1) return idxA - idxB;
                     if (idxA !== -1) return -1;
                     if (idxB !== -1) return 1;
-                    return a.name.localeCompare(b.name);
+                    return this.getCountryName(a).localeCompare(this.getCountryName(b));
                 };
 
                 const renderRegion = (regionKey) => {

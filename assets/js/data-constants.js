@@ -367,9 +367,9 @@ const DB = {
     },
     {
         "id": 52,
-        "name": "United Kingdom",
-        "nameEn": "United Kingdom",
-        "flag": "https://flagcdn.com/w80/gb.png",
+        "name": "England",
+        "nameEn": "England",
+        "flag": "https://flagcdn.com/w80/gb-eng.png",
         "region": "Avrupa"
     },
     {
@@ -1497,7 +1497,7 @@ const DB = {
         "name": "Turkey",
         "nameEn": "Turkey",
         "flag": "https://flagcdn.com/w80/tr.png",
-        "region": "Asya"
+        "region": "Avrupa"
     },
     {
         "id": 214,
@@ -1757,6 +1757,27 @@ const DB = {
         "nameEn": "South Georgia",
         "flag": "https://flagcdn.com/w80/gs.png",
         "region": "Diğer"
+    },
+    {
+        "id": 251,
+        "name": "Scotland",
+        "nameEn": "Scotland",
+        "flag": "https://flagcdn.com/w80/gb-sct.png",
+        "region": "Avrupa"
+    },
+    {
+        "id": 252,
+        "name": "Wales",
+        "nameEn": "Wales",
+        "flag": "https://flagcdn.com/w80/gb-wls.png",
+        "region": "Avrupa"
+    },
+    {
+        "id": 253,
+        "name": "Northern Ireland",
+        "nameEn": "Northern Ireland",
+        "flag": "https://flagcdn.com/w80/gb-nir.png",
+        "region": "Avrupa"
     }
 ],
     leagues: [],
