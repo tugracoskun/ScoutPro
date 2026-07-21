@@ -59,7 +59,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                     <div>
                         <h2 class="text-xl font-bold text-white leading-none tracking-tight">${p.name}</h2>
                         <div class="flex items-center gap-2 mt-1 flex-wrap">
-                            <span class="text-xs text-scout-400 font-bold uppercase tracking-wider">${p.position}${p.role ? ` - ${t(p.role)}` : ''}</span>
+                            <span class="text-xs text-scout-400 font-bold uppercase tracking-wider">${p.position}${p.role ? ` <span class="opacity-60 font-normal">- ${t(p.role)}</span>` : ''}</span>
                             ${p.teamId ? `<span class="text-xs text-slate-600">•</span><span class="text-xs text-slate-400 flex items-center gap-1" title="Kulüp Takımı"><i data-lucide="shield" class="w-3 h-3"></i> ${this.getTeamName(p.teamId)}</span>` : ''}
                             ${p.nationalTeamId ? `<span class="text-xs text-slate-600">•</span><span class="text-xs text-slate-400 flex items-center gap-1" title="Milli Takım"><i data-lucide="flag" class="w-3 h-3 text-blue-400"></i> <span class="text-blue-200/80">${this.getTeamName(p.nationalTeamId)}</span></span>` : ''}
                             ${p.u23National ? `<span class="text-xs text-slate-600">•</span><span class="text-[10px] text-blue-400 font-bold px-1.5 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-md flex items-center gap-1"><i data-lucide="check-circle-2" class="w-3 h-3"></i> ${t('u23_national')}</span>` : ''}
