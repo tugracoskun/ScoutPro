@@ -10,6 +10,9 @@ const ATTR_TRANSLATIONS = {
     "Psikolojik (Mental)": "Psychological (Mental)",
     "Sosyolojik": "Sociological",
     "Genel": "General",
+    "Maç Öncesi": "Pre-Match",
+    "Isınma Performansı (Bonus)": "Warm-up Performance (Bonus)",
+    "Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)": "Attitude, seriousness, communication with teammates, body language (confidence/stress)",
 
     // Default Group
     "Hız": "Speed",

@@ -67,9 +67,10 @@ ScoutApp.prototype.getSliderHTMLForUpdate = function(attributeGroup, currentStat
     if (isCategorized) {
         Object.keys(attributeGroup).forEach(cat => {
             const clr = {'Teknik':'text-red-400','Fiziksel':'text-yellow-400','Psikolojik':'text-green-400','Sosyolojik':'text-blue-400','Taktik':'text-purple-400','Mental':'text-pink-400','Psiko-Sosyal':'text-indigo-400'}[cat] || 'text-white';
+            const borderClr = {'Teknik':'border-red-400','Fiziksel':'border-yellow-400','Psikolojik':'border-green-400','Sosyolojik':'border-blue-400','Taktik':'border-purple-400','Mental':'border-pink-400','Psiko-Sosyal':'border-indigo-400'}[cat] || 'border-slate-600';
             const displayCat = window.tAttr ? window.tAttr(cat) : cat;
             
-            html += `<div class="col-span-2 mt-4 mb-2 pb-1 border-b border-dark-800 font-bold text-sm uppercase tracking-wider ${clr}">${displayCat}</div>`;
+            html += `<div class="col-span-2 mt-4 mb-2 pb-1 border-b ${borderClr} font-bold text-sm uppercase tracking-wider ${clr}">${displayCat}</div>`;
             
             attributeGroup[cat].forEach(attr => { 
                 const val = currentStats[attr.name] || 50;

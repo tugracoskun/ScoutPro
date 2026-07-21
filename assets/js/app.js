@@ -918,7 +918,7 @@ class ScoutApp {
         // Kategorili yapı (Kaleci gibi)
         if (Object.keys(attributeSet).length > 1 && !attributeSet['Genel']) {
             Object.keys(attributeSet).forEach(category => {
-                const colors = { 'Teknik': 'text-red-400', 'Fiziksel': 'text-yellow-400', 'Psikolojik': 'text-green-400', 'Sosyolojik': 'text-blue-400' };
+                const colors = { 'Teknik': 'text-red-400', 'Fiziksel': 'text-yellow-400', 'Psikolojik': 'text-green-400', 'Sosyolojik': 'text-blue-400', 'Taktik': 'text-purple-400', 'Mental': 'text-pink-400', 'Psiko-Sosyal': 'text-indigo-400' };
                 const colorClass = colors[category] || 'text-white';
                 
                 html += `<div class="col-span-1 md:col-span-2 mt-4 mb-2 pb-1 border-b border-dark-800 font-bold text-sm uppercase tracking-wider ${colorClass}">${category}</div>`;
