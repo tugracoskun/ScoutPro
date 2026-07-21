@@ -58,12 +58,35 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                 const displayRegion = displayRegionMap[regionKey] || regionKey;
 
                 return `
-                    <div class="mb-8 bg-dark-950/30 p-6 rounded-3xl border border-dark-800">
-                        <h3 class="text-2xl font-bold ${regionColor} mb-6 flex items-center gap-2">
-                            <i data-lucide="${regionIcon}" class="${regionKey === 'Favoriler' ? 'fill-current' : ''}"></i> ${displayRegion}
-                        </h3>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            ${regionCountries.map(country => {
+                    <div class="mb-6 bg-dark-950/30 p-5 rounded-2xl border border-dark-800 transition-all">
+                        <div class="flex items-center justify-between cursor-pointer group select-none" 
+                             onclick="
+                                const content = this.nextElementSibling;
+                                const isClosed = content.classList.contains('hidden');
+                                if(isClosed) {
+                                    content.classList.remove('hidden');
+                                    requestAnimationFrame(() => {
+                                        content.classList.remove('opacity-0', '-translate-y-4');
+                                        content.classList.add('opacity-100', 'translate-y-0');
+                                    });
+                                    this.querySelector('.chevron-icon').classList.remove('rotate-180');
+                                } else {
+                                    content.classList.remove('opacity-100', 'translate-y-0');
+                                    content.classList.add('opacity-0', '-translate-y-4');
+                                    setTimeout(() => {
+                                        content.classList.add('hidden');
+                                    }, 200);
+                                    this.querySelector('.chevron-icon').classList.add('rotate-180');
+                                }
+                             ">
+                            <h3 class="text-xl font-bold ${regionColor} flex items-center gap-2">
+                                <i data-lucide="${regionIcon}" class="${regionKey === 'Favoriler' ? 'fill-current' : ''} w-5 h-5"></i> ${displayRegion}
+                            </h3>
+                            <i data-lucide="chevron-up" class="chevron-icon w-5 h-5 text-slate-500 group-hover:text-white transition-transform duration-300 ease-in-out"></i>
+                        </div>
+                        <div class="transition-all duration-200 ease-out transform opacity-100 translate-y-0 origin-top">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-5">
+                                    ${regionCountries.map(country => {
                     const leagues = this.state.data.leagues.filter(l => l.countryId === country.id);
                     return `
                                     <div id="db-country-${country.id}" class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden hover-trigger relative">
@@ -193,6 +216,7 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                                     </div>
                                 `;
                 }).join('')}
+                            </div>
                         </div>
                     </div>
                 `;
