@@ -1183,7 +1183,17 @@ class ScoutApp {
         this.renderDatabase(document.getElementById('content-area'));
     }
     
-    updateTeam(id) {
+    async updateTeam(id) {
+        const btn = document.querySelector('#modal-content button.bg-scout-600');
+        let originalText = '';
+        if (btn) {
+            originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto"></i>`;
+            if (window.lucide) window.lucide.createIcons();
+            await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 150)));
+        }
+
         const t = this.state.data.teams.find(x => x.id === id);
         if(t) {
             t.name = document.getElementById('edit-team-name').value;
