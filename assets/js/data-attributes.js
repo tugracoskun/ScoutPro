@@ -33,8 +33,8 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Liderlik & İletişim', sub: 'Savunma Hattını Yönetme, Konuşma' },
             { name: 'Cesaret', sub: 'Kafa Sokma, Şut Bloklama, Sakatlanma Pahasina Hamle' },
             { name: 'Agresiflik', sub: 'Caydırıcılık, Kontrollü Sertlik' },
-            { name: 'Hata Reaksiyonu', sub: 'Oyuna Küsmeme, Hatayı Telafi Etme Çabası' },
-            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' }
+            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' },
+            { name: 'Profesyonellik ve Sahada Duruş (Bonus)', sub: 'Hakemle ve rakiple iletişim, kriz anlarındaki vücut dili, maç içi disiplin' }
         ]
     },
 
@@ -69,8 +69,8 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Konsantrasyon', sub: 'Top Uzaktayken Oyundan Kopmama (Arka Direk)' },
             { name: 'Cesaret', sub: 'Şutlara Siper Olma, Sert Müdahaleden Kaçmama' },
             { name: 'İletişim', sub: 'Önündeki Kanat Oyuncusunu Yönetme' },
-            { name: 'Agresiflik', sub: 'Rakibi Sindirme, Kontrollü Sertlik' },
-            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' }
+            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' },
+            { name: 'Profesyonellik ve Sahada Duruş (Bonus)', sub: 'Hakemle ve rakiple iletişim, kriz anlarındaki vücut dili, maç içi disiplin' }
         ]
     },
 
@@ -108,8 +108,8 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Liderlik (Teknik)', sub: 'Oyun Sıkıştığında Topu İsteme ve Sorumluluk Alma' },
             { name: 'Bencillik/Diğerkamlık', sub: 'Şut ve Pas Dengesini Doğru Ayarlama' },
             { name: 'Soğukkanlılık', sub: 'Baskı Altında Paniklememe' },
-            { name: 'Çalışkanlık', sub: 'Takım Savunmasına Yardım' },
-            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' }
+            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' },
+            { name: 'Profesyonellik ve Sahada Duruş (Bonus)', sub: 'Hakemle ve rakiple iletişim, kriz anlarındaki vücut dili, maç içi disiplin' }
         ]
     },
 
@@ -143,8 +143,8 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Yaratıcılık (Flair)', sub: 'Beklenmedik Hamleler, Sihirli Dokunuşlar' },
             { name: 'Defansif Disiplin', sub: 'Bekini Takip Etme (Tracking Back), Takım Savunması' },
             { name: 'Takım Oyunu', sub: 'Şut/Pas Dengesini Doğru Ayarlama (Bencillik Kontrolü)' },
-            { name: 'Performans Tutarlılığı', sub: 'Büyük Maçlarda da Seviyeyi Koruma, Baskıda Kaybetmeme' },
-            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' }
+            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' },
+            { name: 'Profesyonellik ve Sahada Duruş (Bonus)', sub: 'Hakemle ve rakiple iletişim, kriz anlarındaki vücut dili, maç içi disiplin' }
         ]
     },
 
@@ -180,8 +180,8 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Direnç (Resilience)', sub: 'Gol Kaçırdıktan Sonra Oyundan Düşmeme İradesi' },
             { name: 'Cesaret', sub: 'Tekmeye Kafa Uzatma, Karambole Girme' },
             { name: 'Bencillik Dengesi', sub: 'Doğru Anda Şut veya Pas Tercihi' },
-            { name: 'Agresiflik', sub: 'Rakip Stoperleri Rahatsız Etme' },
-            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' }
+            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' },
+            { name: 'Profesyonellik ve Sahada Duruş (Bonus)', sub: 'Hakemle ve rakiple iletişim, kriz anlarındaki vücut dili, maç içi disiplin' }
         ]
     },
 
@@ -217,8 +217,8 @@ const ATTRIBUTE_GROUPS = {
             { name: 'İletişim', sub: 'Defans Hattını Uyarma ve Yönetme' },
             { name: 'Cesaret', sub: 'Sakatlanma Pahasina Topa Çıkma, Topun Üzerine Yatma' },
             { name: 'Zorluklara Tepki', sub: 'Yenen Hatalı Golden Sonraki Tutum, Düşmeden Kalma' },
-            { name: 'Kararlılık', sub: 'Kalesini Gole Kapatma Hırsı, Her Topu Kurtarma İsteği' },
-            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' }
+            { name: 'Isınma Performansı (Bonus)', sub: 'Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)' },
+            { name: 'Profesyonellik ve Sahada Duruş (Bonus)', sub: 'Hakemle ve rakiple iletişim, kriz anlarındaki vücut dili, maç içi disiplin' }
         ]
     },
 

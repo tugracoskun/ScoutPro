@@ -13,6 +13,8 @@ const ATTR_TRANSLATIONS = {
     "Maç Öncesi": "Pre-Match",
     "Isınma Performansı (Bonus)": "Warm-up Performance (Bonus)",
     "Tutum, ciddiyet, takım arkadaşlarıyla iletişim, beden dili (özgüven/stres)": "Attitude, seriousness, communication with teammates, body language (confidence/stress)",
+    "Profesyonellik ve Sahada Duruş (Bonus)": "Professionalism & On-pitch Posture (Bonus)",
+    "Hakemle ve rakiple iletişim, kriz anlarındaki vücut dili, maç içi disiplin": "Communication with referee and opponent, body language in crisis, in-match discipline",
 
     // Default Group
     "Hız": "Speed",
