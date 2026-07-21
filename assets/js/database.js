@@ -13,11 +13,26 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
             ${this.state.data.countries.length === 0 ?
             `<div class="text-center py-12 border-2 border-dashed border-dark-800 rounded-2xl text-slate-500">${t('db_empty')}</div>` : ''}
             
-            ${['Favoriler', 'Avrupa', 'Afrika', 'Amerika', 'Asya', 'Okyanusya', 'Diğer'].map(regionKey => {
-                const regionCountries = regionKey === 'Favoriler'
-                    ? this.state.data.countries.filter(c => c.isFavorite)
-                    : this.state.data.countries.filter(c => c.region === regionKey);
-                if (regionCountries.length === 0) return '';
+            ${(() => {
+                const fifaRankings = ["İspanya", "Fransa", "İngiltere", "Portekiz", "Belçika", "Hollanda", "Almanya", "Hırvatistan", "İsviçre", "İtalya", "Norveç", "Danimarka", "Avusturya", "Türkiye", "Ukrayna", "Rusya", "Polonya", "İsveç", "Galler", "Macaristan", "Sırbistan", "İskoçya", "Slovakya", "Yunanistan", "Çekya", "Romanya", "İrlanda", "Slovenya", "Bosna-Hersek", "Arnavutluk", "Kuzey Makedonya", "Kuzey İrlanda", "Gürcistan", "İzlanda", "Finlandiya", "Kosova", "Karadağ", "Bulgaristan", "Belarus", "Lüksemburg", "Ermenistan", "Kazakistan", "Faroe Adaları", "Kıbrıs", "Azerbaycan", "Estonya", "Letonya", "Litvanya", "Moldova", "Malta", "Andorra", "Cebelitarık", "Lihtenştayn", "San Marino"];
+                
+                const sortFn = (a, b) => {
+                    const idxA = fifaRankings.indexOf(a.name);
+                    const idxB = fifaRankings.indexOf(b.name);
+                    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                    if (idxA !== -1) return -1;
+                    if (idxB !== -1) return 1;
+                    return a.name.localeCompare(b.name);
+                };
+
+                const renderRegion = (regionKey) => {
+                    let regionCountries = regionKey === 'Favoriler'
+                        ? this.state.data.countries.filter(c => c.isFavorite)
+                        : this.state.data.countries.filter(c => c.region === regionKey);
+                    
+                    if (regionCountries.length === 0) return '';
+                    
+                    regionCountries = regionCountries.sort(sortFn);
 
                 const regionIcon = regionKey === 'Favoriler' ? 'star' : 'map-pin';
                 const regionColor = regionKey === 'Favoriler' ? 'text-yellow-400' : 'text-scout-400';
@@ -37,7 +52,7 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                             ${regionCountries.map(country => {
                     const leagues = this.state.data.leagues.filter(l => l.countryId === country.id);
                     return `
-                                    <div class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden hover-trigger relative">
+                                    <div id="db-country-${country.id}" class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden hover-trigger relative">
                                         <div class="bg-dark-950/50 p-4 border-b border-dark-800 flex items-center justify-between group">
                                             <div class="flex items-center gap-3">
                                                 <!-- Ülke Bayrağı -->
@@ -167,7 +182,21 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                         </div>
                     </div>
                 `;
-            }).join('')}
+                };
+
+                const searchBarHtml = `
+                    <div class="mb-4 mt-8 relative">
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500"></i>
+                            <input type="text" oninput="app.filterDatabaseCountries(this.value)" placeholder="Ülke ara (Örn: İspanya, Türkiye)..." class="w-full bg-dark-900 border border-dark-800 rounded-xl pl-12 pr-4 py-3 text-white focus:border-scout-500 outline-none transition-colors shadow-sm">
+                        </div>
+                        <div id="db-search-dropdown" class="absolute top-full left-0 right-0 mt-2 bg-dark-900 border border-dark-800 rounded-xl shadow-xl z-50 hidden max-h-60 overflow-y-auto custom-scrollbar"></div>
+                        <p class="text-[11px] text-slate-500 mt-2 ml-1 flex items-center gap-1"><i data-lucide="info" class="w-3.5 h-3.5"></i> Ülke sıralaması güncel Temmuz 2026 FIFA Dünya Sıralaması baz alınarak yapılmıştır.</p>
+                    </div>
+                `;
+
+                return renderRegion('Favoriler') + searchBarHtml + ['Avrupa', 'Afrika', 'Amerika', 'Asya', 'Okyanusya', 'Diğer'].map(renderRegion).join('');
+            })()}
         </div>
     `;
     setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 10);
@@ -639,5 +668,57 @@ ScoutApp.prototype.handleLeagueDragEnd = function(e) {
         activeLeagueDropTarget.style.transform = '';
         activeLeagueDropTarget = null;
         activeLeagueDropPosition = null;
+    }
+};
+
+ScoutApp.prototype.filterDatabaseCountries = function(term) {
+    const lowerTerm = term.toLowerCase().trim();
+    const dropdown = document.getElementById('db-search-dropdown');
+    
+    if (!dropdown) return;
+
+    if (!lowerTerm) {
+        dropdown.classList.add('hidden');
+        dropdown.innerHTML = '';
+        return;
+    }
+
+    const matches = this.state.data.countries.filter(c => c.name.toLowerCase().includes(lowerTerm));
+    
+    if (matches.length === 0) {
+        dropdown.innerHTML = '<div class="p-4 text-sm text-slate-500 text-center">Sonuç bulunamadı.</div>';
+        dropdown.classList.remove('hidden');
+        return;
+    }
+
+    let html = '';
+    matches.forEach(country => {
+        html += `
+            <div onclick="app.scrollToDatabaseCountry(${country.id})" class="p-3 hover:bg-dark-800 cursor-pointer flex items-center gap-3 transition-colors border-b border-dark-800 last:border-0">
+                <div class="w-6 h-4 overflow-hidden rounded shadow-sm flex items-center justify-center text-xs bg-dark-800">
+                    ${this.getLogoDisplayHTML(country.flag)}
+                </div>
+                <span class="text-sm text-slate-300 font-medium">${this.getCountryName(country)}</span>
+            </div>
+        `;
+    });
+    
+    dropdown.innerHTML = html;
+    dropdown.classList.remove('hidden');
+};
+
+ScoutApp.prototype.scrollToDatabaseCountry = function(countryId) {
+    const dropdown = document.getElementById('db-search-dropdown');
+    if (dropdown) dropdown.classList.add('hidden');
+    
+    const block = document.getElementById(`db-country-${countryId}`);
+    if (block) {
+        block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Add a highlight animation
+        block.classList.add('ring-2', 'ring-scout-500', 'ring-offset-4', 'ring-offset-dark-950', 'transition-all', 'duration-500');
+        setTimeout(() => {
+            block.classList.remove('ring-2', 'ring-scout-500', 'ring-offset-4', 'ring-offset-dark-950');
+        }, 2000);
     }
 };
