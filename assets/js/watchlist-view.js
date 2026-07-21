@@ -40,7 +40,20 @@ ScoutApp.prototype.renderWatchlist = function(c, skipAnimation = false) {
     else if (filter.sort === 'az') filtered.sort((a, b) => a.name.localeCompare(b.name));
     else if (filter.sort === 'za') filtered.sort((a, b) => b.name.localeCompare(a.name));
 
-    const allTeams = this.state.data.teams.map(t=>({val:t.id, txt:this.getTeamName(t.id)}));
+    const allTeamsRaw = this.state.data.teams.map(t=>({val:t.id, txt:this.getTeamName(t.id)}));
+    const countryNames = (this.state.data.countries || []).map(c=>c.name.toLowerCase());
+    
+    const isNationalTeam = (name) => {
+        const n = name.toLowerCase();
+        if (n.match(/\\bu(15|16|17|18|19|20|21|23)\\b/)) return true;
+        if (n.includes(' milli') || n.includes(' national')) return true;
+        return countryNames.some(c => n === c || n.startsWith(c + ' '));
+    };
+
+    const clubTeams = allTeamsRaw.filter(t => !isNationalTeam(t.txt));
+    const nationalTeams = allTeamsRaw.filter(t => isNationalTeam(t.txt)).sort((a,b) => a.txt.localeCompare(b.txt));
+    
+    const allTeams = clubTeams;
     const totalCount = this.state.data.watchlist.length;
     const favBtnClass = filter.favoritesOnly ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-500/20" : "bg-dark-900 text-slate-400 border-dark-700 hover:text-white";
 
@@ -58,7 +71,10 @@ ScoutApp.prototype.renderWatchlist = function(c, skipAnimation = false) {
                         <div class="space-y-4">
                             ${this.createInput('wl-name', t('player_name'), 'Örn: Can', 'text', '', '')}
                             <div class="grid grid-cols-1 gap-4">
-                                <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-slate-400 ml-1">${t('team')}</label><div class="flex gap-2"><div class="flex-1">${this.createSelect('wl-team', '', allTeams, '', '', true)}</div><button onclick="app.navigate('database')" class="h-[46px] w-[46px] bg-dark-800 hover:bg-dark-700 rounded-xl border border-dark-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors" title="${t('return_db')}"><i data-lucide="database" class="w-5 h-5"></i></button></div></div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-slate-400 ml-1">${t('team')}</label><div class="flex gap-2"><div class="flex-1 relative" id="wl-team-search-container"><input type="text" id="wl-team-search" placeholder="${t('team')} Ara..." class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none h-[46px] placeholder:text-slate-600 transition-all text-sm" onkeyup="app.filterTeamsList('wl-team', this.value)" onclick="app.filterTeamsList('wl-team', this.value)" onblur="setTimeout(() => { const d = document.getElementById('wl-team-dropdown'); if(d) d.classList.add('hidden'); }, 200)"><input type="hidden" id="wl-team" value=""><div id="wl-team-dropdown" class="absolute top-full left-0 w-full mt-1 bg-dark-900 border border-dark-700 rounded-xl max-h-48 overflow-y-auto hidden z-50 shadow-xl custom-scrollbar">${allTeams.map(ta => `<div class="wl-team-option p-3 hover:bg-scout-600 cursor-pointer text-sm transition-colors text-white" onclick="app.selectTeamList('wl-team', ${ta.val}, '${ta.txt.replace(/'/g, "\\'")}')">${ta.txt}</div>`).join('')}</div></div></div></div>
+                                    <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-slate-400 ml-1">${t('national_team')}</label><div class="flex-1 relative" id="wl-national-team-container"><input type="text" id="wl-national-team" placeholder="Örn: Türkiye U19" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none h-[46px] placeholder:text-slate-600 transition-all text-sm" onkeyup="app.filterTeamsList('wl-national-team', this.value)" onclick="app.filterTeamsList('wl-national-team', this.value)" onblur="setTimeout(() => { const d = document.getElementById('wl-national-team-dropdown'); if(d) d.classList.add('hidden'); }, 200)"><div id="wl-national-team-dropdown" class="absolute top-full left-0 w-full mt-1 bg-dark-900 border border-dark-700 rounded-xl max-h-48 overflow-y-auto hidden z-50 shadow-xl custom-scrollbar">${nationalTeams.map(ta => `<div class="wl-national-team-option p-3 hover:bg-scout-600 cursor-pointer text-sm transition-colors text-white" onclick="app.selectTeamList('wl-national-team', '', '${ta.txt.replace(/'/g, "\\'")}')">${ta.txt}</div>`).join('')}</div></div></div>
+                                </div>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 ${this.createInput('wl-age', t('age'), '18', 'number', '', '', 40)}
@@ -131,7 +147,7 @@ ScoutApp.prototype.renderWatchlist = function(c, skipAnimation = false) {
                             <img src="${w.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-14 h-14 rounded-xl object-cover bg-dark-950 border border-dark-700">
                             <div class="overflow-hidden min-w-0">
                                 <div class="flex items-center gap-2"><h4 class="font-bold text-white text-lg truncate">${w.name}</h4></div>
-                                <div class="text-xs text-slate-400 mt-0.5 truncate flex items-center gap-1"><i data-lucide="shield" class="w-3 h-3"></i> ${this.getTeamName(w.teamId)}</div>
+                                <div class="text-xs text-slate-400 mt-0.5 truncate flex items-center gap-1"><i data-lucide="shield" class="w-3 h-3"></i> ${this.getTeamName(w.teamId)}${w.nationalTeam ? ` <span class="mx-1">•</span> <i data-lucide="flag" class="w-3 h-3 text-scout-400"></i> ${w.nationalTeam}` : ''}</div>
                                 <div class="text-xs text-scout-400 font-medium mt-0.5 truncate">${tPos(w.position) || '-'} • ${w.age || '-'} ${t('age')}</div>
                             </div>
                         </div>
@@ -167,6 +183,7 @@ ScoutApp.prototype.filterWatchlist = function(type, value) {
 ScoutApp.prototype.addToWatchlist = function() {
     const name = document.getElementById('wl-name').value;
     const teamId = document.getElementById('wl-team').value;
+    const nationalTeam = document.getElementById('wl-national-team') ? document.getElementById('wl-national-team').value : '';
     const age = document.getElementById('wl-age').value;
     const pos = document.getElementById('wl-pos').value;
     const source = document.getElementById('wl-source').value;
@@ -174,13 +191,14 @@ ScoutApp.prototype.addToWatchlist = function() {
     const img = document.getElementById('wl-img').value;
 
     if(!name) return alert("Oyuncu adı zorunludur.");
-    if(!teamId) return alert("Lütfen bir takım seçiniz.");
+    if(!teamId) return alert("Lütfen arama çubuğundan bir takım seçiniz.");
     if(age && parseInt(age) > 40) return alert("Oyuncu yaşı 40'tan büyük olamaz!");
 
     this.state.data.watchlist.unshift({
         id: Date.now(),
         name, 
         teamId: parseInt(teamId), 
+        nationalTeam,
         age, 
         position: pos, 
         source, 
@@ -189,6 +207,9 @@ ScoutApp.prototype.addToWatchlist = function() {
         dateAdded: new Date().toLocaleDateString('tr-TR'),
         isFavorite: false
     });
+    
+    // Formu temizle
+    document.getElementById('wl-team-search').value = '';
     
     this.saveData();
     this.renderWatchlist(document.getElementById('content-area'));
@@ -228,7 +249,26 @@ ScoutApp.prototype.goToWatchlistAndHighlight = function(id) {
         if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
             element.classList.add('highlight-pulse');
-            setTimeout(() => { element.classList.remove('highlight-pulse'); }, 2000);
+            setTimeout(() => element.classList.remove('highlight-pulse'), 3000);
         }
     }, 100);
+};
+
+ScoutApp.prototype.filterTeamsList = function(prefix, val) {
+    const dropdown = document.getElementById(`${prefix}-dropdown`);
+    if (!dropdown) return;
+    dropdown.classList.remove('hidden');
+    const options = document.querySelectorAll(`.${prefix}-option`);
+    options.forEach(opt => {
+        if(opt.innerText.toLowerCase().includes(val.toLowerCase())) opt.style.display = 'block';
+        else opt.style.display = 'none';
+    });
+};
+
+ScoutApp.prototype.selectTeamList = function(prefix, id, name) {
+    const idField = document.getElementById(prefix);
+    if(idField) idField.value = id;
+    const searchField = document.getElementById(`${prefix}-search`) || document.getElementById(prefix);
+    if(searchField) searchField.value = name;
+    document.getElementById(`${prefix}-dropdown`).classList.add('hidden');
 };
