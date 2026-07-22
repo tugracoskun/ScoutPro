@@ -34,10 +34,10 @@ ScoutApp.prototype.renderAcademySubmodules = function(container, params) {
             title: isEn ? "Full Back (LB/RB) Roles" : "Bek (LB/RB) Rolleri",
             desc: isEn ? "Learn about inverted fullbacks, wing-backs, and defensive fullbacks." : "Ters ayaklı bekleri, kanat bekleri ve savunmacı bekleri öğrenin.",
             icon: "move",
-            status: "locked",
-            color: "text-dark-400",
-            bg: "bg-dark-800",
-            border: "border-dark-700"
+            status: "active",
+            color: "text-scout-400",
+            bg: "bg-scout-400/20",
+            border: "border-scout-400/30"
         }
     ];
 
