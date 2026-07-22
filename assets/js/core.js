@@ -151,7 +151,8 @@ class ScoutApp {
             'matches': [t('menu_matches'), ''],
             'settings': [t('menu_settings'), ''],
             'team-detail': [t('team_detail'), ''],
-            'academy': [t('menu_academy'), t('dash_academy_desc')]
+            'academy': [t('menu_academy'), t('dash_academy_desc')],
+            'academy-lesson': [t('menu_academy'), 'Ders Modülü']
         };
         if(titles[page]) {
             document.getElementById('page-title').innerText = titles[page][0];
@@ -168,6 +169,7 @@ class ScoutApp {
             case 'players': this.renderPlayers(c); break; // players-list.js
             case 'watchlist': this.renderWatchlist(c); break; // matches.js
             case 'academy': this.renderAcademy(c); break;
+            case 'academy-lesson': this.renderLesson(c); break;
         }
         lucide.createIcons();
     }

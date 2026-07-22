@@ -107,7 +107,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
     
     steps.forEach((step) => {
         const disabledAttr = step.status === 'locked' ? 'disabled' : '';
-        const cursorClass = step.status === 'locked' ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:translate-y-[2px] hover:border-b-[4px] active:translate-y-[6px] active:border-b-0 transition-all';
+        const cursorClass = step.status === 'locked' ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:-translate-y-1 active:translate-y-1 transition-transform hover:scale-105';
         
         let btnBg = step.status === 'locked' ? 'bg-dark-800' : 'bg-[#58cc02]';
         let btnBorderColor = step.status === 'locked' ? 'border-dark-950' : 'border-[#46a302]';
@@ -121,7 +121,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
 
         stepsHTML += `
             <div class="absolute" style="left: ${step.pos.x}%; top: ${step.pos.y / 2}%; transform: translate(-50%, -50%); z-index: 10;">
-                <button ${disabledAttr} class="relative flex flex-col items-center group ${cursorClass}" onclick="app.showNotification('Bu modül şu anda hazırlanıyor.', 'info')">
+                <button ${disabledAttr} class="relative flex flex-col items-center group ${cursorClass}" onclick="${step.status === 'active' ? `app.navigate('academy-lesson')` : `app.showNotification('Bu modül şu an kilitli.', 'info')`}">
                     
                     <div class="absolute ${tooltipPosClass} top-1/2 -translate-y-1/2 w-48 p-3 rounded-2xl bg-dark-900 border border-dark-800 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 hidden md:block">
                         <div class="text-xs font-bold text-white mb-1">${step.title}</div>
@@ -143,7 +143,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
         <div class="h-full w-full overflow-y-auto custom-scrollbar fade-in bg-dark-950">
             <div class="p-4 md:p-8 max-w-4xl mx-auto flex flex-col min-h-full">
                 <!-- Sıradaki Eğitim Önizlemesi (Next Training Preview) -->
-                <div class="mb-8 w-full max-w-md mx-auto relative group cursor-pointer mt-4" onclick="app.showNotification('Bu eğitime başlanacak.', 'info')">
+                <div class="mb-8 w-full max-w-md mx-auto relative group cursor-pointer mt-4" onclick="app.navigate('academy-lesson')">
                     <div class="absolute -inset-1 bg-gradient-to-r from-[#58cc02]/20 to-blue-500/20 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
                     <div class="relative bg-dark-900 border border-dark-800 rounded-2xl p-5 flex items-start gap-4">
                         <div class="w-14 h-14 rounded-xl ${activeStep.bg} border-b-[4px] ${activeStep.border} flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
