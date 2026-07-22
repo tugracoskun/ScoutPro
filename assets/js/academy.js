@@ -169,12 +169,13 @@ ScoutApp.prototype.renderAcademy = function(container) {
                     
                     <!-- Adımlar -->
                     ${stepsHTML}
-                </div>
+                    </div>
 
-                <div class="text-center mt-12 pb-12">
-                    <button onclick="app.navigate('dashboard')" class="px-6 py-3 bg-dark-800 hover:bg-dark-700 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 mx-auto transition-colors">
-                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Genel Bakışa Dön
-                    </button>
+                    <div class="mt-16 text-center pb-8">
+                        <button onclick="app.navigate('dashboard')" class="bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 mx-auto">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i> ${window.getLang() === 'en' ? 'Back to Overview' : 'Genel Bakışa Dön'}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
