@@ -80,6 +80,32 @@ ScoutApp.prototype.renderDashboard = function(c) {
                 <div><h4 class="text-lg font-bold text-white">${t('dash_quick')}</h4><p class="text-xs text-slate-400">${t('dash_quick_desc')}</p></div>
                 <div class="flex gap-3"><button onclick="app.navigate('new-report')" class="px-5 py-2.5 bg-scout-600 hover:bg-scout-500 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-scout-900/20 transition-transform hover:scale-105"><i data-lucide="file-plus" class="w-4 h-4"></i> ${t('dash_create_report')}</button><button onclick="app.openQuickAddTeamModal()" class="px-5 py-2.5 bg-dark-800 hover:bg-dark-700 text-white rounded-xl text-sm font-bold flex items-center gap-2 border border-dark-700 transition-transform hover:scale-105"><i data-lucide="plus" class="w-4 h-4"></i> ${t('dash_quick_team')}</button></div>
             </div>
+
+            <!-- EĞİTİM BANNER -->
+            <div onclick="app.navigate('academy')" class="mt-4 bg-gradient-to-r from-blue-900/20 to-dark-900 border border-dark-800/50 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 cursor-pointer hover:border-blue-500/30 transition-all group">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="search" class="w-6 h-6 text-blue-400"></i>
+                    <div>
+                        <h4 class="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">${t('dash_academy_title')}</h4>
+                        <p class="text-xs text-slate-400">${t('dash_academy_desc')}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-5 w-full md:w-auto mt-4 md:mt-0 justify-end">
+                    <div class="w-32 hidden md:block">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${t('dash_academy_progress')}</span>
+                            <span class="text-[10px] font-black text-blue-400">1/4</span>
+                        </div>
+                        <div class="w-full bg-dark-950 rounded-full h-1.5 overflow-hidden border border-dark-800">
+                            <div class="bg-blue-500 h-1.5 rounded-full w-1/4 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                        </div>
+                    </div>
+                    <button class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20 transition-transform hover:scale-105 whitespace-nowrap">
+                        ${t('dash_academy_btn')} <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
         </div>
     `;
 

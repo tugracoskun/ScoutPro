@@ -21,6 +21,7 @@ const translations = {
         menu_dashboard: "Genel Bakış",
         menu_new_report: "Yeni Rapor",
         menu_database: "Takım Şablonları",
+        menu_academy: "Scout Eğitimi",
         dash_players: "Oyuncu",
         attr_details: "Yetenek Detayları",
         analysis_graph: "Analiz Grafiği",
@@ -182,8 +183,16 @@ const translations = {
         dash_quick_desc: "Sık kullanılan özelliklere buradan ulaşın.",
         dash_create_report: "Rapor Oluştur",
         dash_quick_team: "Hızlı Takım Ekle",
-
-        // --- Matches ---
+        dash_academy_title: "Eğitim",
+        dash_academy_desc: "Roller, etik kurallar ve oyuncu izleme tekniklerini öğrenerek ScoutPro'yu tam kapasite kullanın.",
+        dash_academy_btn: "Eğitime Devam Et",
+        dash_academy_progress: "İlerleme",
+        academy_step1: "Roller ve Pozisyonlar",
+        academy_step2: "Scouting Etiği",
+        academy_step3: "Genç Oyuncu İzleme",
+        academy_step4: "ScoutPro Rehberi",
+        
+        // --- Oyuncu Profili & Kartlar ---
         match_calendar: "Maç İzleme Takvimi",
         add_match: "Yeni Maç Ekle",
         match_plan: "Maç Planla",
@@ -252,6 +261,7 @@ const translations = {
         menu_dashboard: "Dashboard",
         menu_new_report: "New Report",
         menu_database: "Team Templates",
+        menu_academy: "Scout Academy",
         dash_players: "Player",
         attr_details: "Attribute Details",
         analysis_graph: "Analysis Graph",
@@ -408,8 +418,16 @@ const translations = {
         dash_quick_desc: "Access frequently used features here.",
         dash_create_report: "Create Report",
         dash_quick_team: "Quick Add Team",
+        dash_academy_title: "Training",
+        dash_academy_desc: "Learn about roles, ethics, and scouting techniques to use ScoutPro at full capacity.",
+        dash_academy_btn: "Continue Training",
+        dash_academy_progress: "Progress",
+        academy_step1: "Roles and Positions",
+        academy_step2: "Scouting Ethics",
+        academy_step3: "Youth Scouting",
+        academy_step4: "ScoutPro Guide",
 
-        // --- Matches ---
+        // --- Oyuncu Profili & Kartlar ---
         match_calendar: "Match Scouting Calendar",
         add_match: "Add New Match",
         match_plan: "Plan Match",

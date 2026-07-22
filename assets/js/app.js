@@ -49,7 +49,8 @@ class ScoutApp {
             'watchlist': ['Aday Havuzu', 'Takip Listesi'],
             'matches': ['Maç İzleme', 'Fikstür Planlama'],
             'settings': ['Ayarlar', 'Sistem'],
-            'team-detail': ['Takım Detayı', 'Analiz']
+            'team-detail': ['Takım Detayı', 'Analiz'],
+            'academy': ['Scout Eğitimi', 'Başlangıç Rehberi']
         };
         if(titles[page]) {
             document.getElementById('page-title').innerText = titles[page][0];
@@ -65,6 +66,7 @@ class ScoutApp {
             case 'new-report': this.renderNewReport(c); break;
             case 'players': this.renderPlayers(c); break;
             case 'watchlist': this.renderWatchlist(c); break;
+            case 'academy': this.renderAcademy(c); break;
         }
         lucide.createIcons();
     }
