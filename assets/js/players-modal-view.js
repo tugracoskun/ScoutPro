@@ -94,9 +94,11 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
 
                     <div class="h-8 w-[1px] bg-dark-800"></div>
 
-                    <button onclick="app.exportPlayerToPDF(${id}, ${selectedHistoryIndex})" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors border border-slate-700 shadow-lg shadow-slate-900/20 mr-2">
-                        <i data-lucide="download" class="w-4 h-4"></i> PDF İndir
+                    <button onclick="app.exportPlayerToPDF(${id}, ${selectedHistoryIndex})" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors border border-slate-700 shadow-lg shadow-slate-900/20 mr-2" title="PDF İndir">
+                        <i data-lucide="download" class="w-4 h-4"></i> PDF
                     </button>
+
+                    <div class="h-8 w-[1px] bg-dark-800 mr-2"></div>
 
                     <button onclick="app.openNewReportMode(${id})" class="flex items-center gap-2 bg-scout-600 hover:bg-scout-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg shadow-scout-900/20">
                         <i data-lucide="file-plus" class="w-4 h-4"></i> ${t('new_report')}
