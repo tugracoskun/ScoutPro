@@ -108,7 +108,7 @@ ScoutApp.prototype.finishLesson = function() {
     }
     
     setTimeout(() => {
-        this.showNotification("Tebrikler! Rol ve Pozisyonlar eğitimini başarıyla tamamladınız.", "success");
+        this.notify("Tebrikler! Rol ve Pozisyonlar eğitimini başarıyla tamamladınız.");
         this.navigate('academy');
     }, 400);
 };

@@ -121,7 +121,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
 
         stepsHTML += `
             <div class="absolute" style="left: ${step.pos.x}%; top: ${step.pos.y / 2}%; transform: translate(-50%, -50%); z-index: 10;">
-                <button ${disabledAttr} class="relative flex flex-col items-center group ${cursorClass}" onclick="${step.status === 'active' ? `app.navigate('academy-lesson')` : `app.showNotification('Bu modül şu an kilitli.', 'info')`}">
+                <button ${disabledAttr} class="relative flex flex-col items-center group ${cursorClass}" onclick="${step.status === 'active' ? `app.navigate('academy-lesson')` : `window.alert('Bu modül şu an kilitli.', 'error')`}">
                     
                     <div class="absolute ${tooltipPosClass} top-1/2 -translate-y-1/2 w-48 p-3 rounded-2xl bg-dark-900 border border-dark-800 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 hidden md:block">
                         <div class="text-xs font-bold text-white mb-1">${step.title}</div>
