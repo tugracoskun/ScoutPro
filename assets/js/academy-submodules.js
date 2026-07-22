@@ -167,7 +167,7 @@ ScoutApp.prototype.renderAcademySubmodules = function(container, params) {
                             
                             const isCompleted = app.state.completedLessons && app.state.completedLessons.includes(node.id);
                             
-                            let nodeClasses = "absolute transform -translate-x-1/2 -translate-y-1/2 w-11 h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-xl cursor-pointer transition-all duration-300 hover:scale-110 z-10 hover:z-50 group ";
+                            let nodeClasses = "pitch-node absolute transform -translate-x-1/2 -translate-y-1/2 w-11 h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-xl cursor-pointer transition-all duration-300 hover:scale-110 z-10 hover:z-50 group ";
                             
                             if (isCompleted) {
                                 nodeClasses += "bg-[#58cc02] text-dark-950 border-2 border-[#46a302] hover:shadow-[0_0_15px_rgba(88,204,2,0.6)]";
@@ -199,7 +199,7 @@ ScoutApp.prototype.renderAcademySubmodules = function(container, params) {
                             }
 
                             return `
-                                <div class="${nodeClasses}" style="left: ${node.x}%; top: ${node.y}%;" onclick="window.openAcademyLesson('${node.id}')">
+                                <div class="${nodeClasses}" data-id="${node.id}" style="left: ${node.x}%; top: ${node.y}%;" onclick="window.openAcademyLesson('${node.id}')">
                                     ${node.label}
                                     ${isCompleted ? `
                                         <div class="absolute -top-1 -right-1 md:-top-1.5 md:-right-1.5 bg-white rounded-full p-0.5 shadow-md z-20">
@@ -221,7 +221,8 @@ ScoutApp.prototype.renderAcademySubmodules = function(container, params) {
             </div>
 
             <!-- Right Side: Panel -->
-            <div id="panel-wrapper" class="w-0 flex-shrink-0 opacity-0 transition-all duration-500 ease-in-out bg-dark-900 border-l border-dark-800 overflow-hidden relative shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-20 absolute lg:relative top-0 right-0 h-full">
+            <div id="panel-wrapper" class="w-0 flex-shrink-0 opacity-0 transition-all duration-500 ease-in-out bg-dark-900 border-l border-[#58cc02]/20 overflow-hidden relative shadow-[-20px_0_40px_rgba(0,0,0,0.6)] z-20 absolute lg:relative top-0 right-0 h-full">
+                <div class="absolute top-0 bottom-0 left-0 w-px bg-gradient-to-b from-transparent via-[#58cc02]/50 to-transparent"></div>
                 <div id="lesson-panel" class="w-full h-full absolute inset-0 overflow-y-auto"></div>
             </div>
         </div>
@@ -236,7 +237,6 @@ ScoutApp.prototype.renderAcademySubmodules = function(container, params) {
         if (!pitchWrapper || !panelWrapper) return;
 
         // Animate Split
-        // On mobile, pitch is hidden completely. On desktop, it takes 5/12 of the screen.
         pitchWrapper.classList.remove('w-full');
         pitchWrapper.classList.add('w-0', 'lg:w-5/12', 'opacity-0', 'lg:opacity-100'); 
         
@@ -246,6 +246,17 @@ ScoutApp.prototype.renderAcademySubmodules = function(container, params) {
         if (pitchContainer) {
             pitchContainer.classList.add('scale-[0.85]');
         }
+
+        // Highlight active node(s)
+        document.querySelectorAll('.pitch-node').forEach(node => {
+            if (node.getAttribute('data-id') === lessonId) {
+                node.classList.add('ring-4', 'ring-[#58cc02]/70', 'ring-offset-4', 'ring-offset-dark-950', '!scale-125', '!z-50', 'shadow-[0_0_20px_rgba(88,204,2,0.8)]');
+                node.classList.remove('opacity-40');
+            } else {
+                node.classList.remove('ring-4', 'ring-[#58cc02]/70', 'ring-offset-4', 'ring-offset-dark-950', '!scale-125', '!z-50', 'shadow-[0_0_20px_rgba(88,204,2,0.8)]');
+                node.classList.add('opacity-40');
+            }
+        });
 
         setTimeout(() => {
             app.renderLesson(document.getElementById('lesson-panel'), {lessonId});
@@ -262,6 +273,11 @@ ScoutApp.prototype.renderAcademySubmodules = function(container, params) {
 
         pitchWrapper.classList.add('w-full');
         pitchWrapper.classList.remove('w-0', 'lg:w-5/12', 'opacity-0', 'lg:opacity-100');
+        
+        // Reset node highlights
+        document.querySelectorAll('.pitch-node').forEach(node => {
+            node.classList.remove('ring-4', 'ring-[#58cc02]/70', 'ring-offset-4', 'ring-offset-dark-950', '!scale-125', '!z-50', 'opacity-40', 'shadow-[0_0_20px_rgba(88,204,2,0.8)]');
+        });
         
         panelWrapper.classList.add('w-0', 'opacity-0');
         panelWrapper.classList.remove('w-full', 'lg:w-7/12', 'opacity-100');

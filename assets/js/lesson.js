@@ -271,7 +271,10 @@ ScoutApp.prototype.updateLessonUI = function(container) {
                         <button onclick="${isLast ? "app.finishLesson()" : "app.nextLessonSlide()"}" class="group w-auto px-8 py-3 bg-[#58cc02] hover:bg-[#46a302] text-white rounded-2xl font-black text-lg transition-transform hover:-translate-y-1 active:translate-y-1 shadow-[0_4px_0_#46a302] hover:shadow-[0_6px_0_#46a302] active:shadow-none flex items-center justify-center gap-2">
                             ${isLast ? 
                                 `<span>${isEn ? 'COMPLETE' : 'TAMAMLA'}</span><i data-lucide="check-check" class="w-6 h-6"></i>` : 
-                                `<span>${isEn ? 'NEXT' : 'SONRAKİ'}</span><i data-lucide="arrow-right" class="w-6 h-6 group-hover:translate-x-1 transition-transform"></i>`
+                                (slideIndex === 0 ? 
+                                    `<span>${isEn ? 'START' : 'BAŞLA'}</span><i data-lucide="book-open" class="w-6 h-6 group-hover:translate-x-1 transition-transform"></i>` :
+                                    `<span>${isEn ? 'NEXT' : 'SONRAKİ'}</span><i data-lucide="arrow-right" class="w-6 h-6 group-hover:translate-x-1 transition-transform"></i>`
+                                )
                             }
                         </button>
                     </div>
