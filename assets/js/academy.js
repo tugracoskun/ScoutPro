@@ -5,7 +5,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
         {
             id: 1,
             title: t('academy_step1'),
-            desc: "Sahadaki rolleri, mevki özelliklerini ve güncel futbol taktiklerini anlayın.",
+            desc: t('academy_step1_desc'),
             icon: "users",
             status: "active",
             color: "text-scout-400",
