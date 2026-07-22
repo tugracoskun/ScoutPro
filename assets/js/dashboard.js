@@ -94,10 +94,10 @@ ScoutApp.prototype.renderDashboard = function(c) {
                     <div class="w-32 hidden md:block">
                         <div class="flex justify-between items-center mb-1">
                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${t('dash_academy_progress')}</span>
-                            <span class="text-[10px] font-black text-blue-400">1/4</span>
+                            <span class="text-[10px] font-black text-blue-400">1/9</span>
                         </div>
                         <div class="w-full bg-dark-950 rounded-full h-1.5 overflow-hidden border border-dark-800">
-                            <div class="bg-blue-500 h-1.5 rounded-full w-1/4 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                            <div class="bg-blue-500 h-1.5 rounded-full w-[11.1%] shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
                         </div>
                     </div>
                     <button class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20 transition-transform hover:scale-105 whitespace-nowrap">

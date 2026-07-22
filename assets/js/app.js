@@ -50,7 +50,7 @@ class ScoutApp {
             'matches': ['Maç İzleme', 'Fikstür Planlama'],
             'settings': ['Ayarlar', 'Sistem'],
             'team-detail': ['Takım Detayı', 'Analiz'],
-            'academy': ['Scout Eğitimi', 'Başlangıç Rehberi']
+            'academy': ['Eğitim', 'Başlangıç Rehberi']
         };
         if(titles[page]) {
             document.getElementById('page-title').innerText = titles[page][0];

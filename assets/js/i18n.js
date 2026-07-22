@@ -21,7 +21,7 @@ const translations = {
         menu_dashboard: "Genel Bakış",
         menu_new_report: "Yeni Rapor",
         menu_database: "Takım Şablonları",
-        menu_academy: "Scout Eğitimi",
+        menu_academy: "Eğitim",
         dash_players: "Oyuncu",
         attr_details: "Yetenek Detayları",
         analysis_graph: "Analiz Grafiği",
@@ -191,6 +191,11 @@ const translations = {
         academy_step2: "Scouting Etiği",
         academy_step3: "Genç Oyuncu İzleme",
         academy_step4: "ScoutPro Rehberi",
+        academy_step5: "İleri Düzey Analiz",
+        academy_step6: "Raporlama Teknikleri",
+        academy_step7: "Kulüp İletişimi",
+        academy_step8: "Kariyer Planlaması",
+        academy_step9: "Uzman Scout Sertifikası",
         
         // --- Oyuncu Profili & Kartlar ---
         match_calendar: "Maç İzleme Takvimi",
@@ -426,6 +431,11 @@ const translations = {
         academy_step2: "Scouting Ethics",
         academy_step3: "Youth Scouting",
         academy_step4: "ScoutPro Guide",
+        academy_step5: "Advanced Analysis",
+        academy_step6: "Reporting Techniques",
+        academy_step7: "Club Communication",
+        academy_step8: "Career Planning",
+        academy_step9: "Expert Scout Certificate",
 
         // --- Oyuncu Profili & Kartlar ---
         match_calendar: "Match Scouting Calendar",
