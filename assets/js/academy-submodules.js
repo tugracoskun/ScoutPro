@@ -38,6 +38,26 @@ ScoutApp.prototype.renderAcademySubmodules = function(container, params) {
             color: "text-scout-400",
             bg: "bg-scout-400/20",
             border: "border-scout-400/30"
+        },
+        {
+            id: 'dm',
+            title: isEn ? "Defensive Midfield (DM) Roles" : "Defansif Orta Saha (DM) Rolleri",
+            desc: isEn ? "Learn about the Regista, Segundo Volante, Anchor, and Ball-Winning Midfielder." : "Regista, Segundo Volante, Çapa ve Savaşçı Orta Saha rollerini öğrenin.",
+            icon: "shield",
+            status: "active",
+            color: "text-scout-400",
+            bg: "bg-scout-400/20",
+            border: "border-scout-400/30"
+        },
+        {
+            id: 'cm',
+            title: isEn ? "Central Midfield (CM) Roles" : "Merkez Orta Saha (CM) Rolleri",
+            desc: isEn ? "Explore the Mezzala, Central Winger, Carrilero, and Box-to-Box Midfielder." : "Mezzala, Merkez Kanat, Carrilero ve İki Yönlü Orta Saha rollerini keşfedin.",
+            icon: "activity",
+            status: "active",
+            color: "text-scout-400",
+            bg: "bg-scout-400/20",
+            border: "border-scout-400/30"
         }
     ];
 
