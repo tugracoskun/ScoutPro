@@ -88,17 +88,17 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                         <i data-lucide="pencil" class="w-4 h-4"></i>
                     </button>
                     
-                    <button onclick="app.deletePlayer(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700 mr-2" title="${t('delete')}">
+                    <button onclick="app.deletePlayer(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700" title="${t('delete')}">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </button>
 
-                    <div class="h-8 w-[1px] bg-dark-800"></div>
+                    <div class="h-8 w-[1px] bg-dark-800 mx-2"></div>
 
-                    <button onclick="app.exportPlayerToPDF(${id}, ${selectedHistoryIndex})" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors border border-slate-700 shadow-lg shadow-slate-900/20 mr-2" title="PDF İndir">
+                    <button onclick="app.exportPlayerToPDF(${id}, ${selectedHistoryIndex})" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-lg text-sm font-bold transition-colors border border-slate-700 shadow-lg shadow-slate-900/20" title="PDF İndir">
                         <i data-lucide="download" class="w-4 h-4"></i> PDF
                     </button>
 
-                    <div class="h-8 w-[1px] bg-dark-800 mr-2"></div>
+                    <div class="h-8 w-[1px] bg-dark-800 mx-2"></div>
 
                     <button onclick="app.openNewReportMode(${id})" class="flex items-center gap-2 bg-scout-600 hover:bg-scout-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg shadow-scout-900/20">
                         <i data-lucide="file-plus" class="w-4 h-4"></i> ${t('new_report')}
