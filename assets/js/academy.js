@@ -16,7 +16,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
         {
             id: 2,
             title: t('academy_step2'),
-            desc: "Veri gizliliği, kulüp sırları ve doğru analiz raporlamanın temel kuralları.",
+            desc: window.getLang() === 'en' ? "Basic rules of data privacy, club secrets, and accurate analysis reporting." : "Veri gizliliği, kulüp sırları ve doğru analiz raporlamanın temel kuralları.",
             icon: "shield-check",
             status: "locked",
             color: "text-slate-500",
@@ -27,7 +27,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
         {
             id: 3,
             title: t('academy_step3'),
-            desc: "Gelişim potansiyeli nasıl tespit edilir? Hangi yaşta nelere dikkat edilmeli?",
+            desc: window.getLang() === 'en' ? "How to identify development potential? What to look for at what age?" : "Gelişim potansiyeli nasıl tespit edilir? Hangi yaşta nelere dikkat edilmeli?",
             icon: "baby",
             status: "locked",
             color: "text-slate-500",
@@ -38,7 +38,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
         {
             id: 4,
             title: t('academy_step4'),
-            desc: "Uygulamadaki tüm modülleri verimli kullanarak takımınızı zafere taşıyın.",
+            desc: window.getLang() === 'en' ? "Lead your team to victory by using all modules in the application efficiently." : "Uygulamadaki tüm modülleri verimli kullanarak takımınızı zafere taşıyın.",
             icon: "monitor-play",
             status: "locked",
             color: "text-slate-500",
@@ -49,7 +49,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
         {
             id: 5,
             title: t('academy_step5'),
-            desc: "İstatistikleri doğru okuma, veri tabanlı performans değerlendirmesi.",
+            desc: window.getLang() === 'en' ? "Reading statistics correctly, data-based performance evaluation." : "İstatistikleri doğru okuma, veri tabanlı performans değerlendirmesi.",
             icon: "bar-chart-2",
             status: "locked",
             color: "text-slate-500",
@@ -60,7 +60,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
         {
             id: 6,
             title: t('academy_step6'),
-            desc: "Teknik heyet ve yönetim için etkili, kısa ve öz oyuncu raporları yazmak.",
+            desc: window.getLang() === 'en' ? "Writing effective, concise player reports for the coaching staff and management." : "Teknik heyet ve yönetim için etkili, kısa ve öz oyuncu raporları yazmak.",
             icon: "file-text",
             status: "locked",
             color: "text-slate-500",
@@ -71,7 +71,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
         {
             id: 7,
             title: t('academy_step7'),
-            desc: "Sportif direktör ve menajerlerle iletişim kurmanın incelikleri.",
+            desc: window.getLang() === 'en' ? "The subtleties of communicating with sporting directors and managers." : "Sportif direktör ve menajerlerle iletişim kurmanın incelikleri.",
             icon: "message-square",
             status: "locked",
             color: "text-slate-500",
@@ -82,7 +82,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
         {
             id: 8,
             title: t('academy_step8'),
-            desc: "Kısa ve uzun vadeli oyuncu kariyeri planlama stratejileri.",
+            desc: window.getLang() === 'en' ? "Short and long-term player career planning strategies." : "Kısa ve uzun vadeli oyuncu kariyeri planlama stratejileri.",
             icon: "trending-up",
             status: "locked",
             color: "text-slate-500",
@@ -93,7 +93,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
         {
             id: 9,
             title: t('academy_step9'),
-            desc: "Tüm eğitimleri tamamlayıp sertifikanızı alın ve uzmanlığınızı kanıtlayın.",
+            desc: window.getLang() === 'en' ? "Complete all training, get your certificate, and prove your expertise." : "Tüm eğitimleri tamamlayıp sertifikanızı alın ve uzmanlığınızı kanıtlayın.",
             icon: "award",
             status: "locked",
             color: "text-slate-500",
@@ -121,7 +121,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
 
         stepsHTML += `
             <div class="absolute" style="left: ${step.pos.x}%; top: ${step.pos.y / 2}%; transform: translate(-50%, -50%); z-index: 10;">
-                <button ${disabledAttr} class="relative flex flex-col items-center group ${cursorClass}" onclick="${step.status === 'active' ? `app.navigate('academy-submodules', {stepId: ${step.id}})` : `window.alert('Bu modül şu an kilitli.', 'error')`}">
+                <button ${disabledAttr} class="relative flex flex-col items-center group ${cursorClass}" onclick="${step.status === 'active' ? `app.navigate('academy-submodules', {stepId: ${step.id}})` : `window.alert(window.getLang() === 'en' ? 'This module is currently locked.' : 'Bu modül şu an kilitli.', 'error')`}">
                     
                     <div class="absolute ${tooltipPosClass} top-1/2 -translate-y-1/2 w-48 p-3 rounded-2xl bg-dark-900 border border-dark-800 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 hidden md:block">
                         <div class="text-xs font-bold text-white mb-1">${step.title}</div>
@@ -151,7 +151,7 @@ ScoutApp.prototype.renderAcademy = function(container) {
                         </div>
                         <div class="flex-1">
                             <div class="flex justify-between items-start mb-1">
-                                <span class="text-[10px] font-black text-[#58cc02] uppercase tracking-widest bg-[#58cc02]/10 px-2 py-0.5 rounded-md">SIRADAKİ EĞİTİM</span>
+                                <span class="text-[10px] font-black text-[#58cc02] uppercase tracking-widest bg-[#58cc02]/10 px-2 py-0.5 rounded-md">${window.getLang() === 'en' ? 'NEXT TRAINING' : 'SIRADAKİ EĞİTİM'}</span>
                                 <span class="text-xs font-bold text-slate-500">${activeStep.id} / ${totalSteps}</span>
                             </div>
                             <h3 class="text-lg font-bold text-white mb-1 group-hover:text-[#58cc02] transition-colors">${activeStep.title}</h3>
