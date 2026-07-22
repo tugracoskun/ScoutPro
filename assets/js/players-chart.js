@@ -73,7 +73,11 @@ ScoutApp.prototype.initComparisonRadar = function(p, currentReport, prevReport) 
         if (!chartElement) return;
         chartElement.innerHTML = ''; // Temizle
 
-        new ApexCharts(chartElement, {
+        if (this.comparisonRadarChart) {
+            this.comparisonRadarChart.destroy();
+        }
+
+        this.comparisonRadarChart = new ApexCharts(chartElement, {
             series: series,
             chart: { 
                 height: '100%', // Parent yüksekliğine uy
@@ -129,6 +133,8 @@ ScoutApp.prototype.initComparisonRadar = function(p, currentReport, prevReport) 
             theme: { mode: 'dark' },
             tooltip: { theme: 'dark' },
             grid: { show: false, padding: { top: 0, bottom: 0 } }
-        }).render();
+        });
+        
+        this.comparisonRadarChart.render();
     }, 300);
 };
