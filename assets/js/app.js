@@ -51,8 +51,8 @@ class ScoutApp {
             'settings': ['Ayarlar', 'Sistem'],
             'team-detail': ['Takım Detayı', 'Analiz'],
             'academy': ['Eğitim', 'Başlangıç Rehberi'],
-            'academy-submodules': ['Eğitim', 'Modül Seçimi'],
-            'academy-lesson': ['Eğitim', 'Ders Modülü']
+            'academy-submodules': ['Eğitim', window.getLang() === 'en' ? 'Module Selection' : 'Modül Seçimi'],
+            'academy-lesson': ['Eğitim', window.getLang() === 'en' ? 'Lesson Module' : 'Ders Modülü']
         };
         if(titles[page]) {
             document.getElementById('page-title').innerText = titles[page][0];

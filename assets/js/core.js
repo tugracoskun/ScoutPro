@@ -153,8 +153,8 @@ class ScoutApp {
             'settings': [t('menu_settings'), ''],
             'team-detail': [t('team_detail'), ''],
             'academy': [t('menu_academy'), t('dash_academy_desc')],
-            'academy-submodules': [t('menu_academy'), 'Modül Seçimi'],
-            'academy-lesson': [t('menu_academy'), 'Ders Modülü']
+            'academy-submodules': [t('menu_academy'), window.getLang() === 'en' ? 'Module Selection' : 'Modül Seçimi'],
+            'academy-lesson': [t('menu_academy'), window.getLang() === 'en' ? 'Lesson Module' : 'Ders Modülü']
         };
         if(titles[page]) {
             document.getElementById('page-title').innerText = titles[page][0];
