@@ -68,6 +68,16 @@ ScoutApp.prototype.renderAcademySubmodules = function(container, params) {
             color: "text-scout-400",
             bg: "bg-scout-400/20",
             border: "border-scout-400/30"
+        },
+        {
+            id: 'wg',
+            title: isEn ? "Winger (W/IF) Roles" : "Kanat (W/IF) Rolleri",
+            desc: isEn ? "Learn about Inverted Wingers, Inside Forwards, Raumdeuters, and Classic Wingers." : "Ters Kanat, İç Forvet, Raumdeuter ve Klasik Kanat rollerini öğrenin.",
+            icon: "wind",
+            status: "active",
+            color: "text-scout-400",
+            bg: "bg-scout-400/20",
+            border: "border-scout-400/30"
         }
     ];
 

@@ -168,12 +168,46 @@ ScoutApp.prototype.renderLesson = function(container, params) {
         }
     ];
 
+    const wgSlides = [
+        {
+            title: isEn ? "Winger Position and Roles" : "Kanat (Winger - Sağ/Sol Açık) Mevkisi ve Rolleri",
+            text: isEn ? "In modern soccer, attacking width, asymmetric use of space, and direct contributions to scoring are shaped by a fundamental shift in the roles of wing players. Wing players operate along the touchlines, where their dribbling, speed, creativity, technical ability, and decision-making in off-the-ball situations are put to the ultimate test." : "Modern futbolda hücum genişliği, asimetrik alan kullanımı ve skora doğrudan katkı, kanat oyuncularının rollerindeki köklü değişimle belirlenmektedir. Kanat oyuncuları top sürme, hız, yaratıcılık, teknik kapasite ve topsuz alan karar verme yetilerinin maksimum düzeyde test edildiği sınır hatlarında oynarlar.",
+            icon: "wind"
+        },
+        {
+            title: isEn ? "Inverted Winger" : "Ters Kanat Oyuncusu (Inverted Winger)",
+            text: isEn ? "One of the cornerstones of modern attacking theory—and the most commonly used wing role—is based on the tactic of deploying a right-footed player on the left wing and a left-footed player on the right wing. Instead of cutting toward the touchline, the player turns toward the goal upon receiving the ball and cuts inward toward the half-spaces.<br><br>Using their stronger foot, they take shots on goal, deliver key passes behind the defense, or join the team’s passing play in the center. When the opposite-wing player cuts inside, a large gap opens up on the wing; this gap is filled by an overlapping fullback, providing the team with tremendous attacking width and dynamism." : "Modern hücum teorisinin temel yapı taşlarından biri ve en sık kullanılan kanat rolüdür. Bu rol, sağ ayaklı bir oyuncunun sol kanatta, sol ayaklı bir oyuncunun ise sağ kanatta oynatılması taktiğine dayanır. Oyuncu taç çizgisine inmek yerine, topla buluştuğunda yüzünü kaleye dönerek merkez yarı alanlara (half-spaces) doğru içe kat eder.<br><br>Güçlü ayağını kullanarak kaleye şut çeker, defansın arkasına kilit paslar atar veya takımın merkezdeki pas organizasyonuna katılır. Ters kanat oyuncusu içe kat ettiğinde kanatta büyük bir boşluk oluşur; bu boşluk da geriden bindirme yapan hücumcu bek (overlapping fullback) tarafından doldurularak takıma müthiş bir hücum genişliği ve dinamizm kazandırılır.",
+            icon: "corner-down-right"
+        },
+        {
+            title: isEn ? "Raumdeuter (Space Investigator)" : "Raumdeuter (Uzay Yorumcusu)",
+            text: isEn ? "The German soccer term “Raumdeuter” refers to a revolutionary role created for players whose physical attributes, dribbling, or ball-handling skills may be limited, but who possess extraordinary intuition, mental focus, positioning, and off-the-ball movement.<br><br>Although they may resemble a winger, they do not stay on the touchline; when the team has possession, they constantly infiltrate the blind spots left by the opposing defense and the weakest links between two defenders to create scoring opportunities inside the penalty area. The Raumdeuter rarely touches the ball and does not dribble, but when they do get the ball, they are usually on the verge of putting it in the net. While the Mezzala moves forward from midfield with the ball, the Raumdeuter focuses entirely on off-the-ball play, aiming directly for the final action and disrupting the opponent’s balance." : "Alman futbol terimi olan Raumdeuter, fiziksel özellikleri, top sürme veya çalım yetenekleri kısıtlı olan, ancak olağanüstü bir sezgi, zihinsel konsantrasyon, pozisyon alma ve topsuz alan becerisine sahip oyuncular için icat edilmiş devrimsel bir roldür.<br><br>Kanat oyuncusu gibi görünse de taç çizgisinde durmaz; top takımdayken sürekli olarak rakip defansın bıraktığı kör noktalara, iki defans oyuncusu arasındaki en zayıf bağlantı yerlerine sızarak ceza sahası içinde gol şansı yaratırlar. Raumdeuter, topla çok az oynar, çalım atmaz ama topla buluştuğu o an genellikle topu ağlara göndermek üzeredir. Mezzala topla birlikte orta sahadan ileri çıkarken, Raumdeuter tamamen topsuz oyunda doğrudan final aksiyonuna ve rakip dengesini bozmaya odaklanır.",
+            icon: "eye"
+        },
+        {
+            title: isEn ? "Inside Forward" : "İç Forvet (Inside Forward)",
+            text: isEn ? "Similar to a wing-back, he moves toward the center with the ball, but his goal is not to build play, distribute passes, or control the tempo of the game; rather, it is to launch lethal attacks directly at the goal and the penalty spot. The inside forward is essentially an aggressive center forward positioned on the wing.<br><br>He makes rapid diagonal runs into the penalty area, cuts through the narrow channel between the center back and the fullback, and stands out for his high finishing ability. On the wing where an inside forward plays, playmaking qualities are not sought; what is expected of him is a pure vertical threat and goal-scoring ability." : "Ters kanat oyuncusuna benzer şekilde topla birlikte merkeze yönelir, ancak amacı oyun kurmak, pas dağıtmak veya oyunun temposunu ayarlamak değil, doğrudan kaleye ve penaltı noktasına öldürücü saldırılar yapmaktır. İç forvet, temelde kanata yerleştirilmiş agresif bir santrfordur.<br><br>Hızla ceza sahasına çapraz koşular yapar, stoper ile bek arasındaki dar koridoru (channel) deşer ve yüksek bitiriciliğiyle ön plana çıkar. Bir iç forvetin bulunduğu kanatta oyun kurucu özellikleri aranmaz; ondan beklenen saf dikey tehdit ve skor üretimidir.",
+            icon: "crosshair"
+        },
+        {
+            title: isEn ? "Defensive Winger" : "Defansif Kanat (Defensive Winger)",
+            text: isEn ? "This is a specialized role positioned on the wing, where tactical discipline takes center stage and hard work and teamwork are valued more than individual talent, designed to mark the opposing team’s attacking fullbacks and stop their runs forward.<br><br>When the team has possession, the player quickly joins the attack to provide width, but the primary objective is to aggressively defend the wing when the opponent has the ball, narrowing the space by dropping back into the center-back/fullback line and preventing the opponent from building play down the flank. The player is constantly on alert to launch quick counterattacks the moment the ball is won. Characteristics of a central midfielder—such as ball-winning ability, work rate, stamina, and aggressiveness—are integrated into the wing position." : "Taktiksel disiplinin ön plana çıktığı, çalışkanlığın ve takım oyununun yetenekten daha çok değer gördüğü, rakip takımın hücumcu beklerini marke etmek ve onların ileri çıkışını durdurmak için kanatta konumlandırılmış özel bir roldür.<br><br>Top takımdayken hızla hücuma çıkarak genişlik sağlar ancak asıl amacı top rakipteyken kanadı agresifçe savunmak, stoper/bek kademesine girerek alanı daraltmak ve rakibin kanattan oyun kurmasını engellemektir. Top kazanıldığı anda hızlı kontrataklara çıkmak için sürekli tetiktedir. Top çalma, çalışkanlık, dayanıklılık ve agresiflik gibi merkez orta saha özellikleri kanat pozisyonuna entegre edilmiştir.",
+            icon: "shield"
+        },
+        {
+            title: isEn ? "Classic Winger" : "Klasik Kanat (Winger)",
+            text: isEn ? "This is the traditional role of a player who hugs the touchline, stretches the field as wide as possible, and—upon receiving the ball—uses explosive speed and dribbling skills to beat the opposing fullback from the outside, cut inside toward the goal line, and deliver effective crosses into the penalty area.<br><br>Generally, right-footed players play on the right wing and left-footed players on the left wing so that crosses can reach the target forward inside the box with a curved and accurate trajectory. In modern soccer, because teams use inward-cutting attackers, the duties of classic wingers have largely been integrated into the role of attacking fullbacks (wing backs)." : "Taç çizgisini kullanan (hugging the touchline), sahayı olabildiğince genişleten, topu aldığında patlayıcı hızı ve çalım (dribbling) yeteneği ile karşısındaki beki dışarıdan geçip çizgiye inerek ceza sahasına etkili ortalar kesmeyi amaçlayan geleneksel roldür.<br><br>Genellikle sağ ayaklı oyuncular sağ kanatta, sol ayaklı oyuncular sol kanatta oynar ki ortalar kavisli ve isabetli bir şekilde içerideki hedef forvete ulaşabilsin. Günümüz futbolunda, takımların içe dönük hücumcular kullanması sebebiyle klasik kanat oyuncularının görevleri daha çok hücumcu beklerin (Wing Back) rolüne entegre olmuştur.",
+            icon: "arrow-right"
+        }
+    ];
+
     this.lessonState.currentLessonId = lessonId;
     if (lessonId === 'cb') this.lessonState.slides = cbSlides;
     else if (lessonId === 'fb') this.lessonState.slides = fbSlides;
     else if (lessonId === 'dm') this.lessonState.slides = dmSlides;
     else if (lessonId === 'cm') this.lessonState.slides = cmSlides;
     else if (lessonId === 'am') this.lessonState.slides = amSlides;
+    else if (lessonId === 'wg') this.lessonState.slides = wgSlides;
     else this.lessonState.slides = gkSlides;
     this.lessonState.currentSlide = 0;
 
