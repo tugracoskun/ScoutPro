@@ -58,6 +58,16 @@ ScoutApp.prototype.renderAcademySubmodules = function(container, params) {
             color: "text-scout-400",
             bg: "bg-scout-400/20",
             border: "border-scout-400/30"
+        },
+        {
+            id: 'am',
+            title: isEn ? "Attacking Midfield (AM) Roles" : "Ofansif Orta Saha (AM) Rolleri",
+            desc: isEn ? "Discover the Shadow Striker, Trequartista, Enganche, and Advanced Playmaker." : "Gölge Forvet, Trequartista, Enganche ve Ofansif Oyun Kurucu rollerini keşfedin.",
+            icon: "crosshair",
+            status: "active",
+            color: "text-scout-400",
+            bg: "bg-scout-400/20",
+            border: "border-scout-400/30"
         }
     ];
 
