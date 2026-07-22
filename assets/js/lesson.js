@@ -201,6 +201,14 @@ ScoutApp.prototype.renderLesson = function(container, params) {
         }
     ];
 
+    const cfSlides = [
+        {
+            title: isEn ? "Center Forward (CF)" : "Santrfor (CF)",
+            text: isEn ? "Coming soon..." : "Çok yakında...",
+            icon: "target"
+        }
+    ];
+
     this.lessonState.currentLessonId = lessonId;
     if (lessonId === 'cb') this.lessonState.slides = cbSlides;
     else if (lessonId === 'fb') this.lessonState.slides = fbSlides;
@@ -208,6 +216,7 @@ ScoutApp.prototype.renderLesson = function(container, params) {
     else if (lessonId === 'cm') this.lessonState.slides = cmSlides;
     else if (lessonId === 'am') this.lessonState.slides = amSlides;
     else if (lessonId === 'wg') this.lessonState.slides = wgSlides;
+    else if (lessonId === 'cf') this.lessonState.slides = cfSlides;
     else this.lessonState.slides = gkSlides;
     this.lessonState.currentSlide = 0;
 
@@ -229,7 +238,7 @@ ScoutApp.prototype.updateLessonUI = function(container) {
         <div class="h-full w-full flex flex-col bg-dark-950 fade-in">
             <!-- Header Progress -->
             <div class="w-full max-w-3xl mx-auto px-4 py-6 flex items-center gap-4">
-                <button onclick="app.navigate('academy-submodules', {stepId: 1})" class="text-slate-400 hover:text-white transition-colors">
+                <button onclick="${container.id === 'lesson-panel' ? 'window.closeAcademyLesson()' : `app.navigate('academy-submodules', {stepId: 1})`}" class="text-slate-400 hover:text-white transition-colors">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
                 <div class="flex-1 bg-dark-800 h-3 rounded-full overflow-hidden">
@@ -303,6 +312,11 @@ ScoutApp.prototype.finishLesson = function() {
         }
 
         this.notify(isEn ? "Congratulations! You have successfully completed this module." : "Tebrikler! Bu modülü başarıyla tamamladınız.");
-        this.navigate('academy-submodules', {stepId: 1});
+        
+        if (typeof window.closeAcademyLesson === 'function' && document.getElementById('lesson-panel')) {
+            window.closeAcademyLesson(true);
+        } else {
+            this.navigate('academy-submodules', {stepId: 1});
+        }
     }, 400);
 };

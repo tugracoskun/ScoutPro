@@ -78,81 +78,209 @@ ScoutApp.prototype.renderAcademySubmodules = function(container, params) {
             color: "text-scout-400",
             bg: "bg-scout-400/20",
             border: "border-scout-400/30"
+        },
+        {
+            id: 'cf',
+            title: isEn ? "Center Forward (CF) Roles" : "Santrfor (CF) Rolleri",
+            desc: isEn ? "Learn about Advanced Forward, Target Man, Poacher, and False 9." : "Yaratıcı Forvet, Hedef Adam, Fırsatçı Golcü ve Sahte 9 rollerini öğrenin.",
+            icon: "target",
+            status: "active",
+            color: "text-scout-400",
+            bg: "bg-scout-400/20",
+            border: "border-scout-400/30"
         }
     ];
 
+    const pitchNodes = [
+        { label: 'CF', id: 'cf', x: 50, y: 15 },
+        
+        { label: 'LW', id: 'wg', x: 20, y: 25 },
+        { label: 'AM', id: 'am', x: 50, y: 30 },
+        { label: 'RW', id: 'wg', x: 80, y: 25 },
+
+        { label: 'LM', id: 'wg', x: 15, y: 45 },
+        { label: 'CM', id: 'cm', x: 35, y: 45 },
+        { label: 'CM', id: 'cm', x: 65, y: 45 },
+        { label: 'RM', id: 'wg', x: 85, y: 45 },
+        
+        { label: 'LWB', id: 'fb', x: 15, y: 65 },
+        { label: 'DM', id: 'dm', x: 50, y: 60 },
+        { label: 'RWB', id: 'fb', x: 85, y: 65 },
+        
+        { label: 'LB', id: 'fb', x: 20, y: 80 },
+        { label: 'CB', id: 'cb', x: 35, y: 80 },
+        { label: 'CB', id: 'cb', x: 65, y: 80 },
+        { label: 'RB', id: 'fb', x: 80, y: 80 },
+        
+        { label: 'GK', id: 'gk', x: 50, y: 92 }
+    ];
+
     container.innerHTML = `
-        <div class="h-full w-full flex flex-col bg-dark-950 fade-in overflow-y-auto custom-scrollbar">
-            <!-- Header -->
-            <div class="w-full max-w-4xl mx-auto px-4 py-8 flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl font-black text-white mb-2">${isEn ? "Roles and Positions" : "Roller ve Pozisyonlar"}</h1>
-                    <p class="text-slate-400">${isEn ? "Select a module to continue your training." : "Eğitiminize devam etmek için bir modül seçin."}</p>
+        <div class="h-full w-full flex bg-dark-950 fade-in overflow-hidden relative">
+            <!-- Left Side: Pitch -->
+            <div id="pitch-wrapper" class="w-full h-full flex-shrink-0 transition-all duration-500 ease-in-out flex flex-col relative z-10">
+                <!-- Header -->
+                <div class="w-full px-4 md:px-8 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 z-20">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-black text-white mb-2 drop-shadow-lg">${isEn ? "Roles and Positions" : "Roller ve Pozisyonlar"}</h1>
+                        <p class="text-slate-400 font-medium text-sm">${isEn ? "Select a position on the pitch to start your training." : "Eğitime başlamak için sahadan bir mevkii seçin."}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="if(confirm(window.getLang() === 'en' ? 'Are you sure you want to reset your progress?' : 'İlerlemenizi sıfırlamak istediğinize emin misiniz?')) { localStorage.removeItem('scoutpro_completed_lessons'); app.state.completedLessons = []; app.navigate('academy-submodules'); }" class="group flex items-center gap-2 px-4 py-2 bg-dark-800 hover:bg-red-900/40 border border-dark-700 hover:border-red-700/50 rounded-xl transition-all shadow-lg">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4 text-slate-400 group-hover:text-red-400 transition-colors"></i>
+                            <span class="text-slate-400 group-hover:text-red-400 font-medium text-sm">${isEn ? "Reset" : "Sıfırla"}</span>
+                        </button>
+                        <button onclick="app.navigate('academy')" class="group flex items-center gap-2 px-4 py-2 bg-[#58cc02]/10 hover:bg-[#58cc02]/20 border border-[#58cc02]/30 rounded-xl transition-all shadow-lg">
+                            <i data-lucide="arrow-left" class="w-4 h-4 text-[#58cc02] transition-colors"></i>
+                            <span class="text-[#58cc02] font-bold text-sm">${isEn ? "Back" : "Geri"}</span>
+                        </button>
+                    </div>
                 </div>
-                <button onclick="app.navigate('academy')" class="group flex items-center gap-2 px-4 py-2 bg-dark-800 hover:bg-dark-700 border border-dark-700 rounded-xl transition-all">
-                    <i data-lucide="arrow-left" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
-                    <span class="text-slate-300 group-hover:text-white font-medium">${isEn ? "Back to Roadmap" : "Haritaya Dön"}</span>
-                </button>
+
+                <!-- Pitch Container -->
+                <div class="flex-1 flex items-center justify-center p-4 pb-8 overflow-hidden">
+                    <div class="relative mx-auto aspect-[2/3] h-[65vh] max-h-[800px] min-h-[400px] bg-gradient-to-b from-[#1a4a22] to-[#123518] rounded-md border-4 border-white/40 shadow-2xl shadow-[#58cc02]/10 transition-transform duration-500 ease-in-out" id="pitch-container">
+                        
+                        <!-- Field Lines (CSS) -->
+                        <div class="absolute inset-0 border-[8px] md:border-[10px] border-[#1a4a22] rounded-sm pointer-events-none"></div>
+                        <!-- Center Line -->
+                        <div class="absolute top-1/2 left-0 right-0 border-t-2 border-white/40 -translate-y-px pointer-events-none"></div>
+                        <!-- Center Circle -->
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 border-2 border-white/40 rounded-full pointer-events-none"></div>
+                        <!-- Center Dot -->
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white/70 rounded-full pointer-events-none"></div>
+                        
+                        <!-- Top Penalty Area -->
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[16%] border-2 border-t-0 border-white/40 pointer-events-none"></div>
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/4 h-[6%] border-2 border-t-0 border-white/40 pointer-events-none"></div>
+                        <div class="absolute top-[16%] left-1/2 -translate-x-1/2 w-16 h-8 md:w-20 md:h-10 border-b-2 border-x-2 border-white/40 rounded-b-full pointer-events-none"></div>
+
+                        <!-- Bottom Penalty Area -->
+                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[16%] border-2 border-b-0 border-white/40 pointer-events-none"></div>
+                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/4 h-[6%] border-2 border-b-0 border-white/40 pointer-events-none"></div>
+                        <div class="absolute bottom-[16%] left-1/2 -translate-x-1/2 w-16 h-8 md:w-20 md:h-10 border-t-2 border-x-2 border-white/40 rounded-t-full pointer-events-none"></div>
+
+                        <!-- Nodes -->
+                        ${pitchNodes.map(node => {
+                            const modData = submodules.find(m => m.id === node.id);
+                            if (!modData) return '';
+                            
+                            const isCompleted = app.state.completedLessons && app.state.completedLessons.includes(node.id);
+                            
+                            let nodeClasses = "absolute transform -translate-x-1/2 -translate-y-1/2 w-11 h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-xl cursor-pointer transition-all duration-300 hover:scale-110 z-10 hover:z-50 group ";
+                            
+                            if (isCompleted) {
+                                nodeClasses += "bg-[#58cc02] text-dark-950 border-2 border-[#46a302] hover:shadow-[0_0_15px_rgba(88,204,2,0.6)]";
+                            } else {
+                                nodeClasses += "bg-dark-900/90 backdrop-blur text-[#58cc02] border-2 border-[#58cc02] hover:bg-dark-800 hover:shadow-[0_0_15px_rgba(88,204,2,0.4)]";
+                            }
+
+                            // Tooltip Positioning Logic
+                            let tooltipClasses = "absolute mb-3 w-48 p-3 rounded-xl bg-dark-900 border border-dark-800 shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30 hidden md:block";
+                            let arrowClasses = "absolute -bottom-1.5 w-3 h-3 bg-dark-900 border-b border-r border-dark-800 rotate-45";
+                            
+                            // For CF (very top), push tooltip BELOW the node
+                            if (node.y < 20) {
+                                tooltipClasses += " top-full mt-3 left-1/2 -translate-x-1/2";
+                                tooltipClasses = tooltipClasses.replace("mb-3", "");
+                                arrowClasses = "absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-dark-900 border-t border-l border-dark-800 rotate-45";
+                            } else {
+                                tooltipClasses += " bottom-full";
+                                if (node.x > 70) {
+                                    tooltipClasses += " right-0 translate-x-4"; // Push right slightly
+                                    arrowClasses += " right-8"; 
+                                } else if (node.x < 30) {
+                                    tooltipClasses += " left-0 -translate-x-4"; // Push left slightly
+                                    arrowClasses += " left-8";
+                                } else {
+                                    tooltipClasses += " left-1/2 -translate-x-1/2";
+                                    arrowClasses += " left-1/2 -translate-x-1/2";
+                                }
+                            }
+
+                            return `
+                                <div class="${nodeClasses}" style="left: ${node.x}%; top: ${node.y}%;" onclick="window.openAcademyLesson('${node.id}')">
+                                    ${node.label}
+                                    ${isCompleted ? `
+                                        <div class="absolute -top-1 -right-1 md:-top-1.5 md:-right-1.5 bg-white rounded-full p-0.5 shadow-md z-20">
+                                            <i data-lucide="check-circle" class="w-3 h-3 md:w-4 md:h-4 text-[#58cc02]"></i>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <!-- Tooltip -->
+                                    <div class="${tooltipClasses}">
+                                        <div class="text-xs font-bold text-white mb-1">${modData.title}</div>
+                                        <div class="text-[10px] text-slate-400 font-normal leading-relaxed">${modData.desc}</div>
+                                        <div class="${arrowClasses}"></div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
             </div>
 
-            <!-- Modules Grid -->
-            <div class="w-full max-w-4xl mx-auto px-4 py-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-                ${submodules.map((mod, index) => {
-                    const isLocked = mod.status === 'locked';
-                    const isCompleted = app.state.completedLessons && app.state.completedLessons.includes(mod.id);
-                    
-                    const lockOverlay = isLocked ? `
-                        <div class="absolute inset-0 bg-dark-950/60 backdrop-blur-[2px] rounded-2xl flex items-center justify-center z-10 transition-opacity group-hover:bg-dark-950/80">
-                            <div class="w-12 h-12 bg-dark-800 rounded-full flex items-center justify-center shadow-lg border border-dark-700">
-                                <i data-lucide="lock" class="w-6 h-6 text-slate-500"></i>
-                            </div>
-                        </div>
-                    ` : '';
-
-                    let borderClass = 'border-dark-800';
-                    if (!isLocked) {
-                        borderClass = isCompleted ? 'border-[#58cc02]/30 group-hover:border-[#58cc02]/60' : 'group-hover:border-scout-500/50';
-                    }
-
-                    return `
-                        <div class="relative group cursor-${isLocked ? 'not-allowed' : 'pointer'} transition-all duration-300 hover:-translate-y-1"
-                             onclick="${isLocked ? `window.alert('${isEn ? "This module is locked." : "Bu modül şu an kilitli."}', 'error')` : `app.navigate('academy-lesson', {lessonId: '${mod.id}'})`}">
-                            
-                            <!-- Card Background & Border -->
-                            <div class="h-full bg-dark-900 border ${borderClass} rounded-2xl p-6 relative overflow-hidden transition-colors ${!isLocked ? 'group-hover:bg-dark-800' : ''}">
-                                ${lockOverlay}
-                                
-                                <!-- Icon Area -->
-                                <div class="w-14 h-14 rounded-xl ${mod.bg} ${mod.border} border flex items-center justify-center mb-6 relative">
-                                    <i data-lucide="${mod.icon}" class="w-7 h-7 ${mod.color}"></i>
-                                    ${isCompleted ? `
-                                    <div class="absolute -top-2 -right-2 w-6 h-6 bg-[#58cc02] rounded-full flex items-center justify-center border-2 border-dark-900 shadow-md">
-                                        <i data-lucide="check" class="w-3.5 h-3.5 text-white"></i>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                                
-                                <!-- Content -->
-                                <h3 class="text-xl font-bold text-white mb-3">${mod.title}</h3>
-                                <p class="text-slate-400 text-sm leading-relaxed">${mod.desc}</p>
-                                
-                                <!-- Action Button (Visual only) -->
-                                ${!isLocked ? `
-                                    <div class="mt-6 flex items-center ${isCompleted ? 'text-[#58cc02]' : 'text-scout-400'} font-bold text-sm uppercase tracking-wider">
-                                        ${isCompleted ? (isEn ? 'COMPLETED' : 'TAMAMLANDI') : (isEn ? 'START' : 'BAŞLA')} 
-                                        ${isCompleted ? 
-                                            `<i data-lucide="check-circle" class="w-4 h-4 ml-1"></i>` : 
-                                            `<i data-lucide="arrow-right" class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform"></i>`
-                                        }
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `;
-                }).join('')}
+            <!-- Right Side: Panel -->
+            <div id="panel-wrapper" class="w-0 flex-shrink-0 opacity-0 transition-all duration-500 ease-in-out bg-dark-900 border-l border-dark-800 overflow-hidden relative shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-20 absolute lg:relative top-0 right-0 h-full">
+                <div id="lesson-panel" class="w-full h-full absolute inset-0 overflow-y-auto"></div>
             </div>
         </div>
     `;
+
+    // Global Functions for the UI interactivity
+    window.openAcademyLesson = function(lessonId) {
+        const pitchWrapper = document.getElementById('pitch-wrapper');
+        const panelWrapper = document.getElementById('panel-wrapper');
+        const pitchContainer = document.getElementById('pitch-container');
+        
+        if (!pitchWrapper || !panelWrapper) return;
+
+        // Animate Split
+        // On mobile, pitch is hidden completely. On desktop, it takes 5/12 of the screen.
+        pitchWrapper.classList.remove('w-full');
+        pitchWrapper.classList.add('w-0', 'lg:w-5/12', 'opacity-0', 'lg:opacity-100'); 
+        
+        panelWrapper.classList.remove('w-0', 'opacity-0');
+        panelWrapper.classList.add('w-full', 'lg:w-7/12', 'opacity-100');
+        
+        if (pitchContainer) {
+            pitchContainer.classList.add('scale-[0.85]');
+        }
+
+        setTimeout(() => {
+            app.renderLesson(document.getElementById('lesson-panel'), {lessonId});
+            lucide.createIcons();
+        }, 50);
+    };
+
+    window.closeAcademyLesson = function(refreshNodes = false) {
+        const pitchWrapper = document.getElementById('pitch-wrapper');
+        const panelWrapper = document.getElementById('panel-wrapper');
+        const pitchContainer = document.getElementById('pitch-container');
+        
+        if (!pitchWrapper || !panelWrapper) return;
+
+        pitchWrapper.classList.add('w-full');
+        pitchWrapper.classList.remove('w-0', 'lg:w-5/12', 'opacity-0', 'lg:opacity-100');
+        
+        panelWrapper.classList.add('w-0', 'opacity-0');
+        panelWrapper.classList.remove('w-full', 'lg:w-7/12', 'opacity-100');
+        
+        if (pitchContainer) {
+            pitchContainer.classList.remove('scale-[0.85]');
+        }
+        
+        if (refreshNodes) {
+            setTimeout(() => {
+                app.navigate('academy-submodules');
+            }, 500);
+        } else {
+            // Give time for animation to finish before clearing the HTML
+            setTimeout(() => {
+                document.getElementById('lesson-panel').innerHTML = '';
+            }, 500);
+        }
+    };
 
     lucide.createIcons();
 };
