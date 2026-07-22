@@ -382,19 +382,19 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                 ${countdownBadge}
             </div>
 
-            <div class="flex-1 flex flex-col justify-center gap-2 w-full xl:w-auto">
-                <div class="flex items-center justify-center gap-4 w-full">
-                    <div class="flex items-center gap-3 w-[40%] justify-end">
-                        <span class="font-bold text-white text-right hidden sm:block truncate text-lg">${h?.name || '?'}</span>
+            <div class="flex-1 flex flex-col justify-center gap-2 w-full xl:w-auto min-w-0">
+                <div class="flex items-center justify-center gap-4 w-full min-w-0">
+                    <div class="flex items-center gap-3 w-[40%] justify-end min-w-0">
+                        <span class="font-bold text-white text-right hidden sm:block truncate text-lg min-w-0">${h?.name || '?'}</span>
                         <div class="w-14 h-14 flex items-center justify-center shrink-0 drop-shadow-lg">${this.getLogoDisplayHTML(h?.logo)}</div>
                     </div>
                     <div class="flex flex-col items-center justify-center shrink-0">
                         <div class="px-3 py-1 bg-dark-950 border border-dark-800 rounded-lg text-xs font-bold text-slate-500 mb-1">VS</div>
                         ${leagueBadge}
                     </div>
-                    <div class="flex items-center gap-3 w-[40%] justify-start">
+                    <div class="flex items-center gap-3 w-[40%] justify-start min-w-0">
                         <div class="w-14 h-14 flex items-center justify-center shrink-0 drop-shadow-lg">${this.getLogoDisplayHTML(a?.logo)}</div>
-                        <span class="font-bold text-white hidden sm:block truncate text-lg">${a?.name || '?'}</span>
+                        <span class="font-bold text-white hidden sm:block truncate text-lg min-w-0">${a?.name || '?'}</span>
                     </div>
                 </div>
                 ${stadiumBadge}
