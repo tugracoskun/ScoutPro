@@ -5,13 +5,12 @@ ScoutApp.prototype.lessonState = {
     slides: []
 };
 
-ScoutApp.prototype.renderLesson = function(container) {
-    // Şimdilik 1. Ders verisini statik olarak tanımlıyoruz. 
-    // Daha sonra dinamik olarak parametre alabilir.
+ScoutApp.prototype.renderLesson = function(container, params) {
     const lang = window.getLang();
     const isEn = lang === 'en';
+    const lessonId = (params && params.lessonId) ? params.lessonId : 'gk';
 
-    this.lessonState.slides = [
+    const gkSlides = [
         {
             title: isEn ? "(Goalkeeper - GK) Position and Roles" : "Kaleci (GK) Mevkisi ve Rolleri",
             text: isEn ? "In modern soccer, the goalkeeper is not only the team’s last line of defense but also the first attacking player in the build-up.<br><br>The rise of possession-oriented philosophies has fundamentally transformed the characteristics expected of a goalkeeper. While traditional goalkeeping skills remain vital, in the modern era, first touch, vision, the ability to distribute both short and long passes, and the skill to come off the line have come to the forefront. The goalkeeper’s tendencies in distribution and clearing the area must be in perfect harmony with the team’s overall playing style." : "Modern futbolda kaleci, sadece takımın son savunma hattı değil, aynı zamanda oyun kurulumunun (build-up) ilk hücum oyuncusudur. <br><br> Topa sahip olma odaklı felsefelerin yaygınlaşması, kaleciden beklenen karakteristikleri kökten değiştirmiştir. Geleneksel kalecilik vasıfları halen hayati olmakla birlikte, modern çağda ilk dokunuş, vizyon, kısa ve uzun pas dağıtımı ile kalesini terk etme becerileri ön plana çıkmıştır. Dağıtım ve alanı süpürme eğilimleri, takımın genel oyun stiliyle kusursuz bir uyum içinde olmak zorundadır.",
@@ -28,6 +27,37 @@ ScoutApp.prototype.renderLesson = function(container) {
             icon: "anchor"
         }
     ];
+
+    const cbSlides = [
+        {
+            title: isEn ? "Center Back (CB) Position and Roles" : "Stoper (CB) Mevkisi ve Rolleri",
+            text: isEn ? "As the commanders of the defensive line, center backs must prevent opponents from finding space, direct the team, and provide leadership.<br><br>The selection and on-field behavior of modern center backs vary greatly depending on their actions after regaining possession and their relationship with the ball. The pairing of center backs within the tactical structure forms the foundation of defensive balance and possession percentage." : "Savunma duvarının komutanları olan stoperler, rakibin alan bulmasını engellemek, takımı yönlendirmek ve liderlik etmek zorundadırlar.<br><br>Modern stoperlerin seçimi ve sahadaki davranışı, topu geri kazandıktan sonraki aksiyonlarına ve topla kurdukları ilişkiye göre büyük bir çeşitlilik gösterir. Taktiksel yapı içinde stoperlerin birbirleriyle eşleştirilmeleri, savunma dengesinin ve topa sahip olma yüzdesinin temelini oluşturur.",
+            icon: "users"
+        },
+        {
+            title: isEn ? "Playmaking Center Back (Ball-Playing Defender)" : "Pasör Stoper (Ball-Playing Defender)",
+            text: isEn ? "The backbone of modern soccer and the tactical starting point for attacks.<br><br>A playmaking center back is a defender who possesses the ability to build play from the back, high creativity, and ball skills as good as those of outfield players. This role does not merely involve passing the ball to the player next to them; it involves delivering vertical through balls that pierce the opposing team’s pressing lines, long diagonal passes to the wings, and key passes that initiate counterattacks. The presence of the playmaking center back on the field is the most effective way to neutralize the opponent’s high press.<br><br>With high passing accuracy and well-judged weight of pass, he dictates the direction and tempo of the game. However, since this high level of creative freedom can lead to major defensive gaps in the event of passing errors or turnovers, he is typically paired with a standard center back to balance the defensive risk." : "Modern futbolun belkemiği ve taktiksel hücum başlangıç noktasıdır.<br><br>Pasör stoper, oyunu geriden kurma becerisine, yüksek yaratıcılığa ve dış saha oyuncuları kadar iyi bir top tekniğine sahip olan savunma oyuncusudur. Bu rol, topu sadece yanındaki oyuncuya vermekle yetinmez; rakip takımın pres hatlarını delen dikey ara paslar (through balls), kanatlara atılan uzun diyagonal toplar ve kontratak başlatan anahtar paslar çıkarır. Pasör stoperin sahadaki varlığı, rakibin ön alan baskısını (high press) boşa çıkarmanın en etkili yoludur.<br><br>Yüksek pas isabeti ve ağırlığı ayarlanmış (weight of pass) dağıtımlarıyla oyunun yönünü ve temposunu tayin eder. Ancak bu yüksek yaratıcılık özgürlüğü, pas hatalarında veya top kayıplarında savunmada büyük açıklar verilmesine neden olabileceğinden, genellikle standart bir merkez savunmacı ile yan yana oynatılarak defansif risk dengelenir.",
+            icon: "git-merge"
+        },
+        {
+            title: isEn ? "Standard Central Defender" : "Standart Merkez Savunma (Central Defender)",
+            text: isEn ? "This is a balanced and reliable profile that falls between a defensive center back and a playmaking center back.<br><br>Their primary role is to stop opposing attackers, anticipate danger, and prevent the ball from entering the penalty area. He does not hesitate to clear the ball when necessary, but whenever possible, he supports the team’s possession by clearing the ball out of the danger zone and delivering a safe, short pass to nearby midfielders. A standard center back does not attempt risky passes that require a high degree of creativity; instead, he plays the game simply, with composure, and remains committed to zonal marking. In most modern systems, he is positioned alongside a playmaking center back to serve as a safety net, compensating for the spaces his creative partner leaves open or the balls he loses." : "Sınırlı stoper ile pasör stoper arasında dengeli ve güvenilir bir profildir.<br><br>Birincil görevi rakip hücumcuları durdurmak, tehlikeyi sezmek ve ceza sahasına top girmesini engellemektir. Topu uzaklaştırması gerektiğinde tereddüt etmez, ancak imkan varsa topu tehlike bölgesinden çıkarıp yakındaki orta saha oyuncularına güvenli bir kısa pasla aktararak takımın topa sahip olmasını destekler. Standart merkez savunmacı, yüksek yaratıcılık gerektiren riskli paslar denemez; oyunu basit, soğukkanlı (composure) ve alan savunmasına sadık kalarak oynar. Çoğu modern sistemde, bir Pasör Stoperin yanında sigorta görevi görmek üzere konumlandırılır, böylece yaratıcı partnerinin boşalttığı alanları veya kaybettiği topları telafi eder.",
+            icon: "shield"
+        },
+        {
+            title: isEn ? "Limited Defender" : "Sınırlı Stoper (Limited Defender)",
+            text: isEn ? "The primary and sole focus of the limited defender is to clear the ball as far away from the danger zone as possible.<br><br>This profile absolutely avoids taking any risks in building play from the back and, the moment it feels even the slightest pressure, clears the ball forward or out for a throw-in. While the technical abilities, first touch, passing, and vision of Limited Defenders may be quite low, they are extremely effective in terms of physical strength, aerial dominance, aggressiveness, courage, and man-marking. While using this role reduces the risk of losing possession when playing the ball out from the back to zero, it causes the ball to be given back to the opponent very quickly, making it absolutely unsuitable for teams that embrace a possession-based philosophy." : "Sınırlı stoperin birincil ve yegane odak noktası, topu tehlike bölgesinden mümkün olan en uzak mesafeye vurarak uzaklaştırmaktır.<br><br>Bu profil, savunmadan oyun kurma riskine kesinlikle girmez ve en ufak bir baskı hissettiği an topu ileriye veya taca diker. Sınırlı stoperlerin teknik kapasiteleri, ilk dokunuşları, pas veya vizyon özellikleri oldukça düşük olabilir; ancak fiziksel güç, hava hakimiyeti, agresiflik, cesaret ve adam markajı konularında son derece etkilidirler. Bu rolün kullanımı, geride topla oynarken kaptırma riskini sıfıra indirse de, topun rakibe çok çabuk geri verilmesine neden olduğu için topa sahip olma felsefesini benimseyen takımlar için kesinlikle uygun değildir.",
+            icon: "alert-triangle"
+        },
+        {
+            title: isEn ? "Libero / Sweeper" : "Libero / Süpürücü (Sweeper)",
+            text: isEn ? "Although its traditional use has declined in modern soccer with the rise of four-man defensive blocks, it is still employed as a tactical variation right in the center of three-man defensive systems.<br><br>The libero drops back one step behind the defensive line to clear balls played behind the defense, intercept breakaway attackers, and make critical goal-preventing interventions (blocks, interceptions). The modern libero, however, is not merely a defensive safety net; when in possession of the ball, he dribbles forward toward midfield and distributes the ball like an extra midfielder, thereby providing the team with a numerical advantage in the opponent’s half." : "Dörtlü savunma bloklarının yaygınlaşmasıyla modern futbolda klasik kullanımı azalmış olsa da, üçlü savunma sistemlerinin tam ortasında halen taktiksel bir varyasyon olarak kullanılmaktadır.<br><br>Libero, defans hattının bir adım gerisine sarkarak (dropping behind the defensive line) savunma arkasına atılan topları süpürür, kaçan hücumcuları karşılar ve kritik gol önleyici müdahaleler (bloklar, top kesmeler) yapar. Modern libero ise sadece bir savunma sigortası değildir; topla buluştuğunda orta sahaya doğru dripling yaparak çıkar ve ekstra bir orta saha oyuncusu gibi dağıtım yapar, böylece takıma rakip yarı alanda sayısal üstünlük avantajı sunar.",
+            icon: "move"
+        }
+    ];
+
+    this.lessonState.currentLessonId = lessonId;
+    this.lessonState.slides = lessonId === 'cb' ? cbSlides : gkSlides;
     this.lessonState.currentSlide = 0;
 
     this.updateLessonUI(container);
@@ -48,7 +78,7 @@ ScoutApp.prototype.updateLessonUI = function(container) {
         <div class="h-full w-full flex flex-col bg-dark-950 fade-in">
             <!-- Header Progress -->
             <div class="w-full max-w-3xl mx-auto px-4 py-6 flex items-center gap-4">
-                <button onclick="app.navigate('academy')" class="text-slate-400 hover:text-white transition-colors">
+                <button onclick="app.navigate('academy-submodules', {stepId: 1})" class="text-slate-400 hover:text-white transition-colors">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
                 <div class="flex-1 bg-dark-800 h-3 rounded-full overflow-hidden">
@@ -113,7 +143,15 @@ ScoutApp.prototype.finishLesson = function() {
     
     setTimeout(() => {
         const isEn = window.getLang() === 'en';
-        this.notify(isEn ? "Congratulations! You have successfully completed the Roles and Positions training." : "Tebrikler! Rol ve Pozisyonlar eğitimini başarıyla tamamladınız.");
-        this.navigate('academy');
+        
+        // Mark as completed
+        const lessonId = this.lessonState.currentLessonId;
+        if (lessonId && !this.state.completedLessons.includes(lessonId)) {
+            this.state.completedLessons.push(lessonId);
+            localStorage.setItem('scoutpro_completed_lessons', JSON.stringify(this.state.completedLessons));
+        }
+
+        this.notify(isEn ? "Congratulations! You have successfully completed this module." : "Tebrikler! Bu modülü başarıyla tamamladınız.");
+        this.navigate('academy-submodules', {stepId: 1});
     }, 400);
 };

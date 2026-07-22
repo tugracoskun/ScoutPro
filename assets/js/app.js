@@ -51,6 +51,7 @@ class ScoutApp {
             'settings': ['Ayarlar', 'Sistem'],
             'team-detail': ['Takım Detayı', 'Analiz'],
             'academy': ['Eğitim', 'Başlangıç Rehberi'],
+            'academy-submodules': ['Eğitim', 'Modül Seçimi'],
             'academy-lesson': ['Eğitim', 'Ders Modülü']
         };
         if(titles[page]) {
@@ -68,6 +69,8 @@ class ScoutApp {
             case 'players': this.renderPlayers(c); break;
             case 'watchlist': this.renderWatchlist(c); break;
             case 'academy': this.renderAcademy(c); break;
+            case 'academy-submodules': this.renderAcademySubmodules(c, params); break;
+            case 'academy-lesson': this.renderLesson(c, params); break;
         }
         lucide.createIcons();
     }

@@ -7,7 +7,8 @@ class ScoutApp {
             searchTerm: '',
             newReport: this.resetReport(),
             tempData: {},
-            history: [] // Önceki sayfaları tutmak için
+            history: [], // Önceki sayfaları tutmak için
+            completedLessons: JSON.parse(localStorage.getItem('scoutpro_completed_lessons') || '[]')
         };
         this.init();
     }
@@ -152,6 +153,7 @@ class ScoutApp {
             'settings': [t('menu_settings'), ''],
             'team-detail': [t('team_detail'), ''],
             'academy': [t('menu_academy'), t('dash_academy_desc')],
+            'academy-submodules': [t('menu_academy'), 'Modül Seçimi'],
             'academy-lesson': [t('menu_academy'), 'Ders Modülü']
         };
         if(titles[page]) {
@@ -169,7 +171,8 @@ class ScoutApp {
             case 'players': this.renderPlayers(c); break; // players-list.js
             case 'watchlist': this.renderWatchlist(c); break; // matches.js
             case 'academy': this.renderAcademy(c); break;
-            case 'academy-lesson': this.renderLesson(c); break;
+            case 'academy-submodules': this.renderAcademySubmodules(c, params); break;
+            case 'academy-lesson': this.renderLesson(c, params); break;
         }
         lucide.createIcons();
     }
