@@ -308,7 +308,30 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
 
     let leagueBadge = m.league ? `<span class="px-2 py-0.5 bg-scout-900/30 border border-scout-500/20 rounded-md text-[10px] font-bold text-scout-400 mt-1 uppercase tracking-wider">${m.league}</span>` : '';
     let stadiumBadge = m.isStadium ? `<div class="mt-3 bg-dark-900 border border-dark-800 px-3 py-1.5 rounded-lg flex items-center justify-between gap-2 shadow-inner"><div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-400"></i><span class="text-xs font-bold text-slate-300 truncate">${m.stadiumName || 'Stadyum'}</span></div> ${m.stadiumLink ? `<button onclick="app.openExternal('${m.stadiumLink}')" class="text-blue-400 hover:text-white transition-colors"><i data-lucide="external-link" class="w-3 h-3"></i></button>`:''}</div>` : '';
-    let countdownBadge = `<div class="match-countdown flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg border shadow-sm transition-all bg-dark-900 border-dark-800 text-slate-400" data-date="${m.date}"><i data-lucide="timer" class="w-3.5 h-3.5"></i> <span>Hesaplanıyor...</span></div>`;
+    
+    let countdownBadge = `<div class="match-countdown flex items-center justify-center gap-1.5 text-[10px] uppercase font-black px-2 py-1 rounded-md border shadow-sm transition-all bg-dark-900 border-dark-800 text-slate-400" data-date="${m.date}"><i data-lucide="timer" class="w-3.5 h-3.5"></i> <span>...</span></div>`;
+    let actionButtons = '';
+    let isFinished = false;
+    
+    if (m.date) {
+        const now = new Date().getTime();
+        const matchTime = new Date(m.date).getTime();
+        const diff = matchTime - now;
+        isFinished = diff < -(2.5 * 60 * 60 * 1000); // 2.5 saat
+    }
+
+    if (m.watchedStatus === 'watched') {
+        countdownBadge = `<div class="flex items-center justify-center gap-1.5 text-[10px] uppercase font-black px-2 py-1 rounded-md border shadow-sm transition-all bg-scout-900/20 border-scout-500/30 text-scout-500"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> <span>${t('status_watched')}</span></div>`;
+    } else if (m.watchedStatus === 'skipped') {
+        countdownBadge = `<div class="flex items-center justify-center gap-1.5 text-[10px] uppercase font-black px-2 py-1 rounded-md border shadow-sm transition-all bg-dark-900 border-dark-800 text-slate-500"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i> <span>${t('status_skipped')}</span></div>`;
+    } else if (isFinished) {
+        actionButtons = `
+            <div class="flex gap-1.5 z-20 ${isCompact ? 'ml-auto' : 'w-full mt-1.5'}">
+                <button onclick="app.markMatchWatched(${m.id}); event.stopPropagation();" class="flex items-center justify-center ${isCompact ? 'px-2 py-1' : 'flex-1 py-1.5'} bg-scout-600/20 hover:bg-scout-600 border border-scout-600/30 text-scout-500 hover:text-white rounded-md text-[10px] font-bold transition-all" title="${t('mark_watched')}"><i data-lucide="check" class="w-3.5 h-3.5"></i></button>
+                <button onclick="app.markMatchSkipped(${m.id}); event.stopPropagation();" class="flex items-center justify-center ${isCompact ? 'px-2 py-1' : 'flex-1 py-1.5'} bg-dark-800/50 hover:bg-dark-700 border border-dark-700 text-slate-400 hover:text-white rounded-md text-[10px] font-bold transition-all" title="${t('mark_skipped')}"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+            </div>
+        `;
+    }
 
     if (isCompact) {
         // Compact Görünüm (Calendar Side Panel için)
@@ -327,6 +350,7 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                             <span class="text-xs font-bold text-white">${timeStr}</span>
                         </div>
                         ${countdownBadge}
+                        ${actionButtons}
                     </div>
                 </div>
 
@@ -379,7 +403,10 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                     <span class="text-xs text-scout-500 font-bold uppercase tracking-wider">${dateStr}</span>
                     <span class="text-xl font-black text-white mt-1">${timeStr}</span>
                 </div>
-                ${countdownBadge}
+                <div class="flex flex-col w-full px-1">
+                    ${countdownBadge}
+                    ${actionButtons}
+                </div>
             </div>
 
             <div class="flex-1 flex flex-col justify-center gap-2 w-full xl:w-auto min-w-0">
@@ -653,9 +680,9 @@ ScoutApp.prototype.updateMatchCountdowns = function() {
             icon = 'clock-3';
         } else {
             // Geçmişte veya Canlı
-            // Eğer maç başlayalı 2 saatten az olduysa "Canlı" sayalım
-            const twoHours = 2 * 60 * 60 * 1000;
-            if (Math.abs(diff) <= twoHours) {
+            // Eğer maç başlayalı 2.5 saatten az olduysa "Canlı" sayalım
+            const matchDuration = 2.5 * 60 * 60 * 1000;
+            if (Math.abs(diff) <= matchDuration) {
                 txt = 'CANLI';
                 classes = 'bg-red-900/20 border-red-500/50 text-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.2)]';
                 icon = 'radio';
@@ -676,5 +703,26 @@ ScoutApp.prototype.updateMatchCountdowns = function() {
         window.matchesTimerInterval = setInterval(() => {
             if(window.app && window.app.updateMatchCountdowns) window.app.updateMatchCountdowns();
         }, 60000);
+    }
+};
+
+ScoutApp.prototype.markMatchWatched = function(id) {
+    const m = this.state.data.matches.find(x => x.id === id);
+    if(m) {
+        m.watchedStatus = 'watched';
+        this.saveData();
+        this.renderMatches(document.getElementById('content-area'));
+        if(window.app.activePage === 'dashboard') {
+            this.renderDashboard(document.getElementById('content-area'));
+        }
+    }
+};
+
+ScoutApp.prototype.markMatchSkipped = function(id) {
+    const m = this.state.data.matches.find(x => x.id === id);
+    if(m) {
+        m.watchedStatus = 'skipped';
+        this.saveData();
+        this.renderMatches(document.getElementById('content-area'));
     }
 };

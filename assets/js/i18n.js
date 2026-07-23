@@ -245,7 +245,15 @@ const translations = {
         new_report: "Yeni Rapor Ekle",
         standard: "Standart",
         open_to_dev: "Gelişime Açık",
-        read_understood: "Okudum, Anladım"
+        read_understood: "Okudum, Anladım",
+        
+        // --- YENİ EKLENENLER: Maç İzleme & İstatistik ---
+        mark_watched: "İzledim",
+        mark_skipped: "İzlemedim",
+        watched_matches: "İzlenen Maçlar",
+        activity_history: "Aktivite Geçmişi",
+        stats_title: "Scout İstatistikleri",
+        status_skipped: "İzlenmedi"
     },
     en: {
         view_list: "List",
@@ -490,7 +498,15 @@ const translations = {
         err_incomplete: "Please fill the required fields.",
         confirm_delete: "Are you sure you want to delete?",
         deleted_success: "Deleted successfully.",
-        read_understood: "I've Read & Understood"
+        read_understood: "I've Read & Understood",
+        
+        // --- YENİ EKLENENLER: Maç İzleme & İstatistik ---
+        mark_watched: "Watched",
+        mark_skipped: "Skipped",
+        watched_matches: "Watched Matches",
+        activity_history: "Activity History",
+        stats_title: "Scout Statistics",
+        status_skipped: "Not Watched"
     }
 };
 
