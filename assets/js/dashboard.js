@@ -57,13 +57,37 @@ ScoutApp.prototype.renderDashboard = function(c) {
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-lg">
-                    <div class="flex justify-between items-center mb-6"><h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="database" class="text-slate-400 w-5 h-5"></i> ${t('dash_db_status')}</h3><button onclick="app.navigate('database')" class="text-xs bg-dark-800 hover:bg-dark-700 border border-dark-700 text-slate-300 px-3 py-1.5 rounded-lg transition-colors">${t('dash_manage')}</button></div>
-                    <div class="grid grid-cols-3 gap-4">
-                        <div class="bg-dark-950/50 border border-dark-800 p-4 rounded-xl text-center hover:border-dark-600 transition-colors"><div class="text-2xl font-bold text-white mb-1">${countryCount}</div><div class="text-xs text-slate-500 font-bold uppercase tracking-wider flex items-center justify-center gap-1"><i data-lucide="globe" class="w-3 h-3"></i> ${t('dash_country')}</div></div>
-                        <div class="bg-dark-950/50 border border-dark-800 p-4 rounded-xl text-center hover:border-dark-600 transition-colors"><div class="text-2xl font-bold text-white mb-1">${leagueCount}</div><div class="text-xs text-slate-500 font-bold uppercase tracking-wider flex items-center justify-center gap-1"><i data-lucide="trophy" class="w-3 h-3"></i> ${t('dash_league')}</div></div>
-                        <div class="bg-dark-950/50 border border-dark-800 p-4 rounded-xl text-center hover:border-dark-600 transition-colors"><div class="text-2xl font-bold text-white mb-1">${teamCount}</div><div class="text-xs text-slate-500 font-bold uppercase tracking-wider flex items-center justify-center gap-1"><i data-lucide="shield" class="w-3 h-3"></i> ${t('dash_team')}</div></div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Team Templates Status (Kompakt ve Yeni Tasarım) -->
+                <div class="lg:col-span-2 bg-gradient-to-br from-dark-900 via-dark-900 to-blue-900/20 border border-dark-800 rounded-2xl p-1 relative overflow-hidden shadow-xl flex flex-col group transition-all hover:border-blue-500/30 hover:shadow-blue-500/10">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-scout-400 z-20"></div>
+                    <div class="absolute -top-20 -left-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500 pointer-events-none"></div>
+                    
+                    <div class="p-5 flex flex-col h-full relative z-10">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2 drop-shadow-md">
+                                <i data-lucide="database" class="w-4 h-4 text-blue-400"></i> ${t('dash_db_status')}
+                            </h3>
+                        </div>
+                        
+                        <div class="flex-1 flex items-center justify-center gap-3 py-2">
+                            <div class="flex flex-col items-center bg-dark-950/80 backdrop-blur-md border border-dark-800/50 rounded-xl p-3 shadow-inner w-full">
+                                <span class="text-2xl font-black text-white font-mono tracking-tighter">${countryCount}</span>
+                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-1"><i data-lucide="globe" class="w-3 h-3"></i> ${t('dash_country')}</span>
+                            </div>
+                            <div class="flex flex-col items-center bg-dark-950/80 backdrop-blur-md border border-dark-800/50 rounded-xl p-3 shadow-inner w-full">
+                                <span class="text-2xl font-black text-white font-mono tracking-tighter">${leagueCount}</span>
+                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-1"><i data-lucide="trophy" class="w-3 h-3"></i> ${t('dash_league')}</span>
+                            </div>
+                            <div class="flex flex-col items-center bg-dark-950/80 backdrop-blur-md border border-dark-800/50 rounded-xl p-3 shadow-inner w-full">
+                                <span class="text-2xl font-black text-white font-mono tracking-tighter">${teamCount}</span>
+                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-1"><i data-lucide="shield" class="w-3 h-3"></i> ${t('dash_team')}</span>
+                            </div>
+                        </div>
+                        
+                        <button onclick="app.navigate('database')" class="w-full mt-5 py-2.5 bg-dark-800/50 hover:bg-dark-700 border border-dark-700/50 text-white text-xs font-bold rounded-xl transition-all duration-300 backdrop-blur-sm group-hover:border-dark-600 flex items-center justify-center gap-2">
+                            ${t('dash_manage')} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="bg-gradient-to-br from-dark-900 via-dark-900 to-scout-900/20 border border-dark-800 rounded-2xl p-1 relative overflow-hidden shadow-xl flex flex-col group transition-all hover:border-scout-500/30 hover:shadow-scout-500/10">
