@@ -57,6 +57,8 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                 };
                 const displayRegion = displayRegionMap[regionKey] || regionKey;
 
+                const isExpanded = regionKey === 'Favoriler';
+
                 return `
                     <div class="mb-6 bg-dark-950/30 p-5 rounded-2xl border border-dark-800 transition-all">
                         <div class="flex items-center justify-between cursor-pointer group select-none" 
@@ -82,9 +84,9 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                             <h3 class="text-xl font-bold ${regionColor} flex items-center gap-2">
                                 <i data-lucide="${regionIcon}" class="${regionKey === 'Favoriler' ? 'fill-current' : ''} w-5 h-5"></i> ${displayRegion}
                             </h3>
-                            <i data-lucide="chevron-up" class="chevron-icon w-5 h-5 text-slate-500 group-hover:text-white transition-transform duration-300 ease-in-out"></i>
+                            <i data-lucide="chevron-up" class="chevron-icon w-5 h-5 text-slate-500 group-hover:text-white transition-transform duration-300 ease-in-out ${isExpanded ? '' : 'rotate-180'}"></i>
                         </div>
-                        <div class="transition-all duration-200 ease-out transform opacity-100 translate-y-0 origin-top">
+                        <div class="transition-all duration-200 ease-out transform origin-top ${isExpanded ? 'opacity-100 translate-y-0' : 'hidden opacity-0 -translate-y-4'}">
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-5">
                                     ${regionCountries.map(country => {
                     const leagues = this.state.data.leagues.filter(l => l.countryId === country.id);
