@@ -17,13 +17,19 @@ window.alert = function(message, type = 'error') {
 ScoutApp.prototype.notify = function(msg) { window.alert(msg, 'success'); };
 
 // Özel Onay Kutusu
-ScoutApp.prototype.confirmAction = function(message, onConfirmCallback) {
+ScoutApp.prototype.confirmAction = function(message, onConfirmCallback, confirmText = "Evet, Sil") {
     const oldConfirm = document.getElementById('custom-confirm-modal');
     if (oldConfirm) oldConfirm.remove();
     const modal = document.createElement('div');
     modal.id = 'custom-confirm-modal';
     modal.className = 'fixed inset-0 z-[200] flex items-center justify-center bg-dark-950/80 backdrop-blur-sm fade-in px-4';
-    modal.innerHTML = `<div class="bg-dark-900 border border-dark-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm text-center transform scale-100 transition-all"><div class="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500"><i data-lucide="alert-triangle" class="w-6 h-6"></i></div><h3 class="text-lg font-bold text-white mb-2">Emin misiniz?</h3><p class="text-slate-400 text-sm mb-6">${message}</p><div class="flex gap-3"><button id="btn-cancel" class="flex-1 py-2.5 rounded-xl bg-dark-800 text-slate-300 hover:bg-dark-700 font-medium transition-colors">Vazgeç</button><button id="btn-confirm" class="flex-1 py-2.5 rounded-xl bg-red-600 text-white hover:bg-red-500 font-bold transition-colors">Evet, Sil</button></div></div>`;
+    
+    const isDelete = confirmText.toLowerCase().includes("sil");
+    const btnColor = isDelete ? "bg-red-600 hover:bg-red-500" : "bg-scout-600 hover:bg-scout-500";
+    const iconColor = isDelete ? "text-red-500 bg-red-500/10" : "text-scout-500 bg-scout-500/10";
+    const iconName = isDelete ? "alert-triangle" : "help-circle";
+
+    modal.innerHTML = `<div class="bg-dark-900 border border-dark-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm text-center transform scale-100 transition-all"><div class="w-12 h-12 ${iconColor} rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="${iconName}" class="w-6 h-6"></i></div><h3 class="text-lg font-bold text-white mb-2">Emin misiniz?</h3><p class="text-slate-400 text-sm mb-6">${message}</p><div class="flex gap-3"><button id="btn-cancel" class="flex-1 py-2.5 rounded-xl bg-dark-800 text-slate-300 hover:bg-dark-700 font-medium transition-colors">Vazgeç</button><button id="btn-confirm" class="flex-1 py-2.5 rounded-xl ${btnColor} text-white font-bold transition-colors">${confirmText}</button></div></div>`;
     document.body.appendChild(modal);
     lucide.createIcons();
     document.getElementById('btn-cancel').onclick = () => modal.remove();

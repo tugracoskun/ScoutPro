@@ -707,22 +707,28 @@ ScoutApp.prototype.updateMatchCountdowns = function() {
 };
 
 ScoutApp.prototype.markMatchWatched = function(id) {
-    const m = this.state.data.matches.find(x => x.id === id);
-    if(m) {
-        m.watchedStatus = 'watched';
-        this.saveData();
-        this.renderMatches(document.getElementById('content-area'));
-        if(window.app.activePage === 'dashboard') {
-            this.renderDashboard(document.getElementById('content-area'));
+    this.confirmAction("Bu maçı 'İzledim' olarak işaretlemek istediğinize emin misiniz?", () => {
+        const m = this.state.data.matches.find(x => x.id === id);
+        if(m) {
+            m.watchedStatus = 'watched';
+            this.saveData();
+            this.renderMatches(document.getElementById('content-area'));
+            if(window.app.activePage === 'dashboard') {
+                this.renderDashboard(document.getElementById('content-area'));
+            }
+            this.notify("Maç 'İzledim' olarak işaretlendi.");
         }
-    }
+    }, "Eminim");
 };
 
 ScoutApp.prototype.markMatchSkipped = function(id) {
-    const m = this.state.data.matches.find(x => x.id === id);
-    if(m) {
-        m.watchedStatus = 'skipped';
-        this.saveData();
-        this.renderMatches(document.getElementById('content-area'));
-    }
+    this.confirmAction("Bu maçı 'İzlemedim' olarak işaretlemek istediğinize emin misiniz?", () => {
+        const m = this.state.data.matches.find(x => x.id === id);
+        if(m) {
+            m.watchedStatus = 'skipped';
+            this.saveData();
+            this.renderMatches(document.getElementById('content-area'));
+            this.notify("Maç 'İzlemedim' olarak işaretlendi.");
+        }
+    }, "Eminim");
 };
