@@ -125,16 +125,13 @@ ScoutApp.prototype.renderDashboard = function(c) {
             </div>
 
             <!-- EĞİTİM BANNER -->
-            <div onclick="app.navigate('academy')" class="mt-4 bg-gradient-to-r from-blue-900/20 to-dark-900 border border-dark-800/50 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 cursor-pointer hover:border-blue-500/30 transition-all group">
-                <div class="flex items-center gap-3">
-                    <i data-lucide="search" class="w-6 h-6 text-blue-400"></i>
-                    <div>
-                        <h4 class="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">${t('dash_academy_title')}</h4>
-                        <p class="text-xs text-slate-400">${t('dash_academy_desc')}</p>
-                    </div>
+            <div onclick="app.navigate('academy')" class="mt-2 bg-gradient-to-r from-blue-900/20 to-dark-900 border border-dark-800/50 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 cursor-pointer hover:border-blue-500/30 transition-all group">
+                <div>
+                    <h4 class="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">${t('dash_academy_title')}</h4>
+                    <p class="text-xs text-slate-400">${t('dash_academy_desc')}</p>
                 </div>
-                <div class="flex items-center gap-5 w-full md:w-auto mt-4 md:mt-0 justify-end">
-                    <div class="w-32 hidden md:block">
+                <div class="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0 justify-end">
+                    <div class="w-32 hidden md:block mr-2">
                         <div class="flex justify-between items-center mb-1">
                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${t('dash_academy_progress')}</span>
                             <span class="text-[10px] font-black text-blue-400">1/9</span>
@@ -149,6 +146,7 @@ ScoutApp.prototype.renderDashboard = function(c) {
                 </div>
             </div>
 
+            ${this.generateActivityGraphHTML()}
         </div>
     `;
 
@@ -268,4 +266,161 @@ ScoutApp.prototype.openActivityHistoryModal = function() {
         </div>
     `);
     lucide.createIcons();
+};
+
+ScoutApp.prototype.generateActivityGraphHTML = function() {
+    const year = new Date().getFullYear();
+    const activityMap = {};
+    const ensureMap = (key) => {
+        if (!activityMap[key]) activityMap[key] = { total: 0, matchesWatched: 0, matchesPlanned: 0, players: 0, watchlist: 0 };
+        return activityMap[key];
+    };
+
+    this.state.data.matches.forEach(m => {
+        if (m.watchedStatusDate) {
+            const d = new Date(m.watchedStatusDate);
+            if (!isNaN(d) && d.getFullYear() === year) {
+                const dateKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                ensureMap(dateKey).matchesWatched++;
+                ensureMap(dateKey).total++;
+            }
+        }
+        if (m.id && m.id > 1000000000000) {
+            const d = new Date(m.id);
+            if (!isNaN(d) && d.getFullYear() === year) {
+                const dateKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                ensureMap(dateKey).matchesPlanned++;
+                ensureMap(dateKey).total++;
+            }
+        }
+    });
+
+    this.state.data.players.forEach(p => {
+        if (p.id && p.id > 1000000000000) { 
+            const d = new Date(p.id);
+            if (!isNaN(d) && d.getFullYear() === year) {
+                const dateKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                ensureMap(dateKey).players++;
+                ensureMap(dateKey).total++;
+            }
+        }
+    });
+
+    this.state.data.watchlist.forEach(w => {
+        if (w.id && w.id > 1000000000000) {
+            const d = new Date(w.id);
+            if (!isNaN(d) && d.getFullYear() === year) {
+                const dateKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                ensureMap(dateKey).watchlist++;
+                ensureMap(dateKey).total++;
+            }
+        }
+    });
+
+    const startDate = new Date(year, 0, 1);
+    const endDate = new Date(year, 11, 31);
+    const firstDayOfWeek = startDate.getDay();
+    const totalDays = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    const totalCols = Math.ceil((firstDayOfWeek + totalDays) / 7);
+
+    let gridHtml = '';
+    
+    for (let i = 0; i < firstDayOfWeek; i++) {
+        gridHtml += `<div class="w-full h-full rounded-[2px] bg-transparent pointer-events-none"></div>`;
+    }
+
+    let currentDate = new Date(startDate);
+    const monthLabels = [];
+    const isEn = window.getLang && window.getLang() === 'en';
+    
+    const monthNames = isEn 
+        ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        : ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+    
+    let currentMonth = -1;
+    let weekCount = 0;
+
+    while (currentDate <= endDate) {
+        if (currentDate.getDay() === 0 && currentDate.getTime() !== startDate.getTime()) weekCount++;
+        
+        if (currentDate.getMonth() !== currentMonth) {
+            currentMonth = currentDate.getMonth();
+            monthLabels.push({ month: monthNames[currentMonth], week: weekCount });
+        }
+
+        const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+        const act = activityMap[dateKey] || { total: 0 };
+        const count = act.total;
+        
+        let colorClass = "bg-dark-800"; 
+        if (count === 1) colorClass = "bg-scout-900";
+        else if (count > 1 && count <= 3) colorClass = "bg-scout-600";
+        else if (count > 3 && count <= 5) colorClass = "bg-scout-500";
+        else if (count > 5) colorClass = "bg-scout-400";
+        
+        const dateObj = new Date(currentDate);
+        const dateStr = dateObj.toLocaleDateString(isEn ? 'en-US' : 'tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+        
+        let tooltip = isEn ? `No activity on ${dateStr}` : `${dateStr} tarihinde işlem yok`;
+        if (count > 0) {
+            let parts = [];
+            if (act.matchesWatched) parts.push(isEn ? `${act.matchesWatched} match(es) watched` : `${act.matchesWatched} maç izlendi/işaretlendi`);
+            if (act.matchesPlanned) parts.push(isEn ? `${act.matchesPlanned} match(es) planned` : `${act.matchesPlanned} maç planlandı`);
+            if (act.players) parts.push(isEn ? `${act.players} player report(s) added` : `${act.players} oyuncu raporu eklendi`);
+            if (act.watchlist) parts.push(isEn ? `${act.watchlist} watchlist addition(s)` : `${act.watchlist} aday havuza eklendi`);
+            tooltip = `[ ${dateStr} ]\n` + parts.join('\n');
+        }
+        
+        gridHtml += `<div class="w-full h-full min-h-[6px] rounded-[2px] ${colorClass} hover:ring-1 hover:ring-white transition-all cursor-pointer" title="${tooltip}"></div>`;
+        
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    let monthsHtml = '';
+    monthLabels.forEach((m, index) => {
+        const startCol = m.week + 1;
+        const nextWeek = (index + 1 < monthLabels.length) ? monthLabels[index + 1].week : totalCols;
+        const span = nextWeek - m.week;
+        monthsHtml += `<div style="grid-column: ${startCol} / span ${span};" class="text-[10px] text-slate-500 font-bold truncate pr-1">${m.month}</div>`;
+    });
+
+    return `
+        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-5 shadow-lg mt-6 fade-in overflow-hidden relative group transition-all flex flex-col w-full">
+            <h3 class="text-xs font-bold text-white uppercase tracking-widest mb-3 flex items-center gap-2 shrink-0">
+                <i data-lucide="git-commit" class="w-4 h-4 text-scout-500"></i> ${isEn ? 'Activity History' : 'Yıllık Aktivite Geçmişi'} (${year})
+            </h3>
+            
+            <div class="flex flex-col w-full flex-1">
+                <div class="flex w-full mb-1">
+                    <div class="w-6 shrink-0 mr-2"></div>
+                    <div class="grid flex-1 gap-1" style="grid-template-columns: repeat(${totalCols}, 1fr);">
+                        ${monthsHtml}
+                    </div>
+                </div>
+                
+                <div class="flex w-full gap-2 h-[88px]">
+                    <div class="flex flex-col justify-between text-[9px] text-slate-500 font-bold leading-none h-[88px] pb-1 w-6 shrink-0 text-right">
+                        <div>${isEn ? 'Sun' : 'Paz'}</div>
+                        <div>${isEn ? 'Tue' : 'Sal'}</div>
+                        <div>${isEn ? 'Thu' : 'Per'}</div>
+                        <div>${isEn ? 'Sat' : 'Cmt'}</div>
+                    </div>
+                    
+                    <div class="grid flex-1 grid-rows-7 gap-1 h-[88px]" style="grid-auto-flow: column; grid-template-columns: repeat(${totalCols}, 1fr);">
+                        ${gridHtml}
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-1.5 mt-3 text-[9px] font-bold text-slate-400 justify-end">
+                    <span>${isEn ? 'Less' : 'Az'}</span>
+                    <div class="w-2.5 h-2.5 rounded-[2px] bg-dark-800"></div>
+                    <div class="w-2.5 h-2.5 rounded-[2px] bg-scout-900"></div>
+                    <div class="w-2.5 h-2.5 rounded-[2px] bg-scout-600"></div>
+                    <div class="w-2.5 h-2.5 rounded-[2px] bg-scout-500"></div>
+                    <div class="w-2.5 h-2.5 rounded-[2px] bg-scout-400"></div>
+                    <span>${isEn ? 'More' : 'Çok'}</span>
+                </div>
+            </div>
+        </div>
+    `;
 };
