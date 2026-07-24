@@ -66,6 +66,21 @@ ScoutApp.prototype.toggleStadiumFields = function(prefix) {
 
 ScoutApp.prototype.renderMatchesList = function(c, headerHtml, allTeams, allTargetPlayers) {
     const allLeagues = this.state.data.leagues.map(l => ({val: l.name, txt: l.name, icon: l.logo}));
+    
+    const activeMatches = this.state.data.matches.filter(m => {
+        if (m.watchedStatus) {
+            const refDateStr = m.watchedStatusDate || m.date;
+            if (refDateStr) {
+                const refDate = new Date(refDateStr);
+                if (!isNaN(refDate)) {
+                    return (new Date() - refDate) <= (24 * 60 * 60 * 1000);
+                }
+            }
+            return false;
+        }
+        return true;
+    });
+
     c.innerHTML = `
         ${headerHtml}
         <div class="space-y-6 fade-in max-w-6xl mx-auto px-4">
@@ -126,12 +141,12 @@ ScoutApp.prototype.renderMatchesList = function(c, headerHtml, allTeams, allTarg
             <!-- Maç ${t('view_list')}si -->
             <div class="flex justify-between items-center mt-10 mb-4">
                 <h3 class="text-2xl font-bold text-white flex items-center gap-2"><i data-lucide="calendar-check" class="text-scout-400 w-6 h-6"></i> ${t('watchlist_title')}</h3>
-                <span class="text-xs font-bold text-slate-400 bg-dark-900 px-3 py-1.5 rounded-lg border border-dark-800">${this.state.data.matches.length} Maç</span>
+                <span class="text-xs font-bold text-slate-400 bg-dark-900 px-3 py-1.5 rounded-lg border border-dark-800">${activeMatches.length} Maç</span>
             </div>
             
             <div class="space-y-4 pb-12">
-                ${this.state.data.matches.length === 0 ? `<div class="text-center text-slate-500 py-12 bg-dark-900/30 rounded-3xl border border-dark-800/30 border-dashed">${t('no_matches')}</div>` : ''}
-                ${this.state.data.matches.sort((a,b)=>new Date(a.date)-new Date(b.date)).map(m => this.generateMatchCardHTML(m)).join('')}
+                ${activeMatches.length === 0 ? `<div class="text-center text-slate-500 py-12 bg-dark-900/30 rounded-3xl border border-dark-800/30 border-dashed">${t('no_matches')}</div>` : ''}
+                ${activeMatches.sort((a,b)=>new Date(a.date)-new Date(b.date)).map(m => this.generateMatchCardHTML(m)).join('')}
             </div>
         </div>
     `;
@@ -148,8 +163,22 @@ ScoutApp.prototype.renderMatchesCalendar = function(c, headerHtml, allTeams, all
     
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
+    const activeMatches = this.state.data.matches.filter(m => {
+        if (m.watchedStatus) {
+            const refDateStr = m.watchedStatusDate || m.date;
+            if (refDateStr) {
+                const refDate = new Date(refDateStr);
+                if (!isNaN(refDate)) {
+                    return (new Date() - refDate) <= (24 * 60 * 60 * 1000);
+                }
+            }
+            return false;
+        }
+        return true;
+    });
+
     const matchMap = {};
-    this.state.data.matches.forEach(m => {
+    activeMatches.forEach(m => {
         if (!m.date) return;
         const md = new Date(m.date);
         if (isNaN(md)) return;
@@ -711,6 +740,7 @@ ScoutApp.prototype.markMatchWatched = function(id) {
         const m = this.state.data.matches.find(x => x.id === id);
         if(m) {
             m.watchedStatus = 'watched';
+            m.watchedStatusDate = new Date().toISOString();
             this.saveData();
             this.renderMatches(document.getElementById('content-area'));
             if(window.app.activePage === 'dashboard') {
@@ -726,6 +756,7 @@ ScoutApp.prototype.markMatchSkipped = function(id) {
         const m = this.state.data.matches.find(x => x.id === id);
         if(m) {
             m.watchedStatus = 'skipped';
+            m.watchedStatusDate = new Date().toISOString();
             this.saveData();
             this.renderMatches(document.getElementById('content-area'));
             this.notify("Maç 'İzlemedim' olarak işaretlendi.");
