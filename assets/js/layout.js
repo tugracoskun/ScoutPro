@@ -33,6 +33,9 @@ ScoutApp.prototype.renderLayout = function() {
                 <div class="px-3 mb-2 mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-wider sidebar-text">${t('section_scouting')}</div>
                 <button onclick="app.navigate('matches')" class="nav-item" id="nav-matches"><div class="min-w-[24px] flex justify-center relative"><i data-lucide="tv-2" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_matches')}</span></button>
                 <button onclick="app.navigate('watchlist')" class="nav-item" id="nav-watchlist"><div class="min-w-[24px] flex justify-center"><i data-lucide="eye" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_watchlist')}</span></button>
+
+                <div class="px-3 mb-2 mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-wider sidebar-text">${t('section_statistics')}</div>
+                <button onclick="app.navigate('statistics')" class="nav-item" id="nav-statistics"><div class="min-w-[24px] flex justify-center"><i data-lucide="bar-chart-2" class="w-5 h-5"></i></div><span class="sidebar-text ml-3 font-medium text-sm">${t('menu_statistics')}</span></button>
             </nav>
 
             <div class="p-4 border-t border-dark-800 bg-dark-900/50 backdrop-blur">

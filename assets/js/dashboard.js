@@ -42,21 +42,6 @@ ScoutApp.prototype.renderDashboard = function(c) {
                 </div>
             </div>
             
-            <!-- YENİ: Scout İstatistikleri Bölümü -->
-            <div class="mb-6 flex flex-col md:flex-row gap-4 items-center fade-in">
-                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest shrink-0"><i data-lucide="bar-chart-2" class="inline w-4 h-4 mb-0.5 mr-1"></i> ${t('stats_title')}</h3>
-                <div class="h-[1px] w-full bg-dark-800 hidden md:block"></div>
-                <div onclick="app.openActivityHistoryModal()" class="shrink-0 bg-dark-900 border border-dark-800 hover:border-scout-500/30 px-5 py-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-4 group shadow-sm">
-                    <div class="p-2 bg-scout-500/10 rounded-lg text-scout-500 group-hover:bg-scout-500 group-hover:text-white transition-colors">
-                        <i data-lucide="activity" class="w-4 h-4"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">${t('watched_matches')}</span>
-                        <span class="text-lg font-black text-white leading-none">${watchedCount}</span>
-                    </div>
-                </div>
-            </div>
-            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <!-- Team Templates Status (Kompakt ve Yeni Tasarım) -->
                 <div class="lg:col-span-2 bg-gradient-to-br from-dark-900 via-dark-900 to-blue-900/20 border border-dark-800 rounded-2xl p-1 relative overflow-hidden shadow-xl flex flex-col group transition-all hover:border-blue-500/30 hover:shadow-blue-500/10">
@@ -119,34 +104,35 @@ ScoutApp.prototype.renderDashboard = function(c) {
                     ` : `<div class="flex flex-col items-center justify-center h-full p-6 text-center"><div class="w-12 h-12 bg-dark-950 rounded-full flex items-center justify-center mb-3 text-slate-600"><i data-lucide="calendar-off" class="w-6 h-6"></i></div><p class="text-slate-500 text-sm">${t('dash_no_matches')}</p><button onclick="app.navigate('matches')" class="mt-3 text-scout-400 text-xs font-bold hover:underline">${t('dash_plan_match')}</button></div>`}
                 </div>
             </div>
-            <div class="bg-gradient-to-r from-scout-900/20 to-dark-900 border border-dark-800/50 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div><h4 class="text-lg font-bold text-white">${t('dash_quick')}</h4><p class="text-xs text-slate-400">${t('dash_quick_desc')}</p></div>
-                <div class="flex gap-3"><button onclick="app.navigate('new-report')" class="px-5 py-2.5 bg-scout-600 hover:bg-scout-500 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-scout-900/20 transition-transform hover:scale-105"><i data-lucide="file-plus" class="w-4 h-4"></i> ${t('dash_create_report')}</button><button onclick="app.openQuickAddTeamModal()" class="px-5 py-2.5 bg-dark-800 hover:bg-dark-700 text-white rounded-xl text-sm font-bold flex items-center gap-2 border border-dark-700 transition-transform hover:scale-105"><i data-lucide="plus" class="w-4 h-4"></i> ${t('dash_quick_team')}</button></div>
-            </div>
 
-            <!-- EĞİTİM BANNER -->
-            <div onclick="app.navigate('academy')" class="mt-2 bg-gradient-to-r from-blue-900/20 to-dark-900 border border-dark-800/50 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 cursor-pointer hover:border-blue-500/30 transition-all group">
-                <div>
-                    <h4 class="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">${t('dash_academy_title')}</h4>
-                    <p class="text-xs text-slate-400">${t('dash_academy_desc')}</p>
+            <div class="flex flex-col gap-2">
+                <div class="bg-gradient-to-r from-scout-900/20 to-dark-900 border border-dark-800/50 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div><h4 class="text-lg font-bold text-white">${t('dash_quick')}</h4><p class="text-xs text-slate-400">${t('dash_quick_desc')}</p></div>
+                    <div class="flex gap-3"><button onclick="app.navigate('new-report')" class="px-5 py-2.5 bg-scout-600 hover:bg-scout-500 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-scout-900/20 transition-transform hover:scale-105"><i data-lucide="file-plus" class="w-4 h-4"></i> ${t('dash_create_report')}</button><button onclick="app.openQuickAddTeamModal()" class="px-5 py-2.5 bg-dark-800 hover:bg-dark-700 text-white rounded-xl text-sm font-bold flex items-center gap-2 border border-dark-700 transition-transform hover:scale-105"><i data-lucide="plus" class="w-4 h-4"></i> ${t('dash_quick_team')}</button></div>
                 </div>
-                <div class="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0 justify-end">
-                    <div class="w-32 hidden md:block mr-2">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${t('dash_academy_progress')}</span>
-                            <span class="text-[10px] font-black text-blue-400">1/9</span>
-                        </div>
-                        <div class="w-full bg-dark-950 rounded-full h-1.5 overflow-hidden border border-dark-800">
-                            <div class="bg-blue-500 h-1.5 rounded-full w-[11.1%] shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
-                        </div>
+
+                <!-- EĞİTİM BANNER -->
+                <div class="bg-gradient-to-r from-scout-900/20 to-dark-900 border border-dark-800/50 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h4 class="text-lg font-bold text-white">${t('dash_academy_title')}</h4>
+                        <p class="text-xs text-slate-400">${t('dash_academy_desc')}</p>
                     </div>
-                    <button class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20 transition-transform hover:scale-105 whitespace-nowrap">
-                        ${t('dash_academy_btn')} <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </button>
+                    <div class="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0 justify-end">
+                        <div class="w-32 hidden md:block mr-2">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${t('dash_academy_progress')}</span>
+                                <span class="text-[10px] font-black text-scout-400">1/9</span>
+                            </div>
+                            <div class="w-full bg-dark-950 rounded-full h-1.5 overflow-hidden border border-dark-800">
+                                <div class="bg-scout-500 h-1.5 rounded-full w-[11.1%] shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+                            </div>
+                        </div>
+                        <button onclick="app.navigate('academy')" class="px-5 py-2.5 bg-scout-600 hover:bg-scout-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-scout-900/20 transition-transform hover:scale-105 whitespace-nowrap">
+                            ${t('dash_academy_btn')} <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            ${this.generateActivityGraphHTML()}
         </div>
     `;
 
@@ -385,7 +371,7 @@ ScoutApp.prototype.generateActivityGraphHTML = function() {
     });
 
     return `
-        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-5 shadow-lg mt-6 fade-in overflow-hidden relative group transition-all flex flex-col w-full">
+        <div class="bg-dark-900 border border-dark-800 rounded-2xl p-5 shadow-lg fade-in overflow-hidden relative group transition-all flex flex-col w-full">
             <h3 class="text-xs font-bold text-white uppercase tracking-widest mb-3 flex items-center gap-2 shrink-0">
                 <i data-lucide="git-commit" class="w-4 h-4 text-scout-500"></i> ${isEn ? 'Activity History' : 'Yıllık Aktivite Geçmişi'} (${year})
             </h3>
@@ -423,4 +409,34 @@ ScoutApp.prototype.generateActivityGraphHTML = function() {
             </div>
         </div>
     `;
+};
+
+ScoutApp.prototype.renderStatistics = function(c) {
+    const watchedMatches = this.state.data.matches.filter(m => m.watchedStatus === 'watched');
+    const watchedCount = watchedMatches.length;
+
+    c.innerHTML = `
+        <div class="space-y-6 max-w-7xl mx-auto fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div onclick="app.openActivityHistoryModal()" class="bg-dark-900 border border-dark-800 hover:border-scout-500/30 p-5 rounded-2xl flex items-center gap-4 cursor-pointer transition-all group shadow-sm">
+                    <div class="p-3 bg-scout-500/10 rounded-xl text-scout-500">
+                        <i data-lucide="activity" class="w-6 h-6"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">${t('watched_matches')}</span>
+                        <span class="text-2xl font-black text-white leading-none">${watchedCount}</span>
+                    </div>
+                </div>
+                <!-- İleride buraya başka istatistik kartları eklenebilir (örn. Pie Chart verileri, başarı oranları vb.) -->
+            </div>
+
+            ${this.generateActivityGraphHTML()}
+        </div>
+    `;
+    
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        setTimeout(() => {
+            window.lucide.createIcons();
+        }, 10);
+    }
 };
