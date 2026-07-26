@@ -427,6 +427,16 @@ ScoutApp.prototype.renderStatistics = function(c) {
                         <span class="text-2xl font-black text-white leading-none">${watchedCount}</span>
                     </div>
                 </div>
+                
+                <div onclick="app.openReportHistoryModal()" class="bg-dark-900 border border-dark-800 hover:border-blue-500/30 p-5 rounded-2xl flex items-center gap-4 cursor-pointer transition-all group shadow-sm">
+                    <div class="p-3 bg-blue-500/10 rounded-xl text-blue-500">
+                        <i data-lucide="clipboard-check" class="w-6 h-6"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">${window.getLang() === 'en' ? 'Reported Players' : 'Raporlanan Oyuncular'}</span>
+                        <span class="text-2xl font-black text-white leading-none">${this.state.data.players.length}</span>
+                    </div>
+                </div>
                 <!-- İleride buraya başka istatistik kartları eklenebilir (örn. Pie Chart verileri, başarı oranları vb.) -->
             </div>
 
@@ -439,4 +449,62 @@ ScoutApp.prototype.renderStatistics = function(c) {
             window.lucide.createIcons();
         }, 10);
     }
+};
+
+ScoutApp.prototype.openReportHistoryModal = function() {
+    const players = [...this.state.data.players].sort((a, b) => b.id - a.id);
+    let htmlContent = '';
+    
+    if (players.length === 0) {
+        htmlContent = `<div class="text-center text-slate-500 py-12 flex flex-col items-center gap-4"><i data-lucide="clipboard-x" class="w-12 h-12 opacity-50"></i><span>${window.getLang() === 'en' ? 'No reported players yet.' : 'Henüz raporlanmış oyuncu yok.'}</span></div>`;
+    } else {
+        htmlContent = players.map(p => {
+            const team = this.state.data.teams.find(t => t.id == p.teamId) || {name: '???', logo: ''};
+            
+            return `
+                <div class="bg-dark-950 border border-dark-800 rounded-xl p-4 flex flex-col gap-3 relative group hover:border-blue-500/30 transition-all cursor-pointer" onclick="app.closeModal(); app.openPlayerModal(${p.id})">
+                    <div class="flex justify-between items-center pb-3 border-b border-dark-800/50">
+                        <span class="text-xs font-bold text-slate-400 bg-dark-900 px-2 py-1 rounded-md"><i data-lucide="calendar" class="w-3 h-3 inline-block mb-0.5"></i> ${p.dateAdded || ''}</span>
+                        <div class="flex gap-2">
+                            <span class="text-[10px] font-black ${p.rating >= 80 ? 'text-green-500' : (p.rating >= 60 ? 'text-yellow-500' : 'text-red-500')} bg-dark-900 px-2 py-1 rounded-md border border-dark-800 flex items-center gap-1">
+                                [${this.getGrade(p.rating).letter}] - Puan: ${p.rating}
+                            </span>
+                            <span class="text-[10px] font-black text-purple-400 bg-dark-900 px-2 py-1 rounded-md border border-dark-800 flex items-center gap-1">
+                                Pot: ${p.potential || '-'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-10 h-10 rounded-full object-cover border border-dark-700 shrink-0">
+                        <div class="flex flex-col flex-1 truncate">
+                            <span class="text-sm font-bold text-white truncate">${p.name}</span>
+                            <span class="text-[10px] text-slate-500 uppercase tracking-widest truncate flex items-center gap-1">
+                                ${this.getLogoDisplayHTML(team.logo, 'w-3 h-3')} ${team.name}
+                            </span>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600 group-hover:text-blue-500 transition-colors"></i>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    this.showModal(`
+        <div class="p-8 max-w-xl w-full">
+            <div class="flex justify-between items-center mb-6 border-b border-dark-800 pb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="clipboard-list" class="text-blue-500 w-6 h-6"></i> ${window.getLang() === 'en' ? 'Report History' : 'Raporlama Geçmişi'}</h3>
+                <button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400 hover:text-white transition-colors"></i></button>
+            </div>
+            <div class="space-y-3 relative z-10 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
+                ${htmlContent}
+            </div>
+            <div class="mt-4 pt-4 border-t border-dark-800 flex justify-end">
+                <button onclick="app.closeModal(); app.navigate('players')" class="text-xs font-bold text-blue-500 hover:text-white transition-colors flex items-center gap-1">
+                    ${window.getLang() === 'en' ? 'Go to Player Pool' : 'Oyuncu Havuzuna Git'} <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                </button>
+            </div>
+        </div>
+    `);
+    lucide.createIcons();
 };
