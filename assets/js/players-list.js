@@ -5,7 +5,7 @@ ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
 
     // Filtre state kontrolü
     if (!this.state.playerFilter) {
-        this.state.playerFilter = { favoritesOnly: false, sort: 'newest', position: 'all', potential: 'all' };
+        this.state.playerFilter = { favoritesOnly: false, sort: 'newest', category: 'All', potential: 'all' };
     }
 
     let filtered = this.state.data.players;
@@ -25,9 +25,16 @@ ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
         filtered = filtered.filter(p => p.isFavorite);
     }
 
-    // 3. Mevki Filtresi
-    if (this.state.playerFilter.position && this.state.playerFilter.position !== 'all') {
-        filtered = filtered.filter(p => p.position === this.state.playerFilter.position);
+    // 3. Kategori Filtresi
+    if (this.state.playerFilter.category && this.state.playerFilter.category !== 'All') {
+        filtered = filtered.filter(p => {
+            const pos = p.position;
+            if (this.state.playerFilter.category === 'Kaleci') return pos === 'Kaleci';
+            if (this.state.playerFilter.category === 'Defans') return ['Stoper', 'Sağ Bek', 'Sol Bek'].includes(pos);
+            if (this.state.playerFilter.category === 'OrtaSaha') return ['Defansif Orta Saha', 'Orta Saha', 'Ofansif Orta Saha', 'Sağ Kanat', 'Sol Kanat'].includes(pos);
+            if (this.state.playerFilter.category === 'Forvet') return pos === 'Santrafor';
+            return true;
+        });
     }
 
     // 4. Potansiyel Filtresi
@@ -54,35 +61,43 @@ ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
     c.innerHTML = `
         <div class="space-y-6 fade-in">
             
-            <!-- FİLTRE BAR (YENİ) -->
-            <div class="sticky top-0 z-30 bg-dark-950/80 backdrop-blur-xl border-b border-dark-800 py-4 -mx-8 px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="text-sm font-bold text-slate-400">
-                    ${t('total')}: <span class="text-white">${filtered.length}</span> ${t('players_count')}
+            <!-- FİLTRELEME & SIRALAMA BAR (STICKY) -->
+            <div class="sticky top-0 z-30 bg-dark-950/80 backdrop-blur-xl border-b border-dark-800 py-4 -mx-8 px-8 flex flex-col xl:flex-row gap-4 justify-between items-center">
+                <div class="flex items-center gap-3 w-full xl:w-auto">
+                    <!-- Arama -->
+                    <div class="relative w-full xl:w-56 group">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4 group-focus-within:text-scout-500 transition-colors"></i>
+                        <input type="text" onkeyup="app.handleSearch(this.value)" value="${this.state.searchTerm || ''}" placeholder="${window.getLang && window.getLang() === 'en' ? 'Search players...' : 'Oyuncular içinde ara...'}" class="w-full bg-dark-900 border border-dark-700 rounded-xl pl-9 pr-4 py-2 text-sm text-white focus:border-scout-500 outline-none transition-all">
+                    </div>
+                    
+                    <!-- Favori Filtresi -->
+                    <button onclick="app.togglePlayerFilter()" class="w-10 h-10 flex items-center justify-center rounded-xl border transition-all shrink-0 ${favBtnClass}" title="${t('region_favorites')}">
+                        <i data-lucide="heart" class="w-4 h-4 ${this.state.playerFilter.favoritesOnly ? 'fill-white' : ''}"></i>
+                    </button>
                 </div>
-                
-                <div class="flex flex-wrap items-center gap-3">
-                    <select onchange="app.updatePlayerFilter('sort', this.value)" class="bg-dark-900 border border-dark-700 text-slate-300 text-xs font-bold rounded-xl px-3 py-2 outline-none cursor-pointer">
-                        <option value="newest" ${this.state.playerFilter.sort === 'newest' ? 'selected' : ''}>${window.getLang && window.getLang() === 'en' ? 'Newest Added' : 'Yeni Eklenenler'}</option>
-                        <option value="oldest" ${this.state.playerFilter.sort === 'oldest' ? 'selected' : ''}>${window.getLang && window.getLang() === 'en' ? 'Oldest Added' : 'Eskiden Yeniye'}</option>
+
+                <!-- Mevki Kategorileri -->
+                <div class="flex gap-2 overflow-x-auto pb-1 max-w-full custom-scrollbar">
+                    <button onclick="app.updatePlayerFilter('category', 'All')" class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${this.state.playerFilter.category === 'All' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('all')} (${this.state.data.players.length})</button>
+                    <button onclick="app.updatePlayerFilter('category', 'Kaleci')" class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${this.state.playerFilter.category === 'Kaleci' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('pos_gk')}</button>
+                    <button onclick="app.updatePlayerFilter('category', 'Defans')" class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${this.state.playerFilter.category === 'Defans' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('cat_def')}</button>
+                    <button onclick="app.updatePlayerFilter('category', 'OrtaSaha')" class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${this.state.playerFilter.category === 'OrtaSaha' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('cat_mid')}</button>
+                    <button onclick="app.updatePlayerFilter('category', 'Forvet')" class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${this.state.playerFilter.category === 'Forvet' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('pos_st')}</button>
+                </div>
+
+                <div class="flex gap-2">
+                    <select onchange="app.updatePlayerFilter('potential', this.value)" class="bg-dark-900 border border-dark-700 text-slate-300 text-xs rounded-lg px-3 py-2 outline-none focus:border-scout-500 cursor-pointer">
+                        <option value="all">${window.getLang && window.getLang() === 'en' ? 'All Potentials' : 'Tüm Potansiyeller'}</option>
+                        <option value="Yüksek" ${this.state.playerFilter.potential === 'Yüksek' ? 'selected' : ''}>${window.getLang && window.getLang() === 'en' ? 'High Pot.' : 'Yüksek Pot.'}</option>
+                        <option value="Düşük" ${this.state.playerFilter.potential === 'Düşük' ? 'selected' : ''}>${window.getLang && window.getLang() === 'en' ? 'Low Pot.' : 'Düşük Pot.'}</option>
+                    </select>
+
+                    <select onchange="app.updatePlayerFilter('sort', this.value)" class="bg-dark-900 border border-dark-700 text-slate-300 text-xs rounded-lg px-3 py-2 outline-none focus:border-scout-500 cursor-pointer">
+                        <option value="newest" ${this.state.playerFilter.sort === 'newest' ? 'selected' : ''}>${window.getLang && window.getLang() === 'en' ? 'Newest' : 'Yeni'}</option>
+                        <option value="oldest" ${this.state.playerFilter.sort === 'oldest' ? 'selected' : ''}>${window.getLang && window.getLang() === 'en' ? 'Oldest' : 'Eski'}</option>
                         <option value="rating_desc" ${this.state.playerFilter.sort === 'rating_desc' ? 'selected' : ''}>${window.getLang && window.getLang() === 'en' ? 'Highest Rating' : 'En Yüksek Puan'}</option>
                         <option value="rating_asc" ${this.state.playerFilter.sort === 'rating_asc' ? 'selected' : ''}>${window.getLang && window.getLang() === 'en' ? 'Lowest Rating' : 'En Düşük Puan'}</option>
                     </select>
-
-                    <select onchange="app.updatePlayerFilter('position', this.value)" class="bg-dark-900 border border-dark-700 text-slate-300 text-xs font-bold rounded-xl px-3 py-2 outline-none cursor-pointer">
-                        <option value="all">${window.getLang && window.getLang() === 'en' ? 'All Positions' : 'Tüm Mevkiler'}</option>
-                        ${(typeof POSITIONS !== 'undefined' ? POSITIONS : []).map(pos => `<option value="${pos}" ${this.state.playerFilter.position === pos ? 'selected' : ''}>${window.tPos ? window.tPos(pos) : pos}</option>`).join('')}
-                    </select>
-
-                    <select onchange="app.updatePlayerFilter('potential', this.value)" class="bg-dark-900 border border-dark-700 text-slate-300 text-xs font-bold rounded-xl px-3 py-2 outline-none cursor-pointer">
-                        <option value="all">${window.getLang && window.getLang() === 'en' ? 'All Potentials' : 'Tüm Potansiyeller'}</option>
-                        <option value="Yüksek" ${this.state.playerFilter.potential === 'Yüksek' ? 'selected' : ''}>${window.getLang && window.getLang() === 'en' ? 'High' : 'Yüksek'}</option>
-                        <option value="Düşük" ${this.state.playerFilter.potential === 'Düşük' ? 'selected' : ''}>${window.getLang && window.getLang() === 'en' ? 'Low' : 'Düşük'}</option>
-                    </select>
-
-                    <button onclick="app.togglePlayerFilter()" class="flex items-center gap-2 px-4 py-2 rounded-xl border transition-all font-bold text-xs ${favBtnClass}">
-                        <i data-lucide="heart" class="w-4 h-4 ${this.state.playerFilter.favoritesOnly ? 'fill-white' : ''}"></i>
-                        ${t('only_favorites')}
-                    </button>
                 </div>
             </div>
 
@@ -104,7 +119,7 @@ ScoutApp.prototype.togglePlayerFilter = function() {
 
 ScoutApp.prototype.updatePlayerFilter = function(key, value) {
     if (!this.state.playerFilter) {
-        this.state.playerFilter = { favoritesOnly: false, sort: 'newest', position: 'all', potential: 'all' };
+        this.state.playerFilter = { favoritesOnly: false, sort: 'newest', category: 'All', potential: 'all' };
     }
     this.state.playerFilter[key] = value;
     this.renderPlayers(document.getElementById('content-area'), true);
