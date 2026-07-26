@@ -467,10 +467,10 @@ ScoutApp.prototype.openReportHistoryModal = function() {
                         <span class="text-xs font-bold text-slate-400 bg-dark-900 px-2 py-1 rounded-md"><i data-lucide="calendar" class="w-3 h-3 inline-block mb-0.5"></i> ${p.dateAdded || ''}</span>
                         <div class="flex gap-2">
                             <span class="text-[10px] font-black ${p.rating >= 80 ? 'text-green-500' : (p.rating >= 60 ? 'text-yellow-500' : 'text-red-500')} bg-dark-900 px-2 py-1 rounded-md border border-dark-800 flex items-center gap-1">
-                                [${this.getGrade(p.rating).letter}] - Puan: ${p.rating}
+                                [${this.getGrade(p.rating).letter}] - ${window.getLang() === 'en' ? 'Rating' : 'Puan'}: ${p.rating}
                             </span>
                             <span class="text-[10px] font-black text-purple-400 bg-dark-900 px-2 py-1 rounded-md border border-dark-800 flex items-center gap-1">
-                                Pot: ${p.potential || '-'}
+                                Pot: ${p.potential === 'Düşük' ? (window.getLang() === 'en' ? 'Low' : 'Düşük') : (p.potential === 'Yüksek' ? (window.getLang() === 'en' ? 'High' : 'Yüksek') : (p.potential || '-'))}
                             </span>
                         </div>
                     </div>
