@@ -25,6 +25,7 @@ class ScoutApp {
         });
     }
 
+
     resetReport() { 
         return { 
             name: '', teamId: '', position: '', role: '', age: '', height: '', 
@@ -1220,12 +1221,115 @@ class ScoutApp {
     }
 
     handleSearch(val) {
-        this.state.searchTerm = val.toLowerCase();
-        if(this.state.activePage === 'players' || this.state.activePage === 'watchlist') {
-            this.navigate(this.state.activePage);
-        } else {
-            this.navigate('players');
+        const term = val.toLowerCase().trim();
+        const resultsContainer = document.getElementById('global-search-results');
+        
+        if (!term || !resultsContainer) {
+            if (resultsContainer) {
+                resultsContainer.classList.add('hidden');
+                resultsContainer.classList.remove('flex');
+            }
+            return;
         }
+
+        // Search logic
+        const matchedTeams = this.state.data.teams.filter(t => t.name.toLowerCase().includes(term) || (t.type === 'national' && this.getCountryName(this.state.data.countries.find(c => c.id === t.countryId)).toLowerCase().includes(term))).slice(0, 5);
+        const matchedPlayers = this.state.data.players.filter(p => p.name.toLowerCase().includes(term)).slice(0, 5);
+        const matchedWatchlist = this.state.data.watchlist.filter(w => w.name.toLowerCase().includes(term)).slice(0, 5);
+
+        let html = '';
+
+        if (matchedTeams.length === 0 && matchedPlayers.length === 0 && matchedWatchlist.length === 0) {
+            html = `<div class="p-4 text-center text-sm text-slate-500">${window.getLang && window.getLang() === 'en' ? 'No results found' : 'Sonuç bulunamadı'}</div>`;
+        } else {
+            // Render Teams
+            if (matchedTeams.length > 0) {
+                html += `<div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 py-2">${window.getLang && window.getLang() === 'en' ? 'Teams' : 'Takımlar'}</div>`;
+                matchedTeams.forEach(t => {
+                    html += `
+                        <button onclick="app.closeGlobalSearch(); app.navigate('team-detail', ${t.id})" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-dark-800 transition-colors group text-left">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-dark-800 overflow-hidden">
+                                    ${this.getLogoDisplayHTML(t.logo, "w-full h-full object-contain")}
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-slate-200 group-hover:text-white">${t.name}</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] bg-dark-800 text-slate-400 px-2 py-1 rounded-md border border-dark-700">${window.getLang && window.getLang() === 'en' ? 'Team' : 'Takım'}</span>
+                        </button>
+                    `;
+                });
+            }
+
+            // Render Players (Rapor Havuzu)
+            if (matchedPlayers.length > 0) {
+                html += `<div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 py-2 mt-2">${window.getLang && window.getLang() === 'en' ? 'Players (Reports)' : 'Oyuncular (Raporlar)'}</div>`;
+                matchedPlayers.forEach(p => {
+                    const teamName = p.teamId ? this.getTeamName(p.teamId) : (window.getLang && window.getLang() === 'en' ? 'Free Agent' : 'Serbest');
+                    html += `
+                        <button onclick="app.closeGlobalSearch(); app.openPlayerModal(${p.id})" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-dark-800 transition-colors group text-left">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-dark-800">
+                                    ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover">` : `<i data-lucide="user" class="w-4 h-4 text-slate-500"></i>`}
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-slate-200 group-hover:text-white">${p.name}</div>
+                                    <div class="text-[10px] text-slate-500">${window.tPos ? window.tPos(p.position) : p.position} • ${teamName}</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] bg-scout-500/10 text-scout-400 px-2 py-1 rounded-md border border-scout-500/20">${window.getLang && window.getLang() === 'en' ? 'Player' : 'Oyuncu'}</span>
+                        </button>
+                    `;
+                });
+            }
+
+            // Render Watchlist (Aday Havuzu)
+            if (matchedWatchlist.length > 0) {
+                html += `<div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 py-2 mt-2">${window.getLang && window.getLang() === 'en' ? 'Candidates (Watchlist)' : 'Adaylar (Aday Havuzu)'}</div>`;
+                matchedWatchlist.forEach(w => {
+                    const teamName = w.teamId ? this.getTeamName(w.teamId) : (window.getLang && window.getLang() === 'en' ? 'Free Agent' : 'Serbest');
+                    html += `
+                        <button onclick="app.closeGlobalSearch(); app.goToCandidate('${w.name}')" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-dark-800 transition-colors group text-left">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-dark-800 border-2 border-purple-500/20">
+                                    ${w.image ? `<img src="${w.image}" class="w-full h-full object-cover">` : `<i data-lucide="eye" class="w-4 h-4 text-purple-500/50"></i>`}
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-slate-200 group-hover:text-white">${w.name}</div>
+                                    <div class="text-[10px] text-slate-500">${window.tPos ? window.tPos(w.position) : w.position} • ${teamName}</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-1 rounded-md border border-purple-500/20">${window.getLang && window.getLang() === 'en' ? 'Candidate' : 'Aday Oyuncu'}</span>
+                        </button>
+                    `;
+                });
+            }
+        }
+
+        resultsContainer.innerHTML = html;
+        if (window.lucide) window.lucide.createIcons();
+        resultsContainer.classList.remove('hidden');
+        resultsContainer.classList.add('flex');
+    }
+
+    closeGlobalSearch() {
+        const input = document.getElementById('global-search');
+        const resultsContainer = document.getElementById('global-search-results');
+        if (input) {
+            input.value = '';
+            input.blur();
+        }
+        if (resultsContainer) {
+            resultsContainer.classList.add('hidden');
+            resultsContainer.classList.remove('flex');
+        }
+    }
+
+    goToCandidate(name) {
+        if (!this.state.wlFilter) this.state.wlFilter = { search: '', category: 'All', sort: 'newest', favoritesOnly: false };
+        this.state.wlFilter.search = name;
+        this.navigate('watchlist');
     }
 
     updateRep(k, v) { 

@@ -51,9 +51,14 @@ ScoutApp.prototype.renderLayout = function() {
                     <h1 id="page-title" class="text-xl font-bold text-white"></h1>
                     <span id="page-subtitle" class="text-xs text-slate-500"></span>
                 </div>
-                <div class="relative w-64 md:w-80 group">
+                <div class="relative w-64 md:w-96 group">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-scout-500 transition-colors w-4 h-4"></i>
-                    <input id="global-search" type="text" onkeyup="app.handleSearch(this.value)" placeholder="${t('search_player')}" class="w-full bg-dark-900/50 border border-dark-800 text-slate-200 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-scout-500/50 focus:ring-1 focus:ring-scout-500/50 transition-all placeholder:text-slate-600">
+                    <input id="global-search" type="text" oninput="app.handleSearch(this.value)" placeholder="${t('search_player')} (Ctrl+K)" class="w-full bg-dark-900/50 border border-dark-800 text-slate-200 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-scout-500/50 focus:ring-1 focus:ring-scout-500/50 transition-all placeholder:text-slate-600">
+                    
+                    <!-- COMMAND PALETTE DROPDOWN -->
+                    <div id="global-search-results" class="absolute top-full right-0 mt-2 w-full max-h-[70vh] bg-dark-950/95 backdrop-blur-xl border border-dark-700 rounded-2xl shadow-2xl overflow-y-auto hidden z-[100] custom-scrollbar flex-col gap-1 p-2">
+                        <!-- Sonuçlar buraya gelecek -->
+                    </div>
                 </div>
             </header>
 
