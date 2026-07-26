@@ -67,7 +67,7 @@ ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
                     <!-- Arama -->
                     <div class="relative w-full xl:w-56 group">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4 group-focus-within:text-scout-500 transition-colors"></i>
-                        <input type="text" onkeyup="app.handleSearch(this.value)" value="${this.state.searchTerm || ''}" placeholder="${window.getLang && window.getLang() === 'en' ? 'Search players...' : 'Oyuncular içinde ara...'}" class="w-full bg-dark-900 border border-dark-700 rounded-xl pl-9 pr-4 py-2 text-sm text-white focus:border-scout-500 outline-none transition-all">
+                        <input type="text" id="player-pool-search" oninput="app.updatePlayerSearch(this)" value="${this.state.searchTerm || ''}" placeholder="${window.getLang && window.getLang() === 'en' ? 'Search players...' : 'Oyuncular içinde ara...'}" class="w-full bg-dark-900 border border-dark-700 rounded-xl pl-9 pr-4 py-2 text-sm text-white focus:border-scout-500 outline-none transition-all">
                     </div>
                     
                     <!-- Favori Filtresi -->
@@ -115,6 +115,23 @@ ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
 ScoutApp.prototype.togglePlayerFilter = function() {
     this.state.playerFilter.favoritesOnly = !this.state.playerFilter.favoritesOnly;
     this.renderPlayers(document.getElementById('content-area'), true);
+};
+
+ScoutApp.prototype.updatePlayerSearch = function(inputEl) {
+    const val = inputEl.value;
+    const cursor = inputEl.selectionStart;
+    
+    this.state.searchTerm = val.toLowerCase();
+    const globalSearch = document.getElementById('global-search');
+    if (globalSearch) globalSearch.value = val;
+
+    this.renderPlayers(document.getElementById('content-area'), true);
+
+    const newEl = document.getElementById('player-pool-search');
+    if (newEl) {
+        newEl.focus();
+        newEl.setSelectionRange(cursor, cursor);
+    }
 };
 
 ScoutApp.prototype.updatePlayerFilter = function(key, value) {
