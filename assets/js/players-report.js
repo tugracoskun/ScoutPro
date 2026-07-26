@@ -17,10 +17,8 @@ ScoutApp.prototype.renderNewReport = function(c) {
                     
                     ${this.createCustomSearchSelect('rep-nationality', t('nationality'), t('nat_search_ph'), [...this.state.data.countries].sort((a,b) => b.isFavorite - a.isFavorite || this.getCountryName(a).localeCompare(this.getCountryName(b))).map(c => ({val: c.id, txt: this.getCountryName(c), icon: c.flag})), this.state.newReport.nationality, "app.updateRep('nationality', this.value)")}
 
-                    <div class="grid grid-cols-2 gap-4">
-                        ${teams.length > 0 ? this.createCustomSearchSelect('rep-team', 'Kulüp Takımı', 'Ara...', teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") : ''}
-                        ${this.createCustomSearchSelect('rep-national-team', 'Milli Takımı', this.state.newReport.nationality ? 'Ara...' : 'Seçilemez', nationalTeams, this.state.newReport.nationalTeamId, "app.updateRep('nationalTeamId', this.value)", !this.state.newReport.nationality)}
-                    </div>
+                    ${teams.length > 0 ? this.createCustomSearchSelect('rep-team', 'Kulüp Takımı', 'Ara...', teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") : ''}
+                    ${this.createCustomSearchSelect('rep-national-team', 'Milli Takımı', this.state.newReport.nationality ? 'Ara...' : 'Seçilemez', nationalTeams, this.state.newReport.nationalTeamId, "app.updateRep('nationalTeamId', this.value)", !this.state.newReport.nationality)}
                     ${teams.length === 0 ? '<div class="p-3 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-xs">' + t('db_empty') + '</div>' : ''}
 
                     
@@ -387,8 +385,23 @@ ScoutApp.prototype.submitReport = function() {
 
     this.saveData(); 
 
+    const wId = this.state.newReport.watchlistId;
     this.state.newReport = this.resetReport();
     this.navigate('players');
+
+    if (wId) {
+        setTimeout(() => {
+            this.confirmAction(
+                window.isEn ? "You have reported this player. Should they be removed from the candidate pool?" : "Bu oyuncuyu raporladınız. Aday havuzundan kaldırılsın mı?", 
+                () => {
+                    this.state.data.watchlist = this.state.data.watchlist.filter(w => w.id !== wId);
+                    this.saveData();
+                    this.notify(window.isEn ? "Removed from candidate pool." : "Aday havuzundan kaldırıldı.");
+                }, 
+                window.isEn ? "Yes, Remove" : "Evet, Kaldır"
+            );
+        }, 400);
+    }
 };
 
 ScoutApp.prototype.initReportRadar = function(labels = [], data = []) {

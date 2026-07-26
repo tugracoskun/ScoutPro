@@ -230,6 +230,7 @@ ScoutApp.prototype.transferToReport = function(id) {
     if(!w) return;
     this.state.newReport = {
         ...this.resetReport(),
+        watchlistId: w.id,
         name: w.name,
         teamId: w.teamId,
         position: w.position,
