@@ -45,6 +45,18 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
     const natFlag = natObj ? `<img src="${natObj.flag}" class="w-5 h-3.5 object-cover rounded-[2px] shadow-sm">` : '';
     const natName = natObj ? this.getCountryName(natObj) : (p.nationality || '-');
 
+    const footTransMap = {
+        'Sağ': window.getLang && window.getLang() === 'en' ? 'Right' : 'Sağ',
+        'Sol': window.getLang && window.getLang() === 'en' ? 'Left' : 'Sol',
+        'Her İkisi': window.getLang && window.getLang() === 'en' ? 'Both' : 'Her İkisi',
+        'Bilinmiyor': window.getLang && window.getLang() === 'en' ? 'Unknown' : 'Bilinmiyor'
+    };
+    const footTrans = p.foot ? (footTransMap[p.foot] || p.foot) : '-';
+    
+    const potTrans = currentReport.potential === 'Düşük' ? (window.getLang && window.getLang() === 'en' ? 'LOW' : 'DÜŞÜK') : (currentReport.potential === 'Yüksek' ? (window.getLang && window.getLang() === 'en' ? 'HIGH' : 'YÜKSEK') : (currentReport.potential || (window.getLang && window.getLang() === 'en' ? 'LOW' : 'DÜŞÜK')));
+
+    const posTrans = window.tPos ? window.tPos(p.position) : p.position;
+
     // Diğer kolonların içeriğini al (players-modal-content.js dosyasından gelir)
     // Bu sayede dosya boyutu yönetilebilir kalır.
     const mainContentHTML = this.getPlayerContentHTML(p, currentReport, prevReport, id, selectedHistoryIndex, activeTab);
@@ -59,7 +71,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                     <div>
                         <h2 class="text-xl font-bold text-white leading-none tracking-tight">${p.name}</h2>
                         <div class="flex items-center gap-2 mt-1 flex-wrap">
-                            <span class="text-xs text-scout-400 font-bold uppercase tracking-wider">${p.position}${p.role ? ` <span class="opacity-60 font-normal">- ${t(p.role)}</span>` : ''}</span>
+                            <span class="text-xs text-scout-400 font-bold uppercase tracking-wider">${posTrans}${p.role ? ` <span class="opacity-60 font-normal">- ${t(p.role)}</span>` : ''}</span>
                             ${p.teamId ? `<span class="text-xs text-slate-600">•</span><span class="text-xs text-slate-400 flex items-center gap-1" title="Kulüp Takımı"><i data-lucide="shield" class="w-3 h-3"></i> ${this.getTeamName(p.teamId)}</span>` : ''}
                             ${p.nationalTeamId ? `<span class="text-xs text-slate-600">•</span><span class="text-xs text-slate-400 flex items-center gap-1" title="Milli Takım"><i data-lucide="flag" class="w-3 h-3 text-blue-400"></i> <span class="text-blue-200/80">${this.getTeamName(p.nationalTeamId)}</span></span>` : ''}
                             ${p.u23National ? `<span class="text-xs text-slate-600">•</span><span class="text-[10px] text-blue-400 font-bold px-1.5 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-md flex items-center gap-1"><i data-lucide="check-circle-2" class="w-3 h-3"></i> ${t('u23_national')}</span>` : ''}
@@ -128,12 +140,12 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                                 <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-48 h-48 rounded-2xl object-cover border-4 border-dark-800 shadow-2xl">
                                 <div class="absolute -bottom-4 -right-4 bg-dark-900 rounded-full p-1.5 shadow-xl"><div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold border-2 border-dark-800 bg-dark-950 ${grade.color}">${grade.letter}</div></div>
                             </div>
-                            <div class="w-full py-4 px-5 rounded-xl border border-dashed flex justify-between items-center ${potClass} mb-6"><span class="text-xs font-bold opacity-70">${t('potential').toUpperCase()}</span><span class="text-sm font-black tracking-wider uppercase">${currentReport.potential || t('potential_low')}</span></div>
+                            <div class="w-full py-4 px-5 rounded-xl border border-dashed flex justify-between items-center ${potClass} mb-6"><span class="text-xs font-bold opacity-70">${t('potential').toUpperCase()}</span><span class="text-sm font-black tracking-wider uppercase">${potTrans}</span></div>
                             <div class="w-full space-y-3 text-sm">
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('age')}</span><span class="text-white font-mono font-bold">${currentAge}</span></div>
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('birth_date')}</span><span class="text-white text-xs">${birthDatePretty}</span></div>
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('height')}</span><span class="text-white font-mono font-bold">${p.height || '-'}</span></div>
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('foot')}</span><span class="text-white font-bold">${p.foot || '-'}</span></div>
+                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('foot')}</span><span class="text-white font-bold">${footTrans}</span></div>
                                 ${p.nationality ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('nationality')}</span><span class="text-white flex items-center gap-1.5">${natFlag} <span class="font-bold">${natName}</span></span></div>` : ''}
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('report_date')}</span><span class="text-white font-mono text-xs opacity-70">${currentReport.date}</span></div>
                                 ${currentReport.source ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('source')}</span><span class="text-white text-xs text-right max-w-[60%] truncate" title="${currentReport.source}">${currentReport.source}</span></div>` : ''}

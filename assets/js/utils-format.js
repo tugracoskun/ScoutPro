@@ -17,8 +17,9 @@ ScoutApp.prototype.calculateAge = function(birthDateString) {
 ScoutApp.prototype.formatDatePretty = function(dateString) {
     if (!dateString) return '-';
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const locale = (window.getLang && window.getLang() === 'en') ? 'en-US' : 'tr-TR';
     try {
-        return new Date(dateString).toLocaleDateString('tr-TR', options);
+        return new Date(dateString).toLocaleDateString(locale, options);
     } catch (e) {
         return dateString;
     }
