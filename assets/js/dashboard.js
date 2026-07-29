@@ -415,6 +415,23 @@ ScoutApp.prototype.renderStatistics = function(c) {
     const watchedMatches = this.state.data.matches.filter(m => m.watchedStatus === 'watched');
     const watchedCount = watchedMatches.length;
 
+    const activeLeagueIds = new Set();
+    this.state.data.players.forEach(p => {
+        const team = this.state.data.teams.find(t => t.id == p.teamId);
+        if(team) activeLeagueIds.add(team.leagueId);
+    });
+    this.state.data.watchlist.forEach(p => {
+        const team = this.state.data.teams.find(t => t.id == p.teamId);
+        if(team) activeLeagueIds.add(team.leagueId);
+    });
+    this.state.data.matches.forEach(m => {
+        const homeTeam = this.state.data.teams.find(t => t.id == m.homeId);
+        if(homeTeam) activeLeagueIds.add(homeTeam.leagueId);
+        const awayTeam = this.state.data.teams.find(t => t.id == m.awayId);
+        if(awayTeam) activeLeagueIds.add(awayTeam.leagueId);
+    });
+    const activeLeagueCount = activeLeagueIds.size;
+
     c.innerHTML = `
         <div class="space-y-6 max-w-7xl mx-auto fade-in">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -435,6 +452,16 @@ ScoutApp.prototype.renderStatistics = function(c) {
                     <div class="flex flex-col">
                         <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">${window.getLang() === 'en' ? 'Reported Players' : 'Raporlanan Oyuncular'}</span>
                         <span class="text-2xl font-black text-white leading-none">${this.state.data.players.length}</span>
+                    </div>
+                </div>
+
+                <div onclick="app.openActiveLeaguesModal()" class="bg-dark-900 border border-dark-800 hover:border-purple-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm cursor-pointer">
+                    <div class="p-3 bg-purple-500/10 rounded-xl text-purple-500">
+                        <i data-lucide="trophy" class="w-6 h-6"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">${window.getLang() === 'en' ? 'Active Leagues' : 'Aktif Ligler'}</span>
+                        <span class="text-2xl font-black text-white leading-none">${activeLeagueCount}</span>
                     </div>
                 </div>
                 <!-- İleride buraya başka istatistik kartları eklenebilir (örn. Pie Chart verileri, başarı oranları vb.) -->
@@ -507,4 +534,96 @@ ScoutApp.prototype.openReportHistoryModal = function() {
         </div>
     `);
     lucide.createIcons();
+};
+
+ScoutApp.prototype.openActiveLeaguesModal = function() {
+    const activeLeagueIds = new Set();
+    this.state.data.players.forEach(p => {
+        const team = this.state.data.teams.find(t => t.id == p.teamId);
+        if(team) activeLeagueIds.add(team.leagueId);
+    });
+    this.state.data.watchlist.forEach(p => {
+        const team = this.state.data.teams.find(t => t.id == p.teamId);
+        if(team) activeLeagueIds.add(team.leagueId);
+    });
+    this.state.data.matches.forEach(m => {
+        const homeTeam = this.state.data.teams.find(t => t.id == m.homeId);
+        if(homeTeam) activeLeagueIds.add(homeTeam.leagueId);
+        const awayTeam = this.state.data.teams.find(t => t.id == m.awayId);
+        if(awayTeam) activeLeagueIds.add(awayTeam.leagueId);
+    });
+
+    const activeLeagues = Array.from(activeLeagueIds)
+        .map(id => this.state.data.leagues.find(l => l.id === id))
+        .filter(l => l)
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+    let htmlContent = '';
+    
+    if (activeLeagues.length === 0) {
+        htmlContent = `<div class="text-center text-slate-500 py-12 flex flex-col items-center gap-4"><i data-lucide="trophy" class="w-12 h-12 opacity-50"></i><span>${window.getLang() === 'en' ? 'No active leagues yet.' : 'Henüz aktif lig yok.'}</span></div>`;
+    } else {
+        htmlContent = activeLeagues.map(l => {
+            const country = this.state.data.countries.find(c => c.id === l.countryId);
+            return `
+                <div class="bg-dark-950 border border-dark-800 rounded-xl p-4 flex items-center justify-between group hover:border-purple-500/30 transition-all cursor-pointer" onclick="app.goToLeagueInDatabase(${l.countryId}, ${l.id})">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg bg-dark-900 border border-dark-800 overflow-hidden shrink-0">
+                            ${this.getLogoDisplayHTML(l.logo, "w-full h-full object-contain p-1")}
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-white group-hover:text-purple-400 transition-colors">${l.name}</span>
+                            <span class="text-[10px] text-slate-500 uppercase tracking-widest flex items-center gap-1 mt-0.5">
+                                ${country ? this.getLogoDisplayHTML(country.flag, 'w-3 h-3') : ''} ${country ? this.getCountryName(country) : ''}
+                            </span>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600 group-hover:text-purple-500 transition-colors"></i>
+                </div>
+            `;
+        }).join('');
+    }
+
+    this.showModal(`
+        <div class="p-8 max-w-xl w-full">
+            <div class="flex justify-between items-center mb-6 border-b border-dark-800 pb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="trophy" class="text-purple-500 w-6 h-6"></i> ${window.getLang() === 'en' ? 'Active Leagues' : 'Aktif Ligler'}</h3>
+                <button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400 hover:text-white transition-colors"></i></button>
+            </div>
+            <div class="space-y-3 relative z-10 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
+                ${htmlContent}
+            </div>
+        </div>
+    `);
+    lucide.createIcons();
+};
+
+ScoutApp.prototype.goToLeagueInDatabase = function(countryId, leagueId) {
+    this.closeModal();
+    this.navigate('database');
+    setTimeout(() => {
+        const countryDiv = document.getElementById(`db-country-${countryId}`);
+        if(countryDiv) {
+            const regionBlockSafe = countryDiv.closest('div.mb-6');
+            if(regionBlockSafe) {
+                const header = regionBlockSafe.querySelector('.flex.items-center.justify-between.cursor-pointer');
+                if(header) {
+                    const content = header.nextElementSibling;
+                    if(content && content.classList.contains('hidden')) {
+                        header.click();
+                    }
+                }
+            }
+            setTimeout(() => {
+                const leagueDiv = countryDiv.querySelector(`[data-league-id="${leagueId}"]`);
+                if(leagueDiv) {
+                    leagueDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    leagueDiv.classList.add('ring-2', 'ring-purple-500', 'ring-offset-2', 'ring-offset-dark-900');
+                    setTimeout(() => leagueDiv.classList.remove('ring-2', 'ring-purple-500', 'ring-offset-2', 'ring-offset-dark-900'), 2000);
+                } else {
+                    countryDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 350);
+        }
+    }, 100);
 };
