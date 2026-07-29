@@ -944,8 +944,9 @@ ScoutApp.prototype.initDashboardCharts = function() {
                 series: series,
                 chart: {
                     type: 'donut',
-                    height: 220,
-                    offsetY: -10,
+                    height: 230,
+                    offsetX: 0,
+                    offsetY: 0,
                     background: 'transparent',
                     fontFamily: 'Outfit, Inter, sans-serif',
                     foreColor: '#94a3b8',
@@ -963,12 +964,15 @@ ScoutApp.prototype.initDashboardCharts = function() {
                 },
                 legend: {
                     position: 'right',
-                    horizontalAlign: 'center',
+                    horizontalAlign: 'left',
+                    width: 160,
+                    offsetX: 0,
+                    offsetY: 0,
                     labels: { colors: '#94a3b8' },
-                    fontSize: '12px',
-                    markers: { radius: 12, width: 9, height: 9 },
+                    fontSize: '13px',
+                    markers: { radius: 12, width: 10, height: 10 },
                     itemMargin: {
-                        vertical: 2
+                        vertical: 3
                     }
                 },
                 dataLabels: {
@@ -976,6 +980,8 @@ ScoutApp.prototype.initDashboardCharts = function() {
                 },
                 plotOptions: {
                     pie: {
+                        customScale: 1.0,
+                        offsetX: 0,
                         donut: {
                             size: '75%',
                             labels: {
