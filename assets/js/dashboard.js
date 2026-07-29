@@ -453,6 +453,29 @@ ScoutApp.prototype.renderStatistics = function(c) {
     const topTeams = sortedTeams.slice(0, 3);
     const topTeam = topTeams.length > 0 ? topTeams[0].team : null;
 
+    const yearsSet = new Set();
+    yearsSet.add(new Date().getFullYear());
+    this.state.data.matches.forEach(m => {
+        if (m.watchedStatusDate) {
+            const d = new Date(m.watchedStatusDate);
+            if (!isNaN(d)) yearsSet.add(d.getFullYear());
+        }
+    });
+    this.state.data.players.forEach(p => {
+        if (p.id && p.id > 1000000000000) {
+            const d = new Date(p.id);
+            if (!isNaN(d)) yearsSet.add(d.getFullYear());
+        }
+    });
+    this.state.data.watchlist.forEach(w => {
+        if (w.id && w.id > 1000000000000) {
+            const d = new Date(w.id);
+            if (!isNaN(d)) yearsSet.add(d.getFullYear());
+        }
+    });
+    const availableYears = Array.from(yearsSet).sort((a, b) => b - a);
+    const selectedScoutYear = this.state.scoutActivityYear || new Date().getFullYear();
+
     c.innerHTML = `
         <div class="space-y-6 max-w-7xl mx-auto fade-in">
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -517,15 +540,40 @@ ScoutApp.prototype.renderStatistics = function(c) {
                 </div>
             </div>
 
+            <!-- Yeni Grafikler Alanı -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="bg-dark-900/40 backdrop-blur-md border border-dark-800/80 rounded-2xl p-3 pb-1 shadow-2xl flex flex-col h-[270px] relative overflow-hidden group hover:border-dark-700 transition-all duration-300 lg:col-span-4">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-green-500/10 transition-colors duration-500"></div>
+                    <h3 class="text-xs font-bold text-slate-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5 shrink-0 relative z-10">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-green-500"></i> ${window.getLang() === 'en' ? 'Position Distribution' : 'Pozisyon Dağılımı'}
+                    </h3>
+                    <div id="position-chart" class="flex-1 w-full min-h-0 relative z-10"></div>
+                </div>
+
+                <div class="bg-dark-900/40 backdrop-blur-md border border-dark-800/80 rounded-2xl p-3 pb-1 shadow-2xl flex flex-col h-[270px] relative overflow-hidden group hover:border-dark-700 transition-all duration-300 lg:col-span-8">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-scout-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-scout-500/10 transition-colors duration-500"></div>
+                    <div class="flex justify-between items-center mb-1.5 shrink-0 relative z-20">
+                        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-widest flex items-center gap-1.5">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4 text-scout-500"></i> ${window.getLang() === 'en' ? 'Monthly Scout Activity' : 'Aylık Gözlem Aktivitesi'}
+                        </h3>
+                        <select onchange="app.changeScoutActivityYear(this.value)" class="text-[10px] font-black text-slate-400 hover:text-white bg-dark-950/80 border border-dark-850 hover:border-dark-700 rounded px-1.5 py-0.5 outline-none focus:border-scout-500/50 cursor-pointer transition-colors">
+                            ${availableYears.map(y => `<option value="${y}" ${y === selectedScoutYear ? 'selected' : ''}>${y}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div id="monthly-chart" class="flex-1 w-full min-h-0 relative z-10"></div>
+                </div>
+            </div>
+
             ${this.generateActivityGraphHTML()}
         </div>
     `;
     
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-        setTimeout(() => {
+    setTimeout(() => {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
             window.lucide.createIcons();
-        }, 10);
-    }
+        }
+        this.initDashboardCharts();
+    }, 50);
 };
 
 ScoutApp.prototype.openReportHistoryModal = function() {
@@ -840,4 +888,288 @@ ScoutApp.prototype.openTopTeamsModal = function() {
         </div>
     `);
     lucide.createIcons();
+};
+
+ScoutApp.prototype.initDashboardCharts = function() {
+    // 1. Position Donut Chart
+    const posCounts = {};
+    const processPlayer = p => {
+        const pos = p.position;
+        if (pos) {
+            posCounts[pos] = (posCounts[pos] || 0) + 1;
+        }
+    };
+    this.state.data.players.forEach(processPlayer);
+    this.state.data.watchlist.forEach(processPlayer);
+
+    const activePositions = Object.entries(posCounts)
+        .filter(([_, count]) => count > 0)
+        .sort((a, b) => b[1] - a[1]);
+
+    const isEn = window.getLang && window.getLang() === 'en';
+    
+    const posChartEl = document.querySelector("#position-chart");
+    if (posChartEl && typeof ApexCharts !== 'undefined') {
+        posChartEl.innerHTML = '';
+        
+        if (activePositions.length === 0) {
+            posChartEl.innerHTML = `
+                <div class="h-full w-full flex flex-col items-center justify-center text-slate-500 gap-3">
+                    <i data-lucide="pie-chart" class="w-12 h-12 opacity-30"></i>
+                    <span class="text-xs font-medium">${isEn ? 'No position data available' : 'Mevki verisi bulunamadı'}</span>
+                </div>
+            `;
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
+        } else {
+            const labels = activePositions.map(([pos, _]) => window.tPos ? window.tPos(pos) : pos);
+            const series = activePositions.map(([_, count]) => count);
+            
+            const posColors = {
+                'Kaleci': '#f43f5e',            // Rose
+                'Stoper': '#6366f1',            // Indigo
+                'Sağ Bek': '#3b82f6',           // Blue
+                'Sol Bek': '#0ea5e9',           // Sky
+                'Defansif Orta Saha': '#14b8a6',// Teal
+                'Orta Saha': '#10b981',         // Emerald
+                'Ofansif Orta Saha': '#8b5cf6', // Violet
+                'Sağ Kanat': '#f97316',         // Orange
+                'Sol Kanat': '#f59e0b',         // Amber
+                'Santrafor': '#eab308'          // Yellow
+            };
+            const colors = activePositions.map(([pos, _]) => posColors[pos] || '#94a3b8');
+
+            const posChart = new ApexCharts(posChartEl, {
+                series: series,
+                chart: {
+                    type: 'donut',
+                    height: 220,
+                    offsetY: -10,
+                    background: 'transparent',
+                    fontFamily: 'Outfit, Inter, sans-serif',
+                    foreColor: '#94a3b8',
+                    animations: { enabled: true }
+                },
+                labels: labels,
+                colors: colors,
+                grid: {
+                    padding: {
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0
+                    }
+                },
+                legend: {
+                    position: 'right',
+                    horizontalAlign: 'center',
+                    labels: { colors: '#94a3b8' },
+                    fontSize: '12px',
+                    markers: { radius: 12, width: 9, height: 9 },
+                    itemMargin: {
+                        vertical: 2
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '75%',
+                            labels: {
+                                show: true,
+                                name: { show: true, fontSize: '11px', fontWeight: 600 },
+                                value: { show: true, fontSize: '16px', fontWeight: 900, color: '#ffffff' },
+                                total: {
+                                    show: true,
+                                    label: isEn ? 'Total' : 'Toplam',
+                                    color: '#94a3b8',
+                                    formatter: function (w) {
+                                        return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                stroke: { 
+                    show: true, 
+                    width: 2, 
+                    colors: ['#0f172a']
+                },
+                responsive: [{
+                    breakpoint: 640,
+                    options: {
+                        legend: {
+                            position: 'bottom',
+                            fontSize: '10px'
+                        }
+                    }
+                }]
+            });
+            posChart.render();
+        }
+    }
+
+    // 2. Monthly Scout Activity Column Chart
+    const monthNames = isEn 
+        ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        : ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+        
+    const selectedYear = this.state.scoutActivityYear || new Date().getFullYear();
+    const scoutMonths = [];
+    for (let m = 0; m < 12; m++) {
+        scoutMonths.push({
+            year: selectedYear,
+            month: m,
+            label: monthNames[m],
+            reports: 0,
+            matches: 0
+        });
+    }
+
+    // Process players/watchlist items
+    this.state.data.players.forEach(p => {
+        if (p.id && p.id > 1000000000000) {
+            const d = new Date(p.id);
+            if (!isNaN(d) && d.getFullYear() === selectedYear) {
+                const monthObj = scoutMonths[d.getMonth()];
+                if (monthObj) monthObj.reports++;
+            }
+        }
+    });
+
+    this.state.data.watchlist.forEach(w => {
+        if (w.id && w.id > 1000000000000) {
+            const d = new Date(w.id);
+            if (!isNaN(d) && d.getFullYear() === selectedYear) {
+                const monthObj = scoutMonths[d.getMonth()];
+                if (monthObj) monthObj.reports++;
+            }
+        }
+    });
+
+    // Process watched matches
+    this.state.data.matches.forEach(m => {
+        if (m.watchedStatus === 'watched' && m.watchedStatusDate) {
+            const d = new Date(m.watchedStatusDate);
+            if (!isNaN(d) && d.getFullYear() === selectedYear) {
+                const monthObj = scoutMonths[d.getMonth()];
+                if (monthObj) monthObj.matches++;
+            }
+        }
+    });
+
+    const categories = scoutMonths.map(m => m.label);
+    const seriesReports = scoutMonths.map(m => m.reports);
+    const seriesMatches = scoutMonths.map(m => m.matches);
+
+    const monthlyChartEl = document.querySelector("#monthly-chart");
+    if (monthlyChartEl && typeof ApexCharts !== 'undefined') {
+        monthlyChartEl.innerHTML = '';
+        const monthlyChart = new ApexCharts(monthlyChartEl, {
+            series: [{
+                name: isEn ? 'Added Reports' : 'Eklenen Raporlar',
+                data: seriesReports
+            }, {
+                name: isEn ? 'Watched Matches' : 'İzlenen Maçlar',
+                data: seriesMatches
+            }],
+            chart: {
+                type: 'bar',
+                height: 210,
+                offsetY: 0,
+                background: 'transparent',
+                fontFamily: 'Outfit, Inter, sans-serif',
+                foreColor: '#94a3b8',
+                toolbar: { show: false }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    borderRadius: 4
+                },
+            },
+            colors: ['#3b82f6', '#10b981'],
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            dataLabels: {
+                enabled: false
+            },
+            grid: {
+                borderColor: '#1e293b',
+                strokeDashArray: 4,
+                padding: {
+                    top: 10,
+                    right: 10,
+                    bottom: 0,
+                    left: 10
+                }
+            },
+            xaxis: {
+                categories: categories,
+                labels: { style: { colors: '#94a3b8', fontSize: '10px' } }
+            },
+            yaxis: {
+                title: { text: isEn ? 'Count' : 'Adet', style: { color: '#94a3b8', fontSize: '10px' } },
+                labels: { style: { colors: '#94a3b8', fontSize: '10px' } }
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'dark',
+                    type: 'vertical',
+                    shadeIntensity: 0.3,
+                    gradientToColors: ['#60a5fa', '#34d399'],
+                    inverseColors: false,
+                    opacityFrom: 0.85,
+                    opacityTo: 0.55,
+                    stops: [0, 100]
+                }
+            },
+            tooltip: {
+                theme: 'dark',
+                y: {
+                    formatter: function (val) {
+                        return val + (isEn ? " action(s)" : " işlem");
+                    }
+                }
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'center',
+                floating: true,
+                offsetY: -30,
+                offsetX: 0,
+                labels: { colors: '#94a3b8' },
+                fontSize: '10px',
+                markers: { radius: 12, width: 8, height: 8 }
+            },
+            responsive: [{
+                breakpoint: 640,
+                options: {
+                    legend: {
+                        position: 'bottom',
+                        floating: false,
+                        offsetY: 0
+                    }
+                }
+            }]
+        });
+        monthlyChart.render();
+    }
+};
+
+ScoutApp.prototype.changeScoutActivityYear = function(year) {
+    this.state.scoutActivityYear = parseInt(year);
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+        this.renderStatistics(mainContent);
+    }
 };
