@@ -416,55 +416,105 @@ ScoutApp.prototype.renderStatistics = function(c) {
     const watchedCount = watchedMatches.length;
 
     const activeLeagueIds = new Set();
-    this.state.data.players.forEach(p => {
-        const team = this.state.data.teams.find(t => t.id == p.teamId);
-        if(team) activeLeagueIds.add(team.leagueId);
-    });
-    this.state.data.watchlist.forEach(p => {
-        const team = this.state.data.teams.find(t => t.id == p.teamId);
-        if(team) activeLeagueIds.add(team.leagueId);
-    });
+    const activeCountryIds = new Set();
+    
+    const processTeam = (teamId) => {
+        const team = this.state.data.teams.find(t => t.id == teamId);
+        if (team) {
+            activeLeagueIds.add(team.leagueId);
+            const cId = team.countryId || (this.state.data.leagues.find(l => l.id === team.leagueId)?.countryId);
+            if (cId) activeCountryIds.add(cId);
+        }
+    };
+
+    this.state.data.players.forEach(p => processTeam(p.teamId));
+    this.state.data.watchlist.forEach(p => processTeam(p.teamId));
     this.state.data.matches.forEach(m => {
-        const homeTeam = this.state.data.teams.find(t => t.id == m.homeId);
-        if(homeTeam) activeLeagueIds.add(homeTeam.leagueId);
-        const awayTeam = this.state.data.teams.find(t => t.id == m.awayId);
-        if(awayTeam) activeLeagueIds.add(awayTeam.leagueId);
+        processTeam(m.homeId);
+        processTeam(m.awayId);
     });
+    
+    activeLeagueIds.delete(undefined);
+    activeCountryIds.delete(undefined);
     const activeLeagueCount = activeLeagueIds.size;
+    const activeCountryCount = activeCountryIds.size;
+
+    const upcomingCount = this.state.data.matches.filter(m => m.watchedStatus !== 'watched' && m.watchedStatus !== 'skipped').length;
+
+    const teamCounts = {};
+    this.state.data.players.forEach(p => { if(p.teamId) teamCounts[p.teamId] = (teamCounts[p.teamId] || 0) + 1; });
+    this.state.data.watchlist.forEach(p => { if(p.teamId) teamCounts[p.teamId] = (teamCounts[p.teamId] || 0) + 1; });
+    
+    const sortedTeams = Object.entries(teamCounts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([id, count]) => ({ team: this.state.data.teams.find(t => t.id == id), count }))
+        .filter(t => t.team);
+    
+    const topTeams = sortedTeams.slice(0, 3);
+    const topTeam = topTeams.length > 0 ? topTeams[0].team : null;
 
     c.innerHTML = `
         <div class="space-y-6 max-w-7xl mx-auto fade-in">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div onclick="app.openActivityHistoryModal()" class="bg-dark-900 border border-dark-800 hover:border-scout-500/30 p-5 rounded-2xl flex items-center gap-4 cursor-pointer transition-all group shadow-sm">
-                    <div class="p-3 bg-scout-500/10 rounded-xl text-scout-500">
+                    <div class="p-3 bg-scout-500/10 rounded-xl text-scout-500 shrink-0">
                         <i data-lucide="activity" class="w-6 h-6"></i>
                     </div>
-                    <div class="flex flex-col">
-                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">${t('watched_matches')}</span>
+                    <div class="flex flex-col overflow-hidden">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${t('watched_matches')}</span>
                         <span class="text-2xl font-black text-white leading-none">${watchedCount}</span>
                     </div>
                 </div>
                 
                 <div onclick="app.openReportHistoryModal()" class="bg-dark-900 border border-dark-800 hover:border-blue-500/30 p-5 rounded-2xl flex items-center gap-4 cursor-pointer transition-all group shadow-sm">
-                    <div class="p-3 bg-blue-500/10 rounded-xl text-blue-500">
+                    <div class="p-3 bg-blue-500/10 rounded-xl text-blue-500 shrink-0">
                         <i data-lucide="clipboard-check" class="w-6 h-6"></i>
                     </div>
-                    <div class="flex flex-col">
-                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">${window.getLang() === 'en' ? 'Reported Players' : 'Raporlanan Oyuncular'}</span>
+                    <div class="flex flex-col overflow-hidden">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Reported Players' : 'Raporlanan'}</span>
                         <span class="text-2xl font-black text-white leading-none">${this.state.data.players.length}</span>
                     </div>
                 </div>
 
                 <div onclick="app.openActiveLeaguesModal()" class="bg-dark-900 border border-dark-800 hover:border-purple-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm cursor-pointer">
-                    <div class="p-3 bg-purple-500/10 rounded-xl text-purple-500">
+                    <div class="p-3 bg-purple-500/10 rounded-xl text-purple-500 shrink-0">
                         <i data-lucide="trophy" class="w-6 h-6"></i>
                     </div>
-                    <div class="flex flex-col">
-                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">${window.getLang() === 'en' ? 'Active Leagues' : 'Aktif Ligler'}</span>
+                    <div class="flex flex-col overflow-hidden">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Active Leagues' : 'Aktif Ligler'}</span>
                         <span class="text-2xl font-black text-white leading-none">${activeLeagueCount}</span>
                     </div>
                 </div>
-                <!-- İleride buraya başka istatistik kartları eklenebilir (örn. Pie Chart verileri, başarı oranları vb.) -->
+
+                <div onclick="app.openActiveCountriesModal()" class="bg-dark-900 border border-dark-800 hover:border-yellow-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm cursor-pointer">
+                    <div class="p-3 bg-yellow-500/10 rounded-xl text-yellow-500 shrink-0">
+                        <i data-lucide="globe" class="w-6 h-6"></i>
+                    </div>
+                    <div class="flex flex-col overflow-hidden">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Active Countries' : 'Aktif Ülkeler'}</span>
+                        <span class="text-2xl font-black text-white leading-none">${activeCountryCount}</span>
+                    </div>
+                </div>
+
+                <div onclick="app.navigate('matches')" class="bg-dark-900 border border-dark-800 hover:border-red-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm cursor-pointer">
+                    <div class="p-3 bg-red-500/10 rounded-xl text-red-500 shrink-0">
+                        <i data-lucide="calendar-clock" class="w-6 h-6"></i>
+                    </div>
+                    <div class="flex flex-col overflow-hidden">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Pending Tasks' : 'Bekleyenler'}</span>
+                        <span class="text-2xl font-black text-white leading-none">${upcomingCount}</span>
+                    </div>
+                </div>
+
+                <div ${topTeam ? `onclick="app.openTopTeamsModal()"` : ''} class="bg-dark-900 border border-dark-800 hover:border-green-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm ${topTeam ? 'cursor-pointer' : ''}">
+                    <div class="p-3 bg-green-500/10 rounded-xl text-green-500 shrink-0">
+                        ${topTeam ? this.getLogoDisplayHTML(topTeam.logo, 'w-6 h-6') : '<i data-lucide="shield" class="w-6 h-6"></i>'}
+                    </div>
+                    <div class="flex flex-col overflow-hidden w-full">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Most Scouted Teams' : 'En Çok İzlenen Takımlar'}</span>
+                        <span class="text-lg font-black text-white leading-tight truncate">${topTeam ? topTeam.name : '-'}</span>
+                    </div>
+                </div>
             </div>
 
             ${this.generateActivityGraphHTML()}
@@ -626,4 +676,168 @@ ScoutApp.prototype.goToLeagueInDatabase = function(countryId, leagueId) {
             }, 350);
         }
     }, 100);
+};
+
+ScoutApp.prototype.openActiveCountriesModal = function() {
+    const countryStats = {};
+    this.state.data.leagues.forEach(l => {
+        if(!countryStats[l.countryId]) countryStats[l.countryId] = { leagues: new Set(), teams: new Set() };
+        countryStats[l.countryId].leagues.add(l.id);
+    });
+    this.state.data.teams.forEach(t => {
+        let cId = t.countryId || (this.state.data.leagues.find(l => l.id === t.leagueId)?.countryId);
+        if(cId) {
+            if(!countryStats[cId]) countryStats[cId] = { leagues: new Set(), teams: new Set() };
+            countryStats[cId].teams.add(t.id);
+        }
+    });
+
+    const activeCountryIds = new Set();
+    const processTeam = (teamId) => {
+        const team = this.state.data.teams.find(t => t.id == teamId);
+        if (team) {
+            const cId = team.countryId || (this.state.data.leagues.find(l => l.id === team.leagueId)?.countryId);
+            if (cId) activeCountryIds.add(cId);
+        }
+    };
+    this.state.data.players.forEach(p => processTeam(p.teamId));
+    this.state.data.watchlist.forEach(p => processTeam(p.teamId));
+    this.state.data.matches.forEach(m => {
+        processTeam(m.homeId);
+        processTeam(m.awayId);
+    });
+
+    const activeCountries = Array.from(activeCountryIds)
+        .map(id => this.state.data.countries.find(c => c.id === id))
+        .filter(c => c)
+        .sort((a, b) => {
+            const statsA = countryStats[a.id] || { leagues: new Set(), teams: new Set() };
+            const statsB = countryStats[b.id] || { leagues: new Set(), teams: new Set() };
+            const scoreA = statsA.leagues.size + statsA.teams.size;
+            const scoreB = statsB.leagues.size + statsB.teams.size;
+            if(scoreB !== scoreA) return scoreB - scoreA;
+            return this.getCountryName(a).localeCompare(this.getCountryName(b));
+        });
+
+    let htmlContent = '';
+    
+    if (activeCountries.length === 0) {
+        htmlContent = `<div class="text-center text-slate-500 py-12 flex flex-col items-center gap-4"><i data-lucide="globe" class="w-12 h-12 opacity-50"></i><span>${window.getLang() === 'en' ? 'No active countries yet.' : 'Henüz aktif ülke yok.'}</span></div>`;
+    } else {
+        htmlContent = activeCountries.map(c => {
+            return `
+                <div class="bg-dark-950 border border-dark-800 rounded-xl p-4 flex items-center justify-between group hover:border-yellow-500/30 transition-all cursor-pointer" onclick="app.goToCountryInDatabase(${c.id})">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl bg-dark-900 border border-dark-800 overflow-hidden shrink-0 shadow-sm">
+                            ${this.getLogoDisplayHTML(c.flag, "w-full h-full object-cover")}
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-white group-hover:text-yellow-400 transition-colors">${this.getCountryName(c)}</span>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600 group-hover:text-yellow-500 transition-colors"></i>
+                </div>
+            `;
+        }).join('');
+    }
+
+    this.showModal(`
+        <div class="p-8 max-w-xl w-full">
+            <div class="flex justify-between items-center mb-6 border-b border-dark-800 pb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="globe" class="text-yellow-500 w-6 h-6"></i> ${window.getLang() === 'en' ? 'Active Countries' : 'Aktif Ülkeler'}</h3>
+                <button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400 hover:text-white transition-colors"></i></button>
+            </div>
+            <div class="space-y-3 relative z-10 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
+                ${htmlContent}
+            </div>
+        </div>
+    `);
+    lucide.createIcons();
+};
+
+ScoutApp.prototype.goToCountryInDatabase = function(countryId) {
+    this.closeModal();
+    this.navigate('database');
+    setTimeout(() => {
+        const countryDiv = document.getElementById(`db-country-${countryId}`);
+        if(countryDiv) {
+            const regionBlockSafe = countryDiv.closest('div.mb-6');
+            if(regionBlockSafe) {
+                const header = regionBlockSafe.querySelector('.flex.items-center.justify-between.cursor-pointer');
+                if(header) {
+                    const content = header.nextElementSibling;
+                    if(content && content.classList.contains('hidden')) {
+                        header.click();
+                    }
+                }
+            }
+            setTimeout(() => {
+                countryDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                countryDiv.classList.add('ring-2', 'ring-yellow-500', 'ring-offset-2', 'ring-offset-dark-900');
+                setTimeout(() => countryDiv.classList.remove('ring-2', 'ring-yellow-500', 'ring-offset-2', 'ring-offset-dark-900'), 2000);
+            }, 350);
+        }
+    }, 100);
+};
+
+ScoutApp.prototype.openTopTeamsModal = function() {
+    const teamCounts = {};
+    this.state.data.players.forEach(p => { if(p.teamId) teamCounts[p.teamId] = (teamCounts[p.teamId] || 0) + 1; });
+    this.state.data.watchlist.forEach(p => { if(p.teamId) teamCounts[p.teamId] = (teamCounts[p.teamId] || 0) + 1; });
+    
+    const sortedTeams = Object.entries(teamCounts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([id, count]) => ({ team: this.state.data.teams.find(t => t.id == id), count }))
+        .filter(t => t.team);
+    
+    const top3 = sortedTeams.slice(0, 3);
+    
+    if (top3.length === 0) return;
+
+    const getPodiumPlace = (place, data) => {
+        if (!data) return `<div class="flex-1"></div>`;
+        const { team, count } = data;
+        let heightClass = place === 1 ? 'h-32' : (place === 2 ? 'h-24' : 'h-16');
+        let colorClass = place === 1 ? 'bg-yellow-500/20 border-yellow-500/50 text-yellow-500' 
+                       : (place === 2 ? 'bg-slate-300/20 border-slate-300/50 text-slate-300' 
+                       : 'bg-orange-700/20 border-orange-700/50 text-orange-500');
+                       
+        return `
+            <div class="flex flex-col items-center flex-1 cursor-pointer group" onclick="app.closeModal(); app.navigate('team-detail', ${team.id})">
+                <div class="w-16 h-16 rounded-full bg-dark-900 border border-dark-700 flex items-center justify-center p-2 mb-2 group-hover:scale-110 transition-transform shadow-lg z-10 overflow-hidden shrink-0">
+                    ${this.getLogoDisplayHTML(team.logo, 'w-full h-full object-contain')}
+                </div>
+                <div class="text-center mb-2 z-10 h-10 flex flex-col justify-end">
+                    <span class="text-xs font-bold text-white truncate max-w-[80px]">${team.name}</span>
+                    <span class="text-[10px] text-slate-400">${count} ${window.getLang() === 'en' ? 'Players' : 'Oyuncu'}</span>
+                </div>
+                <div class="w-full ${heightClass} ${colorClass} border-t-2 rounded-t-lg flex justify-center pt-2 relative overflow-hidden transition-all group-hover:brightness-125">
+                    <span class="text-2xl font-black opacity-50">${place}</span>
+                    <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent"></div>
+                </div>
+            </div>
+        `;
+    };
+
+    const podiumHtml = `
+        <div class="flex items-end justify-center gap-2 max-w-sm mx-auto mt-8 mb-4">
+            ${getPodiumPlace(2, top3[1])}
+            ${getPodiumPlace(1, top3[0])}
+            ${getPodiumPlace(3, top3[2])}
+        </div>
+    `;
+
+    this.showModal(`
+        <div class="p-8 max-w-xl w-full">
+            <div class="flex justify-between items-center mb-2 border-b border-dark-800 pb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="shield" class="text-green-500 w-6 h-6"></i> ${window.getLang() === 'en' ? 'Most Scouted Teams' : 'En Çok İzlenen Takımlar'}</h3>
+                <button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400 hover:text-white transition-colors"></i></button>
+            </div>
+            
+            ${podiumHtml}
+            
+            ${top3.length > 0 ? `<p class="text-center text-xs text-slate-500 mt-6 flex items-center justify-center gap-1"><i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5"></i> ${window.getLang() === 'en' ? 'Click on a team to view its roster.' : 'Kadro detayları için bir takıma tıklayın.'}</p>` : ''}
+        </div>
+    `);
+    lucide.createIcons();
 };
