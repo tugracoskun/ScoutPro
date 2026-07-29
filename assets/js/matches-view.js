@@ -87,8 +87,12 @@ ScoutApp.prototype.renderMatchesList = function(c, headerHtml, allTeams, allTarg
             <!-- Maç Ekleme Formu -->
             <div class="bg-dark-900 border border-dark-800 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-scout-500/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
-                <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5 text-scout-500"></i> ${t('match_plan')}</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                <details class="group" open>
+                    <summary class="flex justify-between items-center cursor-pointer list-none relative z-10">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5 text-scout-500"></i> ${t('match_plan')}</h3>
+                        <span class="p-2 bg-dark-800 rounded-lg group-open:rotate-180 transition-transform"><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i></span>
+                    </summary>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 border-t border-dark-800 pt-6 animate-fade-in relative z-10">
                     <div class="grid grid-cols-1 gap-4">
                         <div class="flex items-end gap-2">
                             <div class="flex-1">${this.createCustomSearchSelect('m-home', t('home_team'), t('home_team')+'...', allTeams)}</div>
@@ -136,6 +140,7 @@ ScoutApp.prototype.renderMatchesList = function(c, headerHtml, allTeams, allTarg
                         </button>
                     </div>
                 </div>
+                </details>
             </div>
 
             <!-- Maç ${t('view_list')}si -->

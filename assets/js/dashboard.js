@@ -466,6 +466,16 @@ ScoutApp.prototype.renderStatistics = function(c) {
                     </div>
                 </div>
                 
+                <div onclick="app.navigate('matches')" class="bg-dark-900 border border-dark-800 hover:border-red-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm cursor-pointer">
+                    <div class="p-3 bg-red-500/10 rounded-xl text-red-500 shrink-0">
+                        <i data-lucide="calendar-clock" class="w-6 h-6"></i>
+                    </div>
+                    <div class="flex flex-col overflow-hidden">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Matches to Watch' : 'İzlenecek Maçlar'}</span>
+                        <span class="text-2xl font-black text-white leading-none">${upcomingCount}</span>
+                    </div>
+                </div>
+                
                 <div onclick="app.openReportHistoryModal()" class="bg-dark-900 border border-dark-800 hover:border-blue-500/30 p-5 rounded-2xl flex items-center gap-4 cursor-pointer transition-all group shadow-sm">
                     <div class="p-3 bg-blue-500/10 rounded-xl text-blue-500 shrink-0">
                         <i data-lucide="clipboard-check" class="w-6 h-6"></i>
@@ -493,16 +503,6 @@ ScoutApp.prototype.renderStatistics = function(c) {
                     <div class="flex flex-col overflow-hidden">
                         <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Active Countries' : 'Aktif Ülkeler'}</span>
                         <span class="text-2xl font-black text-white leading-none">${activeCountryCount}</span>
-                    </div>
-                </div>
-
-                <div onclick="app.navigate('matches')" class="bg-dark-900 border border-dark-800 hover:border-red-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm cursor-pointer">
-                    <div class="p-3 bg-red-500/10 rounded-xl text-red-500 shrink-0">
-                        <i data-lucide="calendar-clock" class="w-6 h-6"></i>
-                    </div>
-                    <div class="flex flex-col overflow-hidden">
-                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Pending Tasks' : 'Bekleyenler'}</span>
-                        <span class="text-2xl font-black text-white leading-none">${upcomingCount}</span>
                     </div>
                 </div>
 
