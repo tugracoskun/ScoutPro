@@ -109,10 +109,12 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                     <button onclick="app.exportPlayerToPDF(${id}, ${selectedHistoryIndex})" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-lg text-sm font-bold transition-colors border border-slate-700 shadow-lg shadow-slate-900/20" title="PDF İndir">
                         <i data-lucide="download" class="w-4 h-4"></i> PDF
                     </button>
+                    
+                    <button onclick="app.closeModal(); setTimeout(() => app.openCompareModal(${id}), 100)" class="flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-3 py-2 rounded-lg text-sm font-bold transition-all shadow-lg" title="Bu oyuncuyu karşılaştır">
+                        <i data-lucide="scale" class="w-4 h-4"></i> Karşılaştır
+                    </button>
 
-                    <div class="h-8 w-[1px] bg-dark-800 mx-2"></div>
-
-                    <button onclick="app.openNewReportMode(${id})" class="flex items-center gap-2 bg-scout-600 hover:bg-scout-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg shadow-scout-900/20">
+                    <button onclick="app.openAddReportModal(${id})" class="flex items-center gap-2 bg-scout-600 hover:bg-scout-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg shadow-scout-500/20">
                         <i data-lucide="file-plus" class="w-4 h-4"></i> ${t('new_report')}
                     </button>
 

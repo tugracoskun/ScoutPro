@@ -1,6 +1,6 @@
 // --- OYUNCU KARŞILAŞTIRMA MODÜLÜ ---
 
-ScoutApp.prototype.openCompareModal = function() {
+ScoutApp.prototype.openCompareModal = function(prefillId1 = null) {
     const players = this.state.data.players;
     
     // Player Options for Custom Select
@@ -26,7 +26,7 @@ ScoutApp.prototype.openCompareModal = function() {
             
             <!-- Player Selectors -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 relative z-50">
-                ${this.createCustomSearchSelect('compare-player-1', '1. Oyuncu', 'Oyuncu Ara...', allPlayers, '', 'app.renderComparison()')}
+                ${this.createCustomSearchSelect('compare-player-1', '1. Oyuncu', 'Oyuncu Ara...', allPlayers, prefillId1 || '', 'app.renderComparison()')}
                 ${this.createCustomSearchSelect('compare-player-2', '2. Oyuncu', 'Oyuncu Ara...', allPlayers, '', 'app.renderComparison()')}
             </div>
 
@@ -58,6 +58,10 @@ ScoutApp.prototype.openCompareModal = function() {
             </div>
         </div>
     `);
+
+    if (prefillId1) {
+        setTimeout(() => this.renderComparison(), 100);
+    }
 };
 
 ScoutApp.prototype.renderComparison = function() {
