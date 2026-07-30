@@ -152,6 +152,7 @@ class ScoutApp {
             'matches': [t('menu_matches'), ''],
             'settings': [t('menu_settings'), ''],
             'statistics': [t('menu_statistics'), t('dash_subtitle')],
+            'data-hub': [t('menu_datahub'), t('dh_subtitle')],
             'team-detail': [t('team_detail'), ''],
             'academy': [t('menu_academy'), t('dash_academy_desc')],
             'academy-submodules': [t('menu_academy'), window.getLang() === 'en' ? 'Module Selection' : 'Modül Seçimi'],
@@ -169,6 +170,7 @@ class ScoutApp {
             case 'matches': this.renderMatches(c); break;
             case 'settings': this.renderSettings(c); break;
             case 'statistics': this.renderStatistics(c); break;
+            case 'data-hub': this.renderAnalytics(c); break;
             case 'new-report': this.renderNewReport(c); break;
             case 'players': this.renderPlayers(c); break; // players-list.js
             case 'watchlist': this.renderWatchlist(c); break; // matches.js
