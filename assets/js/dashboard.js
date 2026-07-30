@@ -476,6 +476,91 @@ ScoutApp.prototype.renderStatistics = function(c) {
     const availableYears = Array.from(yearsSet).sort((a, b) => b - a);
     const selectedScoutYear = this.state.scoutActivityYear || new Date().getFullYear();
 
+    const activeTeamCount = sortedTeams.length;
+
+    const leagueCounts = {};
+    sortedTeams.forEach(({team, count}) => {
+        if(team.leagueId) {
+            leagueCounts[team.leagueId] = (leagueCounts[team.leagueId] || 0) + count;
+        }
+    });
+    const sortedLeagues = Object.entries(leagueCounts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([id, count]) => ({ league: this.state.data.leagues.find(l => l.id == id), count }))
+        .filter(l => l.league);
+    const top3Leagues = sortedLeagues.slice(0, 3);
+
+    const countryCounts = {};
+    sortedTeams.forEach(({team, count}) => {
+        const cId = team.countryId || (this.state.data.leagues.find(l => l.id == team.leagueId)?.countryId);
+        if(cId) {
+            countryCounts[cId] = (countryCounts[cId] || 0) + count;
+        }
+    });
+    const sortedCountries = Object.entries(countryCounts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([id, count]) => ({ country: this.state.data.countries.find(c => c.id == id), count }))
+        .filter(c => c.country);
+    const top3Countries = sortedCountries.slice(0, 3);
+
+    const getMiniPodiumPlace = (place, data, type) => {
+        if (!data) return `<div class="flex-1 flex flex-col items-center justify-end opacity-20"><div class="w-8 h-8 rounded-full bg-dark-800 mb-2 border border-dark-700"></div><div class="w-full h-8 bg-dark-800 rounded-t-lg border-t-2 border-dark-700"></div></div>`;
+        const count = data.count;
+        let item, name, logoHtml, clickAction = '';
+        if (type === 'team') {
+            item = data.team;
+            name = item.name;
+            logoHtml = this.getLogoDisplayHTML(item.logo, 'w-full h-full object-contain');
+            clickAction = `onclick="app.closeModal(); app.navigate('team-detail', ${item.id})"`;
+        } else if (type === 'league') {
+            item = data.league;
+            name = item.name;
+            logoHtml = this.getLogoDisplayHTML(item.logo, 'w-full h-full object-contain');
+            clickAction = `onclick="app.closeModal(); app.navigate('database'); setTimeout(() => document.getElementById('db-league-${item.id}')?.scrollIntoView({behavior: 'smooth', block: 'center'}), 400);"`;
+        } else if (type === 'country') {
+            item = data.country;
+            name = this.getCountryName(item);
+            logoHtml = this.getLogoDisplayHTML(item.flag, 'w-full h-full object-cover');
+            clickAction = `onclick="app.goToCountryInDatabase(${item.id})"`;
+        }
+
+        let heightClass = place === 1 ? 'h-20' : (place === 2 ? 'h-14' : 'h-10');
+        let colorClass = place === 1 ? 'bg-yellow-500/20 border-yellow-500/50 text-yellow-500' 
+                       : (place === 2 ? 'bg-slate-300/20 border-slate-300/50 text-slate-300' 
+                       : 'bg-orange-700/20 border-orange-700/50 text-orange-500');
+
+        return `
+            <div class="flex flex-col items-center flex-1 group ${clickAction ? 'cursor-pointer' : ''}" ${clickAction}>
+                <div class="w-10 h-10 rounded-full bg-dark-900 border border-dark-700 flex items-center justify-center p-1.5 mb-2 group-hover:scale-110 transition-transform shadow-lg z-10 overflow-hidden shrink-0" title="${name} (${count})">
+                    ${logoHtml}
+                </div>
+                <div class="text-center mb-1 z-10 h-6 flex flex-col justify-end w-full px-1">
+                    <span class="text-[9px] font-bold text-white truncate w-full" title="${name}">${name}</span>
+                </div>
+                <div class="w-full ${heightClass} ${colorClass} border-t-2 rounded-t-lg flex justify-center pt-1.5 relative overflow-hidden transition-all group-hover:brightness-125">
+                    <span class="text-sm font-black opacity-50">${place}</span>
+                    <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent"></div>
+                </div>
+            </div>
+        `;
+    };
+
+    const renderMiniPodiumCard = (title, top3, type, icon, color) => `
+        <div class="bg-dark-900 border border-dark-800 p-4 rounded-2xl flex flex-col justify-between shadow-sm h-[200px] hover:border-${color}-500/30 transition-all">
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="${icon}" class="w-4 h-4 text-${color}-500"></i>
+                    <span class="text-xs text-slate-500 font-bold uppercase tracking-wider truncate">${title}</span>
+                </div>
+            </div>
+            <div class="flex items-end justify-center gap-2 h-full">
+                ${getMiniPodiumPlace(2, top3[1], type)}
+                ${getMiniPodiumPlace(1, top3[0], type)}
+                ${getMiniPodiumPlace(3, top3[2], type)}
+            </div>
+        </div>
+    `;
+
     c.innerHTML = `
         <div class="space-y-6 max-w-7xl mx-auto fade-in">
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -529,15 +614,21 @@ ScoutApp.prototype.renderStatistics = function(c) {
                     </div>
                 </div>
 
-                <div ${topTeam ? `onclick="app.openTopTeamsModal()"` : ''} class="bg-dark-900 border border-dark-800 hover:border-green-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm ${topTeam ? 'cursor-pointer' : ''}">
+                <div onclick="app.openActiveTeamsModal()" class="bg-dark-900 border border-dark-800 hover:border-green-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm cursor-pointer">
                     <div class="p-3 bg-green-500/10 rounded-xl text-green-500 shrink-0">
-                        ${topTeam ? this.getLogoDisplayHTML(topTeam.logo, 'w-6 h-6') : '<i data-lucide="shield" class="w-6 h-6"></i>'}
+                        <i data-lucide="shield" class="w-6 h-6"></i>
                     </div>
                     <div class="flex flex-col overflow-hidden w-full">
-                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Most Scouted Teams' : 'En Çok İzlenen Takımlar'}</span>
-                        <span class="text-lg font-black text-white leading-tight truncate">${topTeam ? topTeam.name : '-'}</span>
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Active Teams' : 'Aktif Takımlar'}</span>
+                        <span class="text-2xl font-black text-white leading-none">${activeTeamCount}</span>
                     </div>
                 </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                ${renderMiniPodiumCard(window.getLang() === 'en' ? 'Top Leagues' : 'En Aktif Ligler', top3Leagues, 'league', 'trophy', 'purple')}
+                ${renderMiniPodiumCard(window.getLang() === 'en' ? 'Top Countries' : 'En Aktif Ülkeler', top3Countries, 'country', 'globe', 'yellow')}
+                ${renderMiniPodiumCard(window.getLang() === 'en' ? 'Most Scouted Teams' : 'En Çok İzlenen Takımlar', topTeams, 'team', 'shield', 'green')}
             </div>
 
             <!-- Yeni Grafikler Alanı -->
@@ -724,6 +815,60 @@ ScoutApp.prototype.goToLeagueInDatabase = function(countryId, leagueId) {
             }, 350);
         }
     }, 100);
+};
+
+ScoutApp.prototype.openActiveTeamsModal = function() {
+    const teamCounts = {};
+    this.state.data.players.forEach(p => { if(p.teamId) teamCounts[p.teamId] = (teamCounts[p.teamId] || 0) + 1; });
+    this.state.data.watchlist.forEach(p => { if(p.teamId) teamCounts[p.teamId] = (teamCounts[p.teamId] || 0) + 1; });
+    
+    const activeTeams = Object.entries(teamCounts)
+        .map(([id, count]) => ({ team: this.state.data.teams.find(t => t.id == id), count }))
+        .filter(t => t.team)
+        .sort((a, b) => b.count - a.count || a.team.name.localeCompare(b.team.name));
+
+    let htmlContent = '';
+    
+    if (activeTeams.length === 0) {
+        htmlContent = `<div class="text-center text-slate-500 py-12 flex flex-col items-center gap-4"><i data-lucide="shield" class="w-12 h-12 opacity-50"></i><span>${window.getLang() === 'en' ? 'No active teams yet.' : 'Henüz aktif takım yok.'}</span></div>`;
+    } else {
+        htmlContent = activeTeams.map(item => {
+            const t = item.team;
+            const country = this.state.data.countries.find(c => c.id === t.countryId);
+            return `
+                <div class="bg-dark-950 border border-dark-800 rounded-xl p-4 flex items-center justify-between group hover:border-green-500/30 transition-all cursor-pointer" onclick="app.closeModal(); app.navigate('team-detail', ${t.id})">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg bg-dark-900 border border-dark-800 overflow-hidden shrink-0">
+                            ${this.getLogoDisplayHTML(t.logo, "w-full h-full object-contain p-1")}
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-white group-hover:text-green-400 transition-colors">${t.name}</span>
+                            <span class="text-[10px] text-slate-500 uppercase tracking-widest flex items-center gap-1 mt-0.5">
+                                ${country ? this.getLogoDisplayHTML(country.flag, 'w-3 h-3') : ''} ${country ? this.getCountryName(country) : ''}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-slate-400 bg-dark-900 px-2 py-1 rounded-md border border-dark-800">${item.count} ${window.getLang() === 'en' ? 'Players' : 'Oyuncu'}</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600 group-hover:text-green-500 transition-colors"></i>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    this.showModal(`
+        <div class="p-8 max-w-xl w-full">
+            <div class="flex justify-between items-center mb-6 border-b border-dark-800 pb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="shield" class="text-green-500 w-6 h-6"></i> ${window.getLang() === 'en' ? 'Active Teams' : 'Aktif Takımlar'}</h3>
+                <button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400 hover:text-white transition-colors"></i></button>
+            </div>
+            <div class="space-y-3 relative z-10 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
+                ${htmlContent}
+            </div>
+        </div>
+    `);
+    lucide.createIcons();
 };
 
 ScoutApp.prototype.openActiveCountriesModal = function() {
