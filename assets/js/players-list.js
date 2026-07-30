@@ -85,7 +85,11 @@ ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
                     <button onclick="app.updatePlayerFilter('category', 'Forvet')" class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${this.state.playerFilter.category === 'Forvet' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('pos_st')}</button>
                 </div>
 
-                <div class="flex gap-2">
+                <div class="flex gap-2 items-center">
+                    <button onclick="app.openCompareModal()" class="px-3 py-2 rounded-lg text-xs font-bold bg-dark-900 text-slate-300 border border-dark-700 hover:border-blue-500/50 hover:text-blue-400 transition-all flex items-center gap-2">
+                        <i data-lucide="scale" class="w-4 h-4"></i>
+                        ${window.getLang && window.getLang() === 'en' ? 'Compare' : 'Karşılaştır'}
+                    </button>
                     <select onchange="app.updatePlayerFilter('potential', this.value)" class="bg-dark-900 border border-dark-700 text-slate-300 text-xs rounded-lg px-3 py-2 outline-none focus:border-scout-500 cursor-pointer">
                         <option value="all">${window.getLang && window.getLang() === 'en' ? 'All Potentials' : 'Tüm Potansiyeller'}</option>
                         <option value="Yüksek" ${this.state.playerFilter.potential === 'Yüksek' ? 'selected' : ''}>${window.getLang && window.getLang() === 'en' ? 'High Pot.' : 'Yüksek Pot.'}</option>
