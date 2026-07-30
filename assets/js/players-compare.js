@@ -275,7 +275,19 @@ ScoutApp.prototype.drawCompareRadar = function(p1, p2) {
                 toolbar: { show: false }, 
                 background: 'transparent', 
                 fontFamily: 'Inter',
-                animations: { enabled: true, easing: 'easeinout', speed: 800 }
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 1000,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 200
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 400
+                    }
+                }
             },
             labels: labels,
             stroke: { 

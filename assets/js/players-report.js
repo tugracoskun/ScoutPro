@@ -410,7 +410,7 @@ ScoutApp.prototype.initReportRadar = function(labels = [], data = []) {
     if(this.reportRadarChart) this.reportRadarChart.destroy();
     const options = {
         series: [{ name: t('analysis'), data: data }],
-        chart: { height: 300, type: 'radar', toolbar: { show: false }, background: 'transparent', animations: { enabled: true } },
+        chart: { height: 300, type: 'radar', toolbar: { show: false }, background: 'transparent', animations: { enabled: true, easing: 'easeinout', speed: 1000, animateGradually: { enabled: true, delay: 200 }, dynamicAnimation: { enabled: true, speed: 400 } } },
         labels: labels,
         stroke: { width: 2, colors: ['#22c55e'] },
         fill: { opacity: 0.2, colors: ['#22c55e'] },

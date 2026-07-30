@@ -950,7 +950,19 @@ ScoutApp.prototype.initDashboardCharts = function() {
                     background: 'transparent',
                     fontFamily: 'Outfit, Inter, sans-serif',
                     foreColor: '#94a3b8',
-                    animations: { enabled: true }
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 1000,
+                        animateGradually: {
+                            enabled: true,
+                            delay: 200
+                        },
+                        dynamicAnimation: {
+                            enabled: true,
+                            speed: 400
+                        }
+                    }
                 },
                 labels: labels,
                 colors: colors,
@@ -1090,7 +1102,20 @@ ScoutApp.prototype.initDashboardCharts = function() {
                 background: 'transparent',
                 fontFamily: 'Outfit, Inter, sans-serif',
                 foreColor: '#94a3b8',
-                toolbar: { show: false }
+                toolbar: { show: false },
+                animations: { 
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 1000,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 200
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 400
+                    }
+                }
             },
             plotOptions: {
                 bar: {
