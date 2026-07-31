@@ -105,6 +105,8 @@ ScoutApp.prototype.renderDashboard = function(c) {
                 </div>
             </div>
 
+
+
             <div class="flex flex-col gap-2">
                 <div class="bg-gradient-to-r from-scout-900/20 to-dark-900 border border-dark-800/50 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                     <div><h4 class="text-lg font-bold text-white">${t('dash_quick')}</h4><p class="text-xs text-slate-400">${t('dash_quick_desc')}</p></div>
@@ -180,6 +182,8 @@ ScoutApp.prototype.renderDashboard = function(c) {
             window.dashboardCountdownInterval = setInterval(updateCountdown, 1000);
         }, 50);
     }
+
+
     
     // Lucide ikonlarını yeniden oluştur
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -491,10 +495,18 @@ ScoutApp.prototype.renderStatistics = function(c) {
     const top3Leagues = sortedLeagues.slice(0, 3);
 
     const countryCounts = {};
-    sortedTeams.forEach(({team, count}) => {
-        const cId = team.countryId || (this.state.data.leagues.find(l => l.id == team.leagueId)?.countryId);
-        if(cId) {
-            countryCounts[cId] = (countryCounts[cId] || 0) + count;
+    this.state.data.players.forEach(p => {
+        let cId = null;
+        if (p.teamId) {
+            const team = this.state.data.teams.find(t => t.id == p.teamId);
+            if (team) {
+                cId = team.countryId || (this.state.data.leagues.find(l => l.id == team.leagueId)?.countryId);
+            }
+        }
+        if (!cId) cId = p.nationality;
+        
+        if (cId) {
+            countryCounts[cId] = (countryCounts[cId] || 0) + 1;
         }
     });
     const sortedCountries = Object.entries(countryCounts)
@@ -631,6 +643,16 @@ ScoutApp.prototype.renderStatistics = function(c) {
                 ${renderMiniPodiumCard(window.getLang() === 'en' ? 'Most Scouted Teams' : 'En Çok İzlenen Takımlar', topTeams, 'team', 'shield', 'green')}
             </div>
 
+            <div class="bg-gradient-to-br from-dark-900 to-dark-950 border border-dark-800 rounded-2xl p-6 relative flex flex-col shadow-xl mt-6 mb-6">
+                <div class="flex justify-between items-center mb-6 border-b border-dark-800 pb-4">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2 drop-shadow-md">
+                        <i data-lucide="globe" class="w-5 h-5 text-scout-400"></i> Global Scout Ağı
+                    </h3>
+                    <span class="text-xs font-bold text-slate-500 bg-dark-800 px-3 py-1 rounded-full border border-dark-700">Rapordaki Oyuncuların Coğrafi Dağılımı</span>
+                </div>
+                <div id="statistics-world-map" class="w-full h-[400px] rounded-xl overflow-hidden border border-dark-800/50 bg-[#0f172a] shadow-inner relative z-0"></div>
+            </div>
+
             <!-- Yeni Grafikler Alanı -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="bg-dark-900/40 backdrop-blur-md border border-dark-800/80 rounded-2xl p-3 pb-1 shadow-2xl flex flex-col h-[270px] relative overflow-hidden group hover:border-dark-700 transition-all duration-300 lg:col-span-4">
@@ -664,6 +686,129 @@ ScoutApp.prototype.renderStatistics = function(c) {
             window.lucide.createIcons();
         }
         this.initDashboardCharts();
+
+        // Initialize Map in Statistics
+        const mapData = {};
+        
+        let mapPaths = null;
+        if (window.jsVectorMap && window.jsVectorMap.maps && window.jsVectorMap.maps.world) {
+            mapPaths = window.jsVectorMap.maps.world.paths;
+        }
+
+        this.state.data.players.forEach(p => {
+            let targetCountryId = null;
+
+            // Prioritize team/league country
+            if (p.teamId) {
+                const team = this.state.data.teams.find(t => t.id == p.teamId);
+                if (team) {
+                    if (team.countryId) {
+                        targetCountryId = team.countryId;
+                    } else if (team.leagueId) {
+                        const league = this.state.data.leagues.find(l => l.id == team.leagueId);
+                        if (league && league.countryId) {
+                            targetCountryId = league.countryId;
+                        }
+                    }
+                }
+            }
+
+            // Fallback to player's nationality
+            if (!targetCountryId) {
+                targetCountryId = p.nationality;
+            }
+
+            if (targetCountryId) {
+                let natObj = null;
+                if (typeof targetCountryId === 'number' || !isNaN(targetCountryId)) {
+                    natObj = this.state.data.countries.find(c => c.id == targetCountryId);
+                } else {
+                    natObj = this.state.data.countries.find(c => this.getCountryName(c) === targetCountryId || c.name === targetCountryId || c.nameEn === targetCountryId);
+                }
+                
+                if (natObj) {
+                    let iso = null;
+                    
+                    // Try to get ISO from flagcdn URL
+                    if (natObj.flag && natObj.flag.includes('flagcdn.com')) {
+                        const parts = natObj.flag.split('/');
+                        const filename = parts[parts.length - 1];
+                        iso = filename.replace('.png', '').toUpperCase();
+                    }
+                    
+                    // Fallback to jsVectorMap paths lookup
+                    if (!iso && mapPaths) {
+                        for (let code in mapPaths) {
+                            if (mapPaths[code].name === natObj.nameEn || mapPaths[code].name === natObj.name || mapPaths[code].name === this.getCountryName(natObj)) {
+                                iso = code;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Hardcoded fallback for some common mismatches
+                    if (!iso) {
+                        if (natObj.nameEn === 'South Korea' || natObj.name === 'South Korea') iso = 'KR';
+                        else if (natObj.nameEn === 'North Korea' || natObj.name === 'North Korea') iso = 'KP';
+                        else if (natObj.nameEn === 'United States' || natObj.name === 'United States') iso = 'US';
+                        else if (natObj.nameEn === 'United Kingdom' || natObj.name === 'United Kingdom') iso = 'GB';
+                    }
+
+                    if (iso) {
+                        mapData[iso] = (mapData[iso] || 0) + 1;
+                    }
+                }
+            }
+        });
+
+        if (window.jsVectorMap) {
+            new jsVectorMap({
+                selector: '#statistics-world-map',
+                map: 'world',
+                backgroundColor: 'transparent',
+                regionStyle: {
+                    initial: {
+                        fill: '#1e293b', // slate-800
+                        stroke: '#334155', // slate-700
+                        strokeWidth: 0.6,
+                        fillOpacity: 1
+                    },
+                    hover: {
+                        fillOpacity: 0.7,
+                        cursor: 'pointer'
+                    }
+                },
+                visualizeData: {
+                    scale: ['#059669', '#6ee7b7'], // From emerald-600 to emerald-300
+                    values: mapData
+                },
+                onRegionTooltipShow(event, tooltip, code) {
+                    const count = mapData[code] || 0;
+                    if (count > 0) {
+                        tooltip.text(
+                            `<div class="flex flex-col gap-1 min-w-[120px] p-3">
+                                <div class="flex items-center gap-2 border-b border-white/10 pb-2 mb-1">
+                                    <span class="text-xs font-bold text-white uppercase tracking-wider">${tooltip.text()}</span>
+                                </div>
+                                <div class="flex items-center justify-between mt-1">
+                                    <span class="text-xs text-slate-300 font-medium">Scout Edilen</span>
+                                    <span class="text-sm font-black text-[#34d399] bg-[#064e3b] px-2 py-0.5 rounded-md">${count}</span>
+                                </div>
+                            </div>`,
+                            true
+                        );
+                    } else {
+                        tooltip.text(
+                            `<div class="p-2 px-3">
+                                <span class="text-xs font-bold text-slate-400">${tooltip.text()}</span>
+                                <div class="text-[10px] text-slate-500 mt-1">Veri yok</div>
+                            </div>`,
+                            true
+                        );
+                    }
+                }
+            });
+        }
     }, 50);
 };
 
