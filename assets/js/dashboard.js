@@ -817,24 +817,26 @@ ScoutApp.prototype.renderStatistics = function(c) {
             </div>
 
             <div class="bg-gradient-to-br from-dark-900 to-dark-950 border border-dark-800 rounded-2xl p-6 relative flex flex-col shadow-xl mt-6 mb-6 overflow-hidden" id="map-container-wrapper">
-                <div class="flex justify-between items-center mb-6 border-b border-dark-800 pb-4 relative z-10">
-                    <h3 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2 drop-shadow-md">
-                        <i data-lucide="globe" class="w-5 h-5 text-scout-400"></i> Dünya Genelindeki Bilgi Seviyesi
-                    </h3>
-                    <div class="flex items-center gap-3">
-                        <span class="text-xs font-bold text-slate-500 bg-dark-800 px-3 py-1 rounded-full border border-dark-700 hidden sm:block">Rapordaki Oyuncuların Coğrafi Dağılımı</span>
-                        <button onclick="document.getElementById('knowledge-panel').classList.toggle('translate-x-full')" class="bg-scout-600 hover:bg-scout-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95 z-20">
+                <div class="flex justify-between items-center mb-3 relative z-10 px-2 w-full">
+                    <div class="flex-1 flex justify-start">
+                        <button onclick="document.getElementById('knowledge-panel').classList.toggle('-translate-x-full')" class="bg-scout-600 hover:bg-scout-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95 z-20">
                             <i data-lucide="layers" class="w-4 h-4"></i> Seviye Detayları
                         </button>
                     </div>
+                    <div class="flex-1 flex justify-center">
+                        <h3 class="text-xs font-bold text-white/80 uppercase tracking-widest flex items-center gap-2 drop-shadow-md whitespace-nowrap">
+                            <i data-lucide="globe" class="w-4 h-4 text-scout-400"></i> Dünya Genelindeki Bilgi Seviyesi
+                        </h3>
+                    </div>
+                    <div class="flex-1"></div>
                 </div>
-                <div id="statistics-world-map" class="w-full h-[400px] sm:h-[450px] rounded-xl overflow-hidden border border-dark-800/50 bg-[#0f172a] shadow-inner relative z-0"></div>
+                <div id="statistics-world-map" class="w-full h-[500px] sm:h-[550px] rounded-xl overflow-hidden border border-dark-800/50 bg-[#0f172a] shadow-inner relative z-0"></div>
                 
                 <!-- Knowledge Levels Sliding Panel -->
-                <div id="knowledge-panel" class="absolute top-0 right-0 w-full sm:w-80 h-full bg-dark-950/95 backdrop-blur-xl border-l border-dark-800 shadow-2xl transform translate-x-full transition-transform duration-300 z-30 flex flex-col">
+                <div id="knowledge-panel" class="absolute top-0 left-0 w-full sm:w-80 h-full bg-dark-950/95 backdrop-blur-xl border-r border-dark-800/50 transform -translate-x-full transition-transform duration-300 ease-in-out z-50 overflow-hidden shadow-2xl flex flex-col">
                     <div class="flex justify-between items-center p-5 border-b border-dark-800 bg-dark-900/50">
                         <h4 class="text-sm font-black text-white flex items-center gap-2 uppercase tracking-wider"><i data-lucide="bar-chart-2" class="w-4 h-4 text-scout-400"></i> Bilgi Seviyeleri</h4>
-                        <button onclick="document.getElementById('knowledge-panel').classList.add('translate-x-full')" class="text-slate-400 hover:text-white bg-dark-800 hover:bg-dark-700 p-1 rounded-md transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        <button onclick="document.getElementById('knowledge-panel').classList.add('-translate-x-full')" class="text-slate-400 hover:text-white bg-dark-800 hover:bg-dark-700 p-1 rounded-md transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
                     </div>
                     <div class="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6">
                         <div>
