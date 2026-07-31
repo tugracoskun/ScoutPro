@@ -816,6 +816,30 @@ ScoutApp.prototype.renderStatistics = function(c) {
                 ${renderMiniPodiumCard(window.getLang() === 'en' ? 'Most Scouted Teams' : 'En Çok İzlenen Takımlar', topTeams, 'team', 'shield', 'green')}
             </div>
 
+            <!-- Yeni Grafikler Alanı -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="bg-dark-900/40 backdrop-blur-md border border-dark-800/80 rounded-2xl p-3 pb-1 shadow-2xl flex flex-col h-[270px] relative overflow-hidden group hover:border-dark-700 transition-all duration-300 lg:col-span-4">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-green-500/10 transition-colors duration-500"></div>
+                    <h3 class="text-xs font-bold text-slate-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5 shrink-0 relative z-10">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-green-500"></i> ${window.getLang() === 'en' ? 'Position Distribution' : 'Pozisyon Dağılımı'}
+                    </h3>
+                    <div id="position-chart" class="flex-1 w-full min-h-0 relative z-10"></div>
+                </div>
+
+                <div class="bg-dark-900/40 backdrop-blur-md border border-dark-800/80 rounded-2xl p-3 pb-1 shadow-2xl flex flex-col h-[270px] relative overflow-hidden group hover:border-dark-700 transition-all duration-300 lg:col-span-8">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-scout-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-scout-500/10 transition-colors duration-500"></div>
+                    <div class="flex justify-between items-center mb-1.5 shrink-0 relative z-20">
+                        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-widest flex items-center gap-1.5">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4 text-scout-500"></i> ${window.getLang() === 'en' ? 'Monthly Scout Activity' : 'Aylık Gözlem Aktivitesi'}
+                        </h3>
+                        <select onchange="app.changeScoutActivityYear(this.value)" class="text-[10px] font-black text-slate-400 hover:text-white bg-dark-950/80 border border-dark-850 hover:border-dark-700 rounded px-1.5 py-0.5 outline-none focus:border-scout-500/50 cursor-pointer transition-colors">
+                            ${availableYears.map(y => `<option value="${y}" ${y === selectedScoutYear ? 'selected' : ''}>${y}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div id="monthly-chart" class="flex-1 w-full min-h-0 relative z-10"></div>
+                </div>
+            </div>
+
             <div class="bg-gradient-to-br from-dark-900 to-dark-950 border border-dark-800 rounded-2xl p-6 relative flex flex-col shadow-xl mt-6 mb-6 overflow-hidden" id="map-container-wrapper">
                 <div class="flex justify-between items-center mb-3 relative z-10 px-2 w-full">
                     <div class="flex-1 flex justify-start">
@@ -852,30 +876,6 @@ ScoutApp.prototype.renderStatistics = function(c) {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Yeni Grafikler Alanı -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="bg-dark-900/40 backdrop-blur-md border border-dark-800/80 rounded-2xl p-3 pb-1 shadow-2xl flex flex-col h-[270px] relative overflow-hidden group hover:border-dark-700 transition-all duration-300 lg:col-span-4">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-green-500/10 transition-colors duration-500"></div>
-                    <h3 class="text-xs font-bold text-slate-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5 shrink-0 relative z-10">
-                        <i data-lucide="pie-chart" class="w-4 h-4 text-green-500"></i> ${window.getLang() === 'en' ? 'Position Distribution' : 'Pozisyon Dağılımı'}
-                    </h3>
-                    <div id="position-chart" class="flex-1 w-full min-h-0 relative z-10"></div>
-                </div>
-
-                <div class="bg-dark-900/40 backdrop-blur-md border border-dark-800/80 rounded-2xl p-3 pb-1 shadow-2xl flex flex-col h-[270px] relative overflow-hidden group hover:border-dark-700 transition-all duration-300 lg:col-span-8">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-scout-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-scout-500/10 transition-colors duration-500"></div>
-                    <div class="flex justify-between items-center mb-1.5 shrink-0 relative z-20">
-                        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-widest flex items-center gap-1.5">
-                            <i data-lucide="bar-chart-3" class="w-4 h-4 text-scout-500"></i> ${window.getLang() === 'en' ? 'Monthly Scout Activity' : 'Aylık Gözlem Aktivitesi'}
-                        </h3>
-                        <select onchange="app.changeScoutActivityYear(this.value)" class="text-[10px] font-black text-slate-400 hover:text-white bg-dark-950/80 border border-dark-850 hover:border-dark-700 rounded px-1.5 py-0.5 outline-none focus:border-scout-500/50 cursor-pointer transition-colors">
-                            ${availableYears.map(y => `<option value="${y}" ${y === selectedScoutYear ? 'selected' : ''}>${y}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div id="monthly-chart" class="flex-1 w-full min-h-0 relative z-10"></div>
                 </div>
             </div>
 
