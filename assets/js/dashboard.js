@@ -509,6 +509,179 @@ ScoutApp.prototype.renderStatistics = function(c) {
             countryCounts[cId] = (countryCounts[cId] || 0) + 1;
         }
     });
+
+    // --- BİLGİ SEVİYESİ HESAPLAMALARI ---
+    const KNOWLEDGE_LEVELS = [
+        { text: "Veri Yok", color: "#64748b", textClass: "text-slate-500" }, // 0
+        { text: "Sınırlı", color: "#f97316", textClass: "text-orange-500" }, // 1
+        { text: "Temel", color: "#f59e0b", textClass: "text-amber-500" }, // 2
+        { text: "Ortalama", color: "#eab308", textClass: "text-yellow-500" }, // 3
+        { text: "İyi", color: "#84cc16", textClass: "text-lime-500" }, // 4
+        { text: "Çok İyi", color: "#22c55e", textClass: "text-green-500" }, // 5
+        { text: "Kapsamlı", color: "#15803d", textClass: "text-green-700" } // 6
+    ];
+
+    const getCountryLevel = (count) => {
+        if (count >= 50) return 6;
+        if (count >= 40) return 5;
+        if (count >= 25) return 4;
+        if (count >= 15) return 3;
+        if (count >= 5) return 2;
+        if (count > 0) return 1;
+        return 0;
+    };
+
+    const getRegionLevel = (count, unique) => {
+        if (count >= 200 && unique >= 10) return 6;
+        if (count >= 150 && unique >= 8) return 5;
+        if (count >= 100 && unique >= 6) return 4;
+        if (count >= 50 && unique >= 4) return 3;
+        if (count >= 20 && unique >= 2) return 2;
+        if (count > 0) return 1;
+        return 0;
+    };
+
+    const regionStats = {};
+    const mapCounts = {};
+    
+    let mapPaths = null;
+    if (window.jsVectorMap && window.jsVectorMap.maps && window.jsVectorMap.maps.world) {
+        mapPaths = window.jsVectorMap.maps.world.paths;
+    }
+
+    Object.entries(countryCounts).forEach(([cId, count]) => {
+        let natObj = null;
+        if (typeof cId === 'number' || !isNaN(cId)) natObj = this.state.data.countries.find(c => c.id == cId);
+        else natObj = this.state.data.countries.find(c => this.getCountryName(c) === cId || c.name === cId || c.nameEn === cId);
+        
+        if (natObj) {
+            // Region Stats
+            const reg = natObj.region || 'Diğer';
+            if (!regionStats[reg]) regionStats[reg] = { count: 0, uniqueCountries: 0 };
+            regionStats[reg].count += count;
+            regionStats[reg].uniqueCountries += 1;
+
+            // ISO Map Extraction
+            let iso = null;
+            if (natObj.flag && natObj.flag.includes('flagcdn.com')) {
+                const parts = natObj.flag.split('/');
+                const filename = parts[parts.length - 1];
+                iso = filename.replace('.png', '').toUpperCase();
+            }
+            if (!iso && mapPaths) {
+                for (let code in mapPaths) {
+                    if (mapPaths[code].name === natObj.nameEn || mapPaths[code].name === natObj.name || mapPaths[code].name === this.getCountryName(natObj)) {
+                        iso = code; break;
+                    }
+                }
+            }
+            if (!iso) {
+                if (natObj.nameEn === 'South Korea' || natObj.name === 'South Korea') iso = 'KR';
+                else if (natObj.nameEn === 'North Korea' || natObj.name === 'North Korea') iso = 'KP';
+                else if (natObj.nameEn === 'United States' || natObj.name === 'United States') iso = 'US';
+                else if (natObj.nameEn === 'United Kingdom' || natObj.name === 'United Kingdom') iso = 'GB';
+            }
+            if (iso) {
+                mapCounts[iso] = (mapCounts[iso] || 0) + count;
+            }
+        }
+    });
+
+    // --- ISO <-> REGION MAPPING ---
+    const isoToRegion = {};
+    if (mapPaths) {
+        this.state.data.countries.forEach(natObj => {
+            let iso = null;
+            if (natObj.flag && natObj.flag.includes('flagcdn.com')) {
+                const parts = natObj.flag.split('/');
+                const filename = parts[parts.length - 1];
+                iso = filename.replace('.png', '').toUpperCase();
+            }
+            if (!iso) {
+                for (let code in mapPaths) {
+                    if (mapPaths[code].name === natObj.nameEn || mapPaths[code].name === natObj.name || mapPaths[code].name === this.getCountryName(natObj)) {
+                        iso = code; break;
+                    }
+                }
+            }
+            if (!iso) {
+                if (natObj.nameEn === 'South Korea' || natObj.name === 'South Korea') iso = 'KR';
+                else if (natObj.nameEn === 'North Korea' || natObj.name === 'North Korea') iso = 'KP';
+                else if (natObj.nameEn === 'United States' || natObj.name === 'United States') iso = 'US';
+                else if (natObj.nameEn === 'United Kingdom' || natObj.name === 'United Kingdom') iso = 'GB';
+            }
+            if (iso) {
+                isoToRegion[iso] = natObj.region || 'Diğer';
+            }
+        });
+    }
+
+    const mapData = {}; // Holds the level 1-6 for the map
+    const mapColors = {}; // Holds exact hex colors
+    
+    // Process active scouted countries first (Guarantees they get colored even if mapPaths has weird keys)
+    for (let iso in mapCounts) {
+        let countryLevel = getCountryLevel(mapCounts[iso]);
+        let regionLevel = 0;
+        const reg = isoToRegion[iso];
+        if (reg && regionStats[reg]) {
+            regionLevel = getRegionLevel(regionStats[reg].count, regionStats[reg].uniqueCountries);
+        }
+        const finalLevel = Math.max(countryLevel, regionLevel);
+        if (finalLevel > 0) {
+            mapData[iso] = finalLevel;
+            mapColors[iso] = KNOWLEDGE_LEVELS[finalLevel].color;
+        }
+    }
+
+    // Process remaining countries on the map to inherit Region Knowledge
+    if (mapPaths) {
+        for (let iso in mapPaths) {
+            if (mapData[iso]) continue; // Already processed
+            
+            const reg = isoToRegion[iso];
+            if (reg && regionStats[reg]) {
+                const regionLevel = getRegionLevel(regionStats[reg].count, regionStats[reg].uniqueCountries);
+                if (regionLevel > 0) {
+                    mapData[iso] = regionLevel;
+                    mapColors[iso] = KNOWLEDGE_LEVELS[regionLevel].color;
+                }
+            }
+        }
+    }
+    
+    // Add anchor points to prevent jsVectorMap NaN bugs when all countries have the same level
+    mapData['__MIN_ANCHOR__'] = 1;
+    mapData['__MAX_ANCHOR__'] = 6;
+
+    // Side Panel HTML
+    let regionsHtml = '';
+    Object.entries(regionStats).sort((a,b) => b[1].count - a[1].count).forEach(([reg, stats]) => {
+        const level = getRegionLevel(stats.count, stats.uniqueCountries);
+        const levelObj = KNOWLEDGE_LEVELS[level];
+        regionsHtml += `
+            <div class="flex items-center justify-between py-2 border-b border-dark-800/50">
+                <span class="text-xs font-bold text-white">${reg}</span>
+                <span class="text-[10px] font-black ${levelObj.textClass} uppercase tracking-wider">${levelObj.text}</span>
+            </div>
+        `;
+    });
+    
+    let countriesHtml = '';
+    Object.entries(mapCounts).sort((a,b) => b[1] - a[1]).forEach(([iso, count]) => {
+        const level = getCountryLevel(count);
+        const levelObj = KNOWLEDGE_LEVELS[level];
+        const name = mapPaths && mapPaths[iso] ? mapPaths[iso].name : iso;
+        countriesHtml += `
+            <div class="flex items-center justify-between py-2 border-b border-dark-800/50">
+                <div class="flex items-center gap-2">
+                    <img src="https://flagcdn.com/w20/${iso.toLowerCase()}.png" class="w-4 h-3 object-cover rounded-[2px]" onerror="this.style.display='none'">
+                    <span class="text-xs font-medium text-slate-300 truncate max-w-[120px]">${name}</span>
+                </div>
+                <span class="text-[10px] font-black ${levelObj.textClass} uppercase tracking-wider">${levelObj.text}</span>
+            </div>
+        `;
+    });
     const sortedCountries = Object.entries(countryCounts)
         .sort((a, b) => b[1] - a[1])
         .map(([id, count]) => ({ country: this.state.data.countries.find(c => c.id == id), count }))
@@ -643,14 +816,41 @@ ScoutApp.prototype.renderStatistics = function(c) {
                 ${renderMiniPodiumCard(window.getLang() === 'en' ? 'Most Scouted Teams' : 'En Çok İzlenen Takımlar', topTeams, 'team', 'shield', 'green')}
             </div>
 
-            <div class="bg-gradient-to-br from-dark-900 to-dark-950 border border-dark-800 rounded-2xl p-6 relative flex flex-col shadow-xl mt-6 mb-6">
-                <div class="flex justify-between items-center mb-6 border-b border-dark-800 pb-4">
+            <div class="bg-gradient-to-br from-dark-900 to-dark-950 border border-dark-800 rounded-2xl p-6 relative flex flex-col shadow-xl mt-6 mb-6 overflow-hidden" id="map-container-wrapper">
+                <div class="flex justify-between items-center mb-6 border-b border-dark-800 pb-4 relative z-10">
                     <h3 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2 drop-shadow-md">
-                        <i data-lucide="globe" class="w-5 h-5 text-scout-400"></i> Global Scout Ağı
+                        <i data-lucide="globe" class="w-5 h-5 text-scout-400"></i> Dünya Genelindeki Bilgi Seviyesi
                     </h3>
-                    <span class="text-xs font-bold text-slate-500 bg-dark-800 px-3 py-1 rounded-full border border-dark-700">Rapordaki Oyuncuların Coğrafi Dağılımı</span>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-slate-500 bg-dark-800 px-3 py-1 rounded-full border border-dark-700 hidden sm:block">Rapordaki Oyuncuların Coğrafi Dağılımı</span>
+                        <button onclick="document.getElementById('knowledge-panel').classList.toggle('translate-x-full')" class="bg-scout-600 hover:bg-scout-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95 z-20">
+                            <i data-lucide="layers" class="w-4 h-4"></i> Seviye Detayları
+                        </button>
+                    </div>
                 </div>
-                <div id="statistics-world-map" class="w-full h-[400px] rounded-xl overflow-hidden border border-dark-800/50 bg-[#0f172a] shadow-inner relative z-0"></div>
+                <div id="statistics-world-map" class="w-full h-[400px] sm:h-[450px] rounded-xl overflow-hidden border border-dark-800/50 bg-[#0f172a] shadow-inner relative z-0"></div>
+                
+                <!-- Knowledge Levels Sliding Panel -->
+                <div id="knowledge-panel" class="absolute top-0 right-0 w-full sm:w-80 h-full bg-dark-950/95 backdrop-blur-xl border-l border-dark-800 shadow-2xl transform translate-x-full transition-transform duration-300 z-30 flex flex-col">
+                    <div class="flex justify-between items-center p-5 border-b border-dark-800 bg-dark-900/50">
+                        <h4 class="text-sm font-black text-white flex items-center gap-2 uppercase tracking-wider"><i data-lucide="bar-chart-2" class="w-4 h-4 text-scout-400"></i> Bilgi Seviyeleri</h4>
+                        <button onclick="document.getElementById('knowledge-panel').classList.add('translate-x-full')" class="text-slate-400 hover:text-white bg-dark-800 hover:bg-dark-700 p-1 rounded-md transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6">
+                        <div>
+                            <h5 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 pb-1 border-b border-dark-800">Kıtalar / Bölgeler</h5>
+                            <div class="flex flex-col gap-1">
+                                ${regionsHtml || '<p class="text-xs text-slate-500 italic">Veri bulunamadı.</p>'}
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 pb-1 border-b border-dark-800">Ülkeler</h5>
+                            <div class="flex flex-col gap-1">
+                                ${countriesHtml || '<p class="text-xs text-slate-500 italic">Veri bulunamadı.</p>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Yeni Grafikler Alanı -->
@@ -687,80 +887,7 @@ ScoutApp.prototype.renderStatistics = function(c) {
         }
         this.initDashboardCharts();
 
-        // Initialize Map in Statistics
-        const mapData = {};
-        
-        let mapPaths = null;
-        if (window.jsVectorMap && window.jsVectorMap.maps && window.jsVectorMap.maps.world) {
-            mapPaths = window.jsVectorMap.maps.world.paths;
-        }
-
-        this.state.data.players.forEach(p => {
-            let targetCountryId = null;
-
-            // Prioritize team/league country
-            if (p.teamId) {
-                const team = this.state.data.teams.find(t => t.id == p.teamId);
-                if (team) {
-                    if (team.countryId) {
-                        targetCountryId = team.countryId;
-                    } else if (team.leagueId) {
-                        const league = this.state.data.leagues.find(l => l.id == team.leagueId);
-                        if (league && league.countryId) {
-                            targetCountryId = league.countryId;
-                        }
-                    }
-                }
-            }
-
-            // Fallback to player's nationality
-            if (!targetCountryId) {
-                targetCountryId = p.nationality;
-            }
-
-            if (targetCountryId) {
-                let natObj = null;
-                if (typeof targetCountryId === 'number' || !isNaN(targetCountryId)) {
-                    natObj = this.state.data.countries.find(c => c.id == targetCountryId);
-                } else {
-                    natObj = this.state.data.countries.find(c => this.getCountryName(c) === targetCountryId || c.name === targetCountryId || c.nameEn === targetCountryId);
-                }
-                
-                if (natObj) {
-                    let iso = null;
-                    
-                    // Try to get ISO from flagcdn URL
-                    if (natObj.flag && natObj.flag.includes('flagcdn.com')) {
-                        const parts = natObj.flag.split('/');
-                        const filename = parts[parts.length - 1];
-                        iso = filename.replace('.png', '').toUpperCase();
-                    }
-                    
-                    // Fallback to jsVectorMap paths lookup
-                    if (!iso && mapPaths) {
-                        for (let code in mapPaths) {
-                            if (mapPaths[code].name === natObj.nameEn || mapPaths[code].name === natObj.name || mapPaths[code].name === this.getCountryName(natObj)) {
-                                iso = code;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Hardcoded fallback for some common mismatches
-                    if (!iso) {
-                        if (natObj.nameEn === 'South Korea' || natObj.name === 'South Korea') iso = 'KR';
-                        else if (natObj.nameEn === 'North Korea' || natObj.name === 'North Korea') iso = 'KP';
-                        else if (natObj.nameEn === 'United States' || natObj.name === 'United States') iso = 'US';
-                        else if (natObj.nameEn === 'United Kingdom' || natObj.name === 'United Kingdom') iso = 'GB';
-                    }
-
-                    if (iso) {
-                        mapData[iso] = (mapData[iso] || 0) + 1;
-                    }
-                }
-            }
-        });
-
+        // Remove old Map initialization logic that calculated mapData
         if (window.jsVectorMap) {
             new jsVectorMap({
                 selector: '#statistics-world-map',
@@ -779,20 +906,30 @@ ScoutApp.prototype.renderStatistics = function(c) {
                     }
                 },
                 visualizeData: {
-                    scale: ['#059669', '#6ee7b7'], // From emerald-600 to emerald-300
-                    values: mapData
+                    scale: ['#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', '#15803d'],
+                    values: mapData,
+                    min: 1,
+                    max: 6
                 },
                 onRegionTooltipShow(event, tooltip, code) {
-                    const count = mapData[code] || 0;
-                    if (count > 0) {
+                    const finalLevel = mapData[code] || 0;
+                    const count = mapCounts[code] || 0;
+                    const levelObj = KNOWLEDGE_LEVELS[finalLevel];
+                    const isFromRegion = count === 0 && finalLevel > 0;
+
+                    if (finalLevel > 0) {
                         tooltip.text(
-                            `<div class="flex flex-col gap-1 min-w-[120px] p-3">
+                            `<div class="flex flex-col gap-1 min-w-[140px] p-3">
                                 <div class="flex items-center gap-2 border-b border-white/10 pb-2 mb-1">
                                     <span class="text-xs font-bold text-white uppercase tracking-wider">${tooltip.text()}</span>
                                 </div>
-                                <div class="flex items-center justify-between mt-1">
-                                    <span class="text-xs text-slate-300 font-medium">Scout Edilen</span>
-                                    <span class="text-sm font-black text-[#34d399] bg-[#064e3b] px-2 py-0.5 rounded-md">${count}</span>
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-[10px] text-slate-400 font-medium">Scout Edilen</span>
+                                    <span class="text-[10px] font-black text-white bg-dark-700 px-1.5 py-0.5 rounded">${count} Oyuncu</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-slate-300 font-medium">Bilgi Seviyesi</span>
+                                    <span class="text-xs font-black ${levelObj.textClass}">${levelObj.text} ${isFromRegion ? '<span class="text-[8px] opacity-60 ml-1 font-medium">(Bölge)</span>' : ''}</span>
                                 </div>
                             </div>`,
                             true
