@@ -843,7 +843,7 @@ ScoutApp.prototype.renderStatistics = function(c) {
             <div class="bg-gradient-to-br from-dark-900 to-dark-950 border border-dark-800 rounded-2xl p-6 relative flex flex-col shadow-xl mt-6 mb-6 overflow-hidden" id="map-container-wrapper">
                 <div class="flex justify-between items-center mb-3 relative z-10 px-2 w-full">
                     <div class="flex-1 flex justify-start">
-                        <button onclick="document.getElementById('knowledge-panel').classList.toggle('-translate-x-full')" class="bg-scout-600 hover:bg-scout-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95 z-20">
+                        <button onclick="app.toggleKnowledgePanel()" class="bg-scout-600 hover:bg-scout-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 z-20">
                             <i data-lucide="layers" class="w-4 h-4"></i> Seviye Detayları
                         </button>
                     </div>
@@ -856,11 +856,14 @@ ScoutApp.prototype.renderStatistics = function(c) {
                 </div>
                 <div id="statistics-world-map" class="w-full h-[500px] sm:h-[550px] rounded-xl overflow-hidden border border-dark-800/50 bg-[#0f172a] shadow-inner relative z-0"></div>
                 
+                <!-- Backdrop Overlay for smooth click outside -->
+                <div id="knowledge-panel-overlay" onclick="app.toggleKnowledgePanel(false)" class="absolute inset-0 bg-dark-950/60 opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-40"></div>
+
                 <!-- Knowledge Levels Sliding Panel -->
-                <div id="knowledge-panel" class="absolute top-0 left-0 w-full sm:w-80 h-full bg-dark-950/95 backdrop-blur-xl border-r border-dark-800/50 transform -translate-x-full transition-transform duration-300 ease-in-out z-50 overflow-hidden shadow-2xl flex flex-col">
-                    <div class="flex justify-between items-center p-5 border-b border-dark-800 bg-dark-900/50">
+                <div id="knowledge-panel" class="absolute top-0 left-0 w-full sm:w-80 h-full bg-dark-950/98 border-r border-dark-800/80 shadow-2xl transform -translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] z-50 overflow-hidden flex flex-col transform-gpu will-change-transform pointer-events-none">
+                    <div class="flex justify-between items-center p-5 border-b border-dark-800 bg-dark-900/80">
                         <h4 class="text-sm font-black text-white flex items-center gap-2 uppercase tracking-wider"><i data-lucide="bar-chart-2" class="w-4 h-4 text-scout-400"></i> Bilgi Seviyeleri</h4>
-                        <button onclick="document.getElementById('knowledge-panel').classList.add('-translate-x-full')" class="text-slate-400 hover:text-white bg-dark-800 hover:bg-dark-700 p-1 rounded-md transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        <button onclick="app.toggleKnowledgePanel(false)" class="text-slate-400 hover:text-white bg-dark-800 hover:bg-dark-700 p-1 rounded-md transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
                     </div>
                     <div class="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6">
                         <div>
@@ -949,6 +952,29 @@ ScoutApp.prototype.renderStatistics = function(c) {
             });
         }
     }, 50);
+};
+
+ScoutApp.prototype.toggleKnowledgePanel = function(forceState) {
+    const panel = document.getElementById('knowledge-panel');
+    const overlay = document.getElementById('knowledge-panel-overlay');
+    if (!panel) return;
+    
+    const isCurrentlyClosed = panel.classList.contains('-translate-x-full');
+    const shouldOpen = forceState !== undefined ? forceState : isCurrentlyClosed;
+    
+    if (shouldOpen) {
+        panel.classList.remove('-translate-x-full', 'pointer-events-none');
+        if (overlay) {
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+        }
+    } else {
+        panel.classList.add('-translate-x-full', 'pointer-events-none');
+        if (overlay) {
+            overlay.classList.remove('opacity-100');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+        }
+    }
 };
 
 ScoutApp.prototype.openReportHistoryModal = function() {
