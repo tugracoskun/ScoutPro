@@ -549,6 +549,41 @@ ScoutApp.prototype.renderStatistics = function(c) {
         mapPaths = window.jsVectorMap.maps.world.paths;
     }
 
+    const getIsoForCountry = (natObj) => {
+        if (!natObj) return null;
+        let iso = null;
+        if (natObj.flag && natObj.flag.includes('flagcdn.com')) {
+            const parts = natObj.flag.split('/');
+            const filename = parts[parts.length - 1];
+            iso = filename.replace('.png', '').toUpperCase();
+        }
+        if (!iso && mapPaths) {
+            for (let code in mapPaths) {
+                if (mapPaths[code].name === natObj.nameEn || mapPaths[code].name === natObj.name || mapPaths[code].name === this.getCountryName(natObj)) {
+                    iso = code; break;
+                }
+            }
+        }
+        if (!iso) {
+            if (natObj.nameEn === 'South Korea' || natObj.name === 'South Korea') iso = 'KR';
+            else if (natObj.nameEn === 'North Korea' || natObj.name === 'North Korea') iso = 'KP';
+            else if (natObj.nameEn === 'United States' || natObj.name === 'United States') iso = 'US';
+            else if (natObj.nameEn === 'United Kingdom' || natObj.name === 'United Kingdom') iso = 'GB';
+        }
+        // UK Home Nations (England, Scotland, Wales, Northern Ireland) map to vector map polygon key 'GB'
+        if (iso && (iso.startsWith('GB-') || iso === 'ENG' || iso === 'SCT' || iso === 'WLS' || iso === 'NIR')) {
+            iso = 'GB';
+        }
+        const nameEn = (natObj.nameEn || '').toLowerCase();
+        const nameTr = (natObj.name || '').toLowerCase();
+        const trName = (this.getCountryName(natObj) || '').toLowerCase();
+        const ukNations = ['england', 'scotland', 'wales', 'northern ireland', 'ingiltere', 'iskoçya', 'galler', 'kuzey irlanda', 'kuzey i̇rlanda'];
+        if (ukNations.includes(nameEn) || ukNations.includes(nameTr) || ukNations.includes(trName)) {
+            iso = 'GB';
+        }
+        return iso;
+    };
+
     Object.entries(countryCounts).forEach(([cId, count]) => {
         let natObj = null;
         if (typeof cId === 'number' || !isNaN(cId)) natObj = this.state.data.countries.find(c => c.id == cId);
@@ -562,25 +597,7 @@ ScoutApp.prototype.renderStatistics = function(c) {
             regionStats[reg].uniqueCountries += 1;
 
             // ISO Map Extraction
-            let iso = null;
-            if (natObj.flag && natObj.flag.includes('flagcdn.com')) {
-                const parts = natObj.flag.split('/');
-                const filename = parts[parts.length - 1];
-                iso = filename.replace('.png', '').toUpperCase();
-            }
-            if (!iso && mapPaths) {
-                for (let code in mapPaths) {
-                    if (mapPaths[code].name === natObj.nameEn || mapPaths[code].name === natObj.name || mapPaths[code].name === this.getCountryName(natObj)) {
-                        iso = code; break;
-                    }
-                }
-            }
-            if (!iso) {
-                if (natObj.nameEn === 'South Korea' || natObj.name === 'South Korea') iso = 'KR';
-                else if (natObj.nameEn === 'North Korea' || natObj.name === 'North Korea') iso = 'KP';
-                else if (natObj.nameEn === 'United States' || natObj.name === 'United States') iso = 'US';
-                else if (natObj.nameEn === 'United Kingdom' || natObj.name === 'United Kingdom') iso = 'GB';
-            }
+            const iso = getIsoForCountry(natObj);
             if (iso) {
                 mapCounts[iso] = (mapCounts[iso] || 0) + count;
             }
@@ -591,25 +608,7 @@ ScoutApp.prototype.renderStatistics = function(c) {
     const isoToRegion = {};
     if (mapPaths) {
         this.state.data.countries.forEach(natObj => {
-            let iso = null;
-            if (natObj.flag && natObj.flag.includes('flagcdn.com')) {
-                const parts = natObj.flag.split('/');
-                const filename = parts[parts.length - 1];
-                iso = filename.replace('.png', '').toUpperCase();
-            }
-            if (!iso) {
-                for (let code in mapPaths) {
-                    if (mapPaths[code].name === natObj.nameEn || mapPaths[code].name === natObj.name || mapPaths[code].name === this.getCountryName(natObj)) {
-                        iso = code; break;
-                    }
-                }
-            }
-            if (!iso) {
-                if (natObj.nameEn === 'South Korea' || natObj.name === 'South Korea') iso = 'KR';
-                else if (natObj.nameEn === 'North Korea' || natObj.name === 'North Korea') iso = 'KP';
-                else if (natObj.nameEn === 'United States' || natObj.name === 'United States') iso = 'US';
-                else if (natObj.nameEn === 'United Kingdom' || natObj.name === 'United Kingdom') iso = 'GB';
-            }
+            const iso = getIsoForCountry(natObj);
             if (iso) {
                 isoToRegion[iso] = natObj.region || 'Diğer';
             }
