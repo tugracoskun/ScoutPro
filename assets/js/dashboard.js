@@ -105,65 +105,107 @@ ScoutApp.prototype.renderDashboard = function(c) {
                 </div>
             </div>
 
-            <!-- ═══ ADAY HAVUZU KARUSELİ ═══ -->
+            <!-- ═══ ADAY HAVUZU PREVIEW SLIDER ═══ -->
             ${(() => {
                 const watchlist = this.state.data.watchlist || [];
                 if (watchlist.length === 0) return '';
-
+                const isEn = window.getLang && window.getLang() === 'en';
                 const sortedWl = [...watchlist].sort((a, b) => b.id - a.id);
-                
-                const cards = sortedWl.map(w => {
+
+                // Her kart için veri hazırla
+                const cardsData = sortedWl.map(w => {
                     const assignedMatch = (this.state.data.matches || []).find(m => String(m.targetPlayerId) === String(w.id));
-                    const matchBadge = assignedMatch ? `
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/15 text-amber-400 rounded-full text-[10px] font-bold border border-amber-500/30">
-                            <i data-lucide="tv" class="w-2.5 h-2.5"></i>
-                            ${this.getMatchDisplay(assignedMatch)}
-                        </span>` : '';
-                    const favBadge = w.isFavorite ? `<div class="absolute top-3 right-3 text-red-400"><i data-lucide="heart" class="w-3.5 h-3.5 fill-red-400"></i></div>` : '';
+                    const teamName = this.getTeamName(w.teamId) || '-';
+                    const matchDisplay = assignedMatch ? this.getMatchDisplay(assignedMatch) : null;
+                    return { w, teamName, matchDisplay };
+                });
+
+                // Kart iç HTML'i
+                const renderCardInner = (data, idx) => {
+                    const { w, teamName, matchDisplay } = data;
+                    const posLabel = (typeof tPos === 'function' ? tPos(w.position) : w.position) || '-';
                     return `
-                        <div onclick="app.goToWatchlistAndHighlight(${w.id})" class="watchlist-carousel-card flex-shrink-0 w-52 bg-dark-900/80 border border-dark-800 hover:border-blue-500/40 rounded-2xl p-4 flex flex-col gap-2.5 cursor-pointer transition-all duration-300 hover:bg-dark-800/90 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 group relative select-none">
-                            ${favBadge}
-                            <div class="flex items-center gap-3">
-                                <img src="${w.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" 
-                                     class="w-11 h-11 rounded-xl object-cover border border-dark-700 flex-shrink-0 group-hover:border-blue-500/40 transition-colors">
-                                <div class="min-w-0 flex-1">
-                                    <div class="font-bold text-white text-sm truncate">${w.name}</div>
-                                    <div class="text-[11px] text-blue-400 font-semibold truncate">${tPos(w.position) || '-'} • ${w.age || '-'} yaş</div>
+                        <div class="wl-slider-card flex flex-col gap-4">
+                            <!-- Üst Oyuncu Bilgi Satırı -->
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div class="flex items-center gap-4 min-w-0">
+                                    <!-- Fotoğraf -->
+                                    <div class="relative shrink-0">
+                                        <img src="${w.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=200&h=200&fit=crop'}" 
+                                             class="w-14 h-14 rounded-2xl object-cover border border-dark-700 bg-dark-900 shadow-md group-hover:border-blue-500/40 transition-colors"
+                                             onerror="this.src='https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=200&h=200&fit=crop'">
+                                        ${w.isFavorite ? `<div class="absolute -top-1 -right-1 w-5 h-5 bg-dark-950 rounded-full border border-red-500/40 flex items-center justify-center text-red-400 shadow"><i data-lucide="heart" class="w-3 h-3 fill-red-400"></i></div>` : ''}
+                                    </div>
+                                    
+                                    <!-- İsim ve Detaylar -->
+                                    <div class="min-w-0 flex flex-col gap-1">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <h4 class="text-base font-bold text-white group-hover:text-blue-400 transition-colors truncate max-w-[220px]">${w.name}</h4>
+                                            <span class="px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[11px] font-bold shrink-0">${posLabel}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-xs text-slate-400 truncate">
+                                            <span class="flex items-center gap-1.5 truncate">
+                                                <i data-lucide="shield" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
+                                                <span class="truncate">${teamName}${w.nationalTeam ? ' · ' + w.nationalTeam : ''}</span>
+                                            </span>
+                                            ${w.age ? `<span class="text-slate-600">•</span><span class="font-medium text-slate-400 shrink-0">${w.age} yaş</span>` : ''}
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <!-- Profile Git Butonu -->
+                                <button onclick="app.goToWatchlistAndHighlight(${w.id})" class="px-4 py-2 bg-blue-500/10 hover:bg-blue-500 hover:text-white border border-blue-500/30 text-blue-400 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shrink-0 self-end sm:self-center">
+                                    ${isEn ? 'View Profile' : 'Profile Git'} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                                </button>
                             </div>
-                            <div class="text-[10px] text-slate-400 flex items-center gap-1 truncate">
-                                <i data-lucide="shield" class="w-3 h-3 flex-shrink-0"></i>
-                                <span class="truncate">${this.getTeamName(w.teamId) || '-'}${w.nationalTeam ? ' · ' + w.nationalTeam : ''}</span>
+
+                            <!-- Etiketler Satırı -->
+                            <div class="flex items-center gap-2 flex-wrap pt-3 border-t border-dark-800/80">
+                                ${w.foot ? `<span class="px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="footprints" class="w-3 h-3"></i> ${w.foot === 'Sağ' ? (isEn ? 'Right Foot' : 'Sağ Ayak') : w.foot === 'Sol' ? (isEn ? 'Left Foot' : 'Sol Ayak') : w.foot}</span>` : ''}
+                                ${matchDisplay ? `<span class="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="tv" class="w-3 h-3"></i> ${matchDisplay}</span>` : ''}
+                                ${w.notes ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> ${isEn ? 'Scout Notes' : 'Scout Notu Ekli'}</span>` : ''}
                             </div>
-                            ${matchBadge ? `<div class="truncate max-w-full">${matchBadge}</div>` : ''}
                         </div>
                     `;
-                }).join('');
+                };
+
+                const dotsHtml = sortedWl.length > 1 ? sortedWl.slice(0, Math.min(sortedWl.length, 12)).map((_, i) => 
+                    `<div class="wl-slider-dot${i === 0 ? ' active' : ''}" id="wl-dot-${i}" onclick="window._wlSliderGoTo(${i})"></div>`
+                ).join('') : '';
 
                 return `
-                <div class="relative overflow-hidden">
-                    <div class="flex justify-between items-center mb-3 px-1">
-                        <div class="flex items-center gap-2">
-                            <div class="p-1.5 bg-blue-500/10 rounded-lg text-blue-400">
-                                <i data-lucide="eye" class="w-4 h-4"></i>
+                <div class="bg-gradient-to-br from-dark-900 to-dark-950 border border-dark-800 rounded-2xl p-6 relative group transition-all shadow-lg hover:border-blue-500/30">
+                    <!-- Kart Üst Başlık Alanı (Dashboard Stat Kartları ile Uyumlu) -->
+                    <div class="flex justify-between items-start mb-5">
+                        <div class="flex items-center gap-3">
+                            <div class="p-3 rounded-xl bg-blue-500/10 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                                <i data-lucide="eye" class="w-6 h-6"></i>
                             </div>
-                            <span class="text-sm font-bold text-white">${window.getLang && window.getLang() === 'en' ? 'Candidate Pool' : 'Aday Havuzu'}</span>
-                            <span class="px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-full text-xs font-black border border-blue-500/20">${watchlist.length}</span>
+                            <div>
+                                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-0.5">${isEn ? 'Candidate Pool Preview' : 'Aday Oyuncu Önizleme'}</p>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xl font-black text-white font-mono" id="wl-slider-counter">1 / ${sortedWl.length}</span>
+                                    <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">(${watchlist.length} ${isEn ? 'Players' : 'Oyuncu'})</span>
+                                </div>
+                            </div>
                         </div>
-                        <button onclick="app.navigate('watchlist')" class="text-xs text-slate-500 hover:text-blue-400 flex items-center gap-1 transition-colors font-semibold">
-                            ${window.getLang && window.getLang() === 'en' ? 'View All' : 'Tümünü Gör'} <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        <button onclick="app.navigate('watchlist')" class="px-3.5 py-2 bg-dark-800/80 hover:bg-dark-700 border border-dark-700 text-slate-300 hover:text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
+                            ${isEn ? 'View All' : 'Tümünü Gör'} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
 
-                    <!-- Gradient kenarlar -->
-                    <div class="absolute left-0 top-9 bottom-0 w-12 bg-gradient-to-r from-dark-950 to-transparent z-10 pointer-events-none"></div>
-                    <div class="absolute right-0 top-9 bottom-0 w-12 bg-gradient-to-l from-dark-950 to-transparent z-10 pointer-events-none"></div>
+                    <!-- Kart İçeriği Viewport -->
+                    <div id="wl-slider-viewport" class="min-h-[110px]">
+                        ${renderCardInner(cardsData[0], 0)}
+                    </div>
 
-                    <!-- Marquee wrapper: hover CSS ile durduruyor -->
-                    <div id="watchlist-carousel-track-wrapper" class="watchlist-marquee-wrapper overflow-hidden w-full">
-                        <div id="watchlist-carousel-track" class="watchlist-marquee-track pb-2${sortedWl.length <= 3 ? ' no-anim' : ''}">
-                            ${cards}
-                            ${cards}
+                    <!-- Alt Kontroller (Oklar ve Noktalar) -->
+                    <div class="flex items-center justify-between mt-5 pt-3 border-t border-dark-800/60">
+                        <span class="text-[11px] text-slate-500 font-medium">${isEn ? 'Use arrows to switch players' : 'Oyuncuları incelemek için okları kullanın'}</span>
+                        <div class="flex items-center gap-2">
+                            ${sortedWl.length > 1 ? `<button class="wl-slider-btn" onclick="window._wlSliderPrev()" title="${isEn ? 'Previous' : 'Önceki'}"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>` : ''}
+                            <div class="flex items-center gap-1.5 px-1">${dotsHtml}</div>
+                            ${sortedWl.length > 1 ? `<button class="wl-slider-btn" onclick="window._wlSliderNext()" title="${isEn ? 'Next' : 'Sonraki'}"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>` : ''}
                         </div>
                     </div>
                 </div>
@@ -255,19 +297,137 @@ ScoutApp.prototype.renderDashboard = function(c) {
         }, 10);
     }
 
-    // ═══ ADAY HAVUZU MARQUEE ANİMASYONU (Saf CSS, GPU hızlandırmalı) ═══
-    // RAF döngüsü yok — hız sadece CSS --marquee-duration ile ayarlanıyor.
+    // ═══ ADAY HAVUZU PREVIEW SLIDER LOGIC ═══
     setTimeout(() => {
-        const track = document.getElementById('watchlist-carousel-track');
-        if (!track) return;
-        // Her kart ~208px (w-52) + 16px gap ≈ 224px
-        // Kart sayısı × 224px / 60 (px/sn istenen hız) = saniye
-        const halfCount = Math.floor(track.querySelectorAll('.watchlist-carousel-card').length / 2) || 1;
-        const estimatedWidth = halfCount * 224;
-        const speedPxPerSec = 60;
-        const duration = Math.max(8, Math.round(estimatedWidth / speedPxPerSec));
-        track.style.setProperty('--marquee-duration', duration + 's');
-    }, 100);
+        const viewport = document.getElementById('wl-slider-viewport');
+        if (!viewport) return; // Watchlist boşsa slider yok
+
+        const watchlist = this.state.data.watchlist || [];
+        const sortedWl = [...watchlist].sort((a, b) => b.id - a.id);
+        if (sortedWl.length === 0) return;
+
+        const isEn = window.getLang && window.getLang() === 'en';
+        let currentIdx = 0;
+        let isAnimating = false;
+
+        // Dot & Counter güncelle
+        const updateDots = (idx) => {
+            const maxDots = Math.min(sortedWl.length, 12);
+            for (let i = 0; i < maxDots; i++) {
+                const dot = document.getElementById('wl-dot-' + i);
+                if (dot) dot.className = 'wl-slider-dot' + (i === idx ? ' active' : '');
+            }
+            const counter = document.getElementById('wl-slider-counter');
+            if (counter) counter.innerText = `${idx + 1} / ${sortedWl.length}`;
+        };
+
+        // Kart render
+        const renderCard = (data, idx) => {
+            const { w, teamName, matchDisplay } = data;
+            const posLabel = (typeof tPos === 'function' ? tPos(w.position) : w.position) || '-';
+            return `
+                <div class="wl-slider-card flex flex-col gap-4">
+                    <!-- Üst Oyuncu Bilgi Satırı -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <!-- Fotoğraf -->
+                            <div class="relative shrink-0">
+                                <img src="${w.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=200&h=200&fit=crop'}" 
+                                     class="w-14 h-14 rounded-2xl object-cover border border-dark-700 bg-dark-900 shadow-md group-hover:border-blue-500/40 transition-colors"
+                                     onerror="this.src='https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=200&h=200&fit=crop'">
+                                ${w.isFavorite ? `<div class="absolute -top-1 -right-1 w-5 h-5 bg-dark-950 rounded-full border border-red-500/40 flex items-center justify-center text-red-400 shadow"><i data-lucide="heart" class="w-3 h-3 fill-red-400"></i></div>` : ''}
+                            </div>
+                            
+                            <!-- İsim ve Detaylar -->
+                            <div class="min-w-0 flex flex-col gap-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h4 class="text-base font-bold text-white group-hover:text-blue-400 transition-colors truncate max-w-[220px]">${w.name}</h4>
+                                    <span class="px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[11px] font-bold shrink-0">${posLabel}</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs text-slate-400 truncate">
+                                    <span class="flex items-center gap-1.5 truncate">
+                                        <i data-lucide="shield" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
+                                        <span class="truncate">${teamName}${w.nationalTeam ? ' · ' + w.nationalTeam : ''}</span>
+                                    </span>
+                                    ${w.age ? `<span class="text-slate-600">•</span><span class="font-medium text-slate-400 shrink-0">${w.age} yaş</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Profile Git Butonu -->
+                        <button onclick="app.goToWatchlistAndHighlight(${w.id})" class="px-4 py-2 bg-blue-500/10 hover:bg-blue-500 hover:text-white border border-blue-500/30 text-blue-400 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shrink-0 self-end sm:self-center">
+                            ${isEn ? 'View Profile' : 'Profile Git'} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Etiketler Satırı -->
+                    <div class="flex items-center gap-2 flex-wrap pt-3 border-t border-dark-800/80">
+                        ${w.foot ? `<span class="px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="footprints" class="w-3 h-3"></i> ${w.foot === 'Sağ' ? (isEn ? 'Right Foot' : 'Sağ Ayak') : w.foot === 'Sol' ? (isEn ? 'Left Foot' : 'Sol Ayak') : w.foot}</span>` : ''}
+                        ${matchDisplay ? `<span class="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="tv" class="w-3 h-3"></i> ${matchDisplay}</span>` : ''}
+                        ${w.notes ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> ${isEn ? 'Scout Notes' : 'Scout Notu Ekli'}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        };
+
+        // cardsData oluştur
+        const cardsData = sortedWl.map(w => {
+            const assignedMatch = (this.state.data.matches || []).find(m => String(m.targetPlayerId) === String(w.id));
+            return {
+                w,
+                teamName: this.getTeamName(w.teamId) || '-',
+                matchDisplay: assignedMatch ? this.getMatchDisplay(assignedMatch) : null
+            };
+        });
+
+        // Geçiş fonksiyonu
+        const goTo = (newIdx, direction) => {
+            if (isAnimating || newIdx === currentIdx) return;
+            isAnimating = true;
+
+            const outClass = direction === 'next' ? 'slide-out-left' : 'slide-out-right';
+            const inClass  = direction === 'next' ? 'slide-in-right' : 'slide-in-left';
+
+            const oldCard = viewport.querySelector('.wl-slider-card');
+            if (oldCard) {
+                oldCard.classList.add(outClass);
+                setTimeout(() => {
+                    viewport.innerHTML = renderCard(cardsData[newIdx], newIdx);
+                    const newCard = viewport.querySelector('.wl-slider-card');
+                    if (newCard) newCard.classList.add(inClass);
+                    currentIdx = newIdx;
+                    updateDots(currentIdx);
+                    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                        window.lucide.createIcons();
+                    }
+                    setTimeout(() => { isAnimating = false; }, 380);
+                }, 250);
+            } else {
+                viewport.innerHTML = renderCard(cardsData[newIdx], newIdx);
+                currentIdx = newIdx;
+                updateDots(currentIdx);
+                isAnimating = false;
+            }
+        };
+
+        window._wlSliderNext = () => {
+            const nextIdx = (currentIdx + 1) % sortedWl.length;
+            goTo(nextIdx, 'next');
+        };
+        window._wlSliderPrev = () => {
+            const prevIdx = (currentIdx - 1 + sortedWl.length) % sortedWl.length;
+            goTo(prevIdx, 'prev');
+        };
+        window._wlSliderGoTo = (idx) => {
+            if (idx === currentIdx) return;
+            goTo(idx, idx > currentIdx ? 'next' : 'prev');
+        };
+
+        // İlk kart zaten render edildi, sadece lucide ikonlarını oluştur
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+        }
+    }, 120);
 };
 
 ScoutApp.prototype.openActivityHistoryModal = function() {
