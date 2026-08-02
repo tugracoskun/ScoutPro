@@ -758,13 +758,13 @@ ScoutApp.prototype.renderStatistics = function(c) {
                     </div>
                 </div>
                 
-                <div onclick="app.navigate('matches')" class="bg-dark-900 border border-dark-800 hover:border-red-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm cursor-pointer">
-                    <div class="p-3 bg-red-500/10 rounded-xl text-red-500 shrink-0">
-                        <i data-lucide="calendar-clock" class="w-6 h-6"></i>
+                <div onclick="app.openActiveLeaguesModal()" class="bg-dark-900 border border-dark-800 hover:border-purple-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm cursor-pointer">
+                    <div class="p-3 bg-purple-500/10 rounded-xl text-purple-500 shrink-0">
+                        <i data-lucide="trophy" class="w-6 h-6"></i>
                     </div>
                     <div class="flex flex-col overflow-hidden">
-                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Matches to Watch' : 'İzlenecek Maçlar'}</span>
-                        <span class="text-2xl font-black text-white leading-none">${upcomingCount}</span>
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Active Leagues' : 'Aktif Ligler'}</span>
+                        <span class="text-2xl font-black text-white leading-none">${activeLeagueCount}</span>
                     </div>
                 </div>
                 
@@ -778,13 +778,13 @@ ScoutApp.prototype.renderStatistics = function(c) {
                     </div>
                 </div>
 
-                <div onclick="app.openActiveLeaguesModal()" class="bg-dark-900 border border-dark-800 hover:border-purple-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm cursor-pointer">
-                    <div class="p-3 bg-purple-500/10 rounded-xl text-purple-500 shrink-0">
-                        <i data-lucide="trophy" class="w-6 h-6"></i>
+                <div onclick="app.navigate('matches')" class="bg-dark-900 border border-dark-800 hover:border-red-500/30 p-5 rounded-2xl flex items-center gap-4 transition-all group shadow-sm cursor-pointer">
+                    <div class="p-3 bg-red-500/10 rounded-xl text-red-500 shrink-0">
+                        <i data-lucide="calendar-clock" class="w-6 h-6"></i>
                     </div>
                     <div class="flex flex-col overflow-hidden">
-                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Active Leagues' : 'Aktif Ligler'}</span>
-                        <span class="text-2xl font-black text-white leading-none">${activeLeagueCount}</span>
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 truncate">${window.getLang() === 'en' ? 'Matches to Watch' : 'İzlenecek Maçlar'}</span>
+                        <span class="text-2xl font-black text-white leading-none">${upcomingCount}</span>
                     </div>
                 </div>
 
