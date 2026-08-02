@@ -105,7 +105,70 @@ ScoutApp.prototype.renderDashboard = function(c) {
                 </div>
             </div>
 
+            <!-- ═══ ADAY HAVUZU KARUSELİ ═══ -->
+            ${(() => {
+                const watchlist = this.state.data.watchlist || [];
+                if (watchlist.length === 0) return '';
 
+                const sortedWl = [...watchlist].sort((a, b) => b.id - a.id);
+                
+                const cards = sortedWl.map(w => {
+                    const assignedMatch = (this.state.data.matches || []).find(m => String(m.targetPlayerId) === String(w.id));
+                    const matchBadge = assignedMatch ? `
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/15 text-amber-400 rounded-full text-[10px] font-bold border border-amber-500/30">
+                            <i data-lucide="tv" class="w-2.5 h-2.5"></i>
+                            ${this.getMatchDisplay(assignedMatch)}
+                        </span>` : '';
+                    const favBadge = w.isFavorite ? `<div class="absolute top-3 right-3 text-red-400"><i data-lucide="heart" class="w-3.5 h-3.5 fill-red-400"></i></div>` : '';
+                    return `
+                        <div onclick="app.goToWatchlistAndHighlight(${w.id})" class="watchlist-carousel-card flex-shrink-0 w-52 bg-dark-900/80 border border-dark-800 hover:border-blue-500/40 rounded-2xl p-4 flex flex-col gap-2.5 cursor-pointer transition-all duration-300 hover:bg-dark-800/90 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 group relative select-none">
+                            ${favBadge}
+                            <div class="flex items-center gap-3">
+                                <img src="${w.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" 
+                                     class="w-11 h-11 rounded-xl object-cover border border-dark-700 flex-shrink-0 group-hover:border-blue-500/40 transition-colors">
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-bold text-white text-sm truncate">${w.name}</div>
+                                    <div class="text-[11px] text-blue-400 font-semibold truncate">${tPos(w.position) || '-'} • ${w.age || '-'} yaş</div>
+                                </div>
+                            </div>
+                            <div class="text-[10px] text-slate-400 flex items-center gap-1 truncate">
+                                <i data-lucide="shield" class="w-3 h-3 flex-shrink-0"></i>
+                                <span class="truncate">${this.getTeamName(w.teamId) || '-'}${w.nationalTeam ? ' · ' + w.nationalTeam : ''}</span>
+                            </div>
+                            ${matchBadge ? `<div class="truncate max-w-full">${matchBadge}</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                <div class="relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-3 px-1">
+                        <div class="flex items-center gap-2">
+                            <div class="p-1.5 bg-blue-500/10 rounded-lg text-blue-400">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </div>
+                            <span class="text-sm font-bold text-white">${window.getLang && window.getLang() === 'en' ? 'Candidate Pool' : 'Aday Havuzu'}</span>
+                            <span class="px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-full text-xs font-black border border-blue-500/20">${watchlist.length}</span>
+                        </div>
+                        <button onclick="app.navigate('watchlist')" class="text-xs text-slate-500 hover:text-blue-400 flex items-center gap-1 transition-colors font-semibold">
+                            ${window.getLang && window.getLang() === 'en' ? 'View All' : 'Tümünü Gör'} <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </button>
+                    </div>
+
+                    <!-- Gradient kenarlar -->
+                    <div class="absolute left-0 top-9 bottom-0 w-12 bg-gradient-to-r from-dark-950 to-transparent z-10 pointer-events-none"></div>
+                    <div class="absolute right-0 top-9 bottom-0 w-12 bg-gradient-to-l from-dark-950 to-transparent z-10 pointer-events-none"></div>
+
+                    <!-- Karusel wrapper -->
+                    <div id="watchlist-carousel-track-wrapper" class="overflow-hidden w-full">
+                        <div id="watchlist-carousel-track" class="flex gap-4 pb-2" style="width: max-content;">
+                            ${cards}
+                            ${cards}
+                        </div>
+                    </div>
+                </div>
+                `;
+            })()}
 
             <div class="flex flex-col gap-2">
                 <div class="bg-gradient-to-r from-scout-900/20 to-dark-900 border border-dark-800/50 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -191,6 +254,69 @@ ScoutApp.prototype.renderDashboard = function(c) {
             window.lucide.createIcons();
         }, 10);
     }
+
+    // ═══ ADAY HAVUZU KARUSELİ ANİMASYONU ═══
+    if (window.watchlistCarouselRAF) {
+        cancelAnimationFrame(window.watchlistCarouselRAF);
+        window.watchlistCarouselRAF = null;
+    }
+
+    setTimeout(() => {
+        const track = document.getElementById('watchlist-carousel-track');
+        if (!track) return;
+
+        const cards = track.querySelectorAll('.watchlist-carousel-card');
+        if (cards.length < 2) return; // İkiye kopyalandı, en az 2 olmalı
+
+        // Tek set genişliğini hesapla (kartlar + gap dahil)
+        const halfCount = Math.floor(cards.length / 2);
+        const gap = 16; // gap-4 = 1rem = 16px
+        let singleSetWidth = 0;
+        for (let i = 0; i < halfCount; i++) {
+            singleSetWidth += cards[i].offsetWidth + gap;
+        }
+
+        let offset = 0;
+        const speed = 0.6; // px/frame — hızı buradan ayarla
+        let paused = false;
+        let userDragging = false;
+        let dragStartX = 0;
+        let dragStartOffset = 0;
+
+        // Hover duraklatma
+        track.addEventListener('mouseenter', () => { paused = true; });
+        track.addEventListener('mouseleave', () => { paused = false; });
+
+        // Touch/drag scroll
+        track.addEventListener('mousedown', (e) => {
+            userDragging = true; paused = true;
+            dragStartX = e.clientX;
+            dragStartOffset = offset;
+        });
+        window.addEventListener('mouseup', () => { userDragging = false; paused = false; }, { once: false });
+        track.addEventListener('mousemove', (e) => {
+            if (!userDragging) return;
+            offset = dragStartOffset - (e.clientX - dragStartX);
+            if (offset < 0) offset += singleSetWidth;
+            offset = offset % singleSetWidth;
+            track.style.transform = `translateX(-${offset}px)`;
+        });
+
+        const animate = () => {
+            if (!document.getElementById('watchlist-carousel-track')) {
+                cancelAnimationFrame(window.watchlistCarouselRAF);
+                return;
+            }
+            if (!paused) {
+                offset += speed;
+                if (offset >= singleSetWidth) offset -= singleSetWidth;
+                track.style.transform = `translateX(-${offset}px)`;
+            }
+            window.watchlistCarouselRAF = requestAnimationFrame(animate);
+        };
+
+        window.watchlistCarouselRAF = requestAnimationFrame(animate);
+    }, 150);
 };
 
 ScoutApp.prototype.openActivityHistoryModal = function() {
