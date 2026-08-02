@@ -150,6 +150,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('foot')}</span><span class="text-white font-bold">${footTrans}</span></div>
                                 ${p.nationality ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('nationality')}</span><span class="text-white flex items-center gap-1.5">${natFlag} <span class="font-bold">${natName}</span></span></div>` : ''}
                                 <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('report_date')}</span><span class="text-white font-mono text-xs opacity-70">${currentReport.date}</span></div>
+                                ${currentReport.matchId && this.getMatchDisplay(currentReport.matchId) ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium flex items-center gap-1"><i data-lucide="tv" class="w-3 h-3 text-scout-400"></i> ${t('watched_match')}</span><span class="text-scout-400 text-xs font-bold text-right max-w-[60%] truncate" title="${this.getMatchDisplay(currentReport.matchId)}">${this.getMatchDisplay(currentReport.matchId)}</span></div>` : ''}
                                 ${currentReport.source ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('source')}</span><span class="text-white text-xs text-right max-w-[60%] truncate" title="${currentReport.source}">${currentReport.source}</span></div>` : ''}
                             </div>
                         </div>
@@ -231,6 +232,19 @@ ScoutApp.prototype.switchMediaTab = function(tabName) {
     window.dispatchEvent(new Event('resize'));
 };
 
+// 3. Özellik Ağacını Aç/Kapat (Kategorisiz Model)
+ScoutApp.prototype.toggleAttrTree = function(key) {
+    const content = document.getElementById(`tree-content-${key}`);
+    const icon = document.getElementById(`tree-icon-${key}`);
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        content.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+    }
+};
+
 // --- PDF DIŞA AKTARMA ---
 ScoutApp.prototype.exportPlayerToPDF = async function(id, selectedHistoryIndex) {
     if (typeof html2pdf === 'undefined') {
@@ -298,43 +312,34 @@ ScoutApp.prototype.exportPlayerToPDF = async function(id, selectedHistoryIndex) 
         const cats = Object.keys(attributeGroup);
         
         // Özellik tablosu - 2 sütun yan yana
-        attributesHTML += '<div style="display:flex; gap:6px; flex-wrap:wrap;">';
-        cats.forEach(cat => {
-            const attrs = attributeGroup[cat];
-            const catName = window.tAttr ? window.tAttr(cat) : cat;
-            
-            // Her özelliği topla
-            attrs.forEach(attr => {
-                const val = currentReport.stats[attr.name] || 50;
-                allAttrs.push({ name: attr.name, val: parseInt(val), category: catName });
-            });
+        const catColors = {
+            'Teknik': '#ef4444', 'Fiziksel': '#eab308', 'Psikolojik': '#22c55e',
+            'Sosyolojik': '#3b82f6', 'Taktik': '#a855f7', 'Mental': '#ec4899', 'Psiko-Sosyal': '#6366f1'
+        };
 
-            attributesHTML += `
-                <div style="flex:1; min-width:calc(50% - 4px); background:#fafafa; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; margin-bottom:3px;">
-                    <div style="font-size:8px; font-weight:800; color:#1e293b; text-transform:uppercase; letter-spacing:0.4px; border-bottom:1px solid #e5e7eb; padding-bottom:2px; margin-bottom:2px;">${catName}</div>
-            `;
+        attributesHTML += '<div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">';
+        cats.forEach(cat => {
+            const color = catColors[cat] || '#64748b';
+            const attrs = attributeGroup[cat] || [];
+            const displayCat = window.tAttr ? window.tAttr(cat) : cat;
+            
+            attributesHTML += `<div style="background:#fafafa; border:1px solid #e5e7eb; border-radius:6px; padding:6px 8px; border-left:3px solid ${color}; font-size:8.5px;">`;
+            attributesHTML += `<div style="font-weight:800; color:${color}; text-transform:uppercase; font-size:8px; margin-bottom:4px; letter-spacing:0.3px;">${displayCat}</div>`;
+            
             attrs.forEach(attr => {
                 const val = currentReport.stats[attr.name] || 50;
                 const v = parseInt(val);
+                allAttrs.push({ name: attr.name, val: v, category: cat });
                 let valColor = '#64748b';
                 if (v >= 80) valColor = '#16a34a';
                 else if (v >= 65) valColor = '#2563eb';
                 else if (v <= 40) valColor = '#dc2626';
                 const attrName = window.tAttr ? window.tAttr(attr.name) : attr.name;
                 
-                // Progress bar rengi
-                let barColor = '#94a3b8';
-                if (v >= 80) barColor = '#22c55e';
-                else if (v >= 65) barColor = '#3b82f6';
-                else if (v <= 40) barColor = '#ef4444';
-
                 attributesHTML += `
-                    <div style="display:flex; align-items:center; justify-content:space-between; padding:1px 0; font-size:7.5px; line-height:1.2;">
-                        <span style="color:#475569; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-right:3px;">${attrName}</span>
-                        <div style="width:50px; height:3px; background:#e2e8f0; border-radius:2px; overflow:hidden; margin-right:3px; flex-shrink:0;">
-                            <div style="height:100%; width:${v}%; background:${barColor}; border-radius:2px;"></div>
-                        </div>
-                        <span style="color:${valColor}; font-weight:700; font-family:monospace; width:16px; text-align:right; flex-shrink:0;">${v}</span>
+                    <div style="display:flex; align-items:center; justify-space-between; padding:1.5px 0; border-bottom:1px solid #f1f5f9;">
+                        <span style="color:#475569; font-weight:500; font-size:8px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${attrName}">${attrName}</span>
+                        <span style="color:${valColor}; font-weight:800; font-family:monospace; font-size:9px; margin-left:4px;">${v}</span>
                     </div>
                 `;
             });
@@ -439,6 +444,11 @@ ScoutApp.prototype.exportPlayerToPDF = async function(id, selectedHistoryIndex) 
                     <div style="font-size:6.5px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.4px;">Rapor Tarihi</div>
                     <div style="font-size:10px; font-weight:800; color:#334155;">${currentReport.date}</div>
                 </div>
+                ${currentReport.matchId && this.getMatchDisplay(currentReport.matchId) ? `
+                <div style="flex:1; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:5px; padding:4px 8px; text-align:center;">
+                    <div style="font-size:6.5px; color:#16a34a; font-weight:700; text-transform:uppercase; letter-spacing:0.4px;">İzlenen Maç</div>
+                    <div style="font-size:8px; font-weight:800; color:#15803d; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${this.getMatchDisplay(currentReport.matchId)}</div>
+                </div>` : ''}
                 ${currentReport.source ? `
                 <div style="flex:1; background:#f8fafc; border:1px solid #e2e8f0; border-radius:5px; padding:4px 8px; text-align:center;">
                     <div style="font-size:6.5px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.4px;">Kaynak</div>

@@ -29,7 +29,7 @@ class ScoutApp {
     resetReport() { 
         return { 
             name: '', teamId: '', position: '', role: '', age: '', height: '', 
-            foot: 'Sağ', marketValue: '', image: '', source: '', 
+            foot: 'Sağ', marketValue: '', image: '', source: '', matchId: '',
             tmUrl: '', sofaUrl: '', 
             potential: 'Düşük',
             stats: {} 

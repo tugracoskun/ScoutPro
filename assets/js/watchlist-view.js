@@ -228,6 +228,7 @@ ScoutApp.prototype.deleteWatchlistPlayer = function(id) {
 ScoutApp.prototype.transferToReport = function(id) {
     const w = this.state.data.watchlist.find(x => x.id === id);
     if(!w) return;
+    const matchedMatch = (this.state.data.matches || []).find(m => m.targetPlayerId == w.id);
     this.state.newReport = {
         ...this.resetReport(),
         watchlistId: w.id,
@@ -237,6 +238,7 @@ ScoutApp.prototype.transferToReport = function(id) {
         age: w.age,
         source: w.source,
         image: w.image,
+        matchId: matchedMatch ? matchedMatch.id : '',
         tmUrl: '',
         sofaUrl: ''
     };

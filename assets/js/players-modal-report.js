@@ -8,6 +8,17 @@ ScoutApp.prototype.openNewReportMode = function(id) {
     const lastStats = p.history[0] ? p.history[0].stats : {};
     this.state.newReport.stats = {...lastStats}; 
 
+    // Oyuncunun takımlarına ait maçları filtrele
+    const filteredMatches = this.getFilteredMatchesForPlayer(
+        p.teamId,
+        p.nationalTeamId,
+        p.id
+    );
+
+    // Hedef maç var mı kontrol et
+    const matchedMatch = (this.state.data.matches || []).find(m => m.targetPlayerId == id);
+    const defaultMatchId = matchedMatch ? matchedMatch.id : '';
+
     // Mevkiye göre doğru özellik grubunu bul
     const mapping = POSITION_MAPPING[p.position] || { group: 'Default' };
     const attributeGroup = ATTRIBUTE_GROUPS[mapping.group];
@@ -20,7 +31,7 @@ ScoutApp.prototype.openNewReportMode = function(id) {
                 <button onclick="app.openPlayerModal(${id})" class="text-slate-400 hover:text-white flex items-center gap-1 text-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${t('cancel')}</button>
             </div>
             
-            <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-bold text-slate-400 ml-1">${t('potential')}</label>
                     <select id="new-rep-potential" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-green-500 outline-none text-sm cursor-pointer">
@@ -31,6 +42,19 @@ ScoutApp.prototype.openNewReportMode = function(id) {
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-bold text-slate-400 ml-1">${t('source')}</label>
                     <input type="text" id="new-rep-source" placeholder="Örn: Canlı İzleme, WyScout..." class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white outline-none focus:border-green-500 text-sm">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-slate-400 ml-1 flex items-center justify-between">
+                        <span>${t('watched_match')}</span>
+                    </label>
+                    <select id="new-rep-match" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-green-500 outline-none text-sm cursor-pointer">
+                        ${filteredMatches.length > 0 ? `
+                            <option value="">-- ${t('select_match_optional')} --</option>
+                            ${filteredMatches.map(m => `<option value="${m.id}" ${defaultMatchId == m.id ? 'selected' : ''}>${this.getMatchDisplay(m)}</option>`).join('')}
+                        ` : `
+                            <option value="">-- ${window.getLang && window.getLang() === 'en' ? 'No matches found for this team' : 'Bu takıma ait maç bulunamadı'} --</option>
+                        `}
+                    </select>
                 </div>
             </div>
 
@@ -118,6 +142,8 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
     const newPotential = document.getElementById('new-rep-potential').value;
     const newSourceElement = document.getElementById('new-rep-source');
     const newSource = newSourceElement ? newSourceElement.value : '';
+    const newMatchElement = document.getElementById('new-rep-match');
+    const newMatchId = newMatchElement ? newMatchElement.value : '';
     
     // Ortalama Hesapla
     const statsArr = Object.values(newStats);
@@ -130,7 +156,8 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
         rating: avg,
         stats: {...newStats},
         potential: newPotential,
-        source: newSource
+        source: newSource,
+        matchId: newMatchId
     };
 
     // Geçmişe ekle

@@ -262,9 +262,22 @@ const translations = {
         watched_matches: "İzlenen Maçlar",
         activity_history: "Aktivite Geçmişi",
         stats_title: "Scout İstatistikleri",
-        status_skipped: "İzlenmedi"
+        status_skipped: "İzlenmedi",
+        watched_match: "İzlenen Maç",
+        select_match_optional: "Maç Seçiniz (Opsiyonel)",
+        optional: "Opsiyonel"
     },
     en: {
+        // --- YENİ EKLENENLER: Maç İzleme & İstatistik ---
+        mark_watched: "Watched",
+        mark_skipped: "Skipped",
+        watched_matches: "Watched Matches",
+        activity_history: "Activity History",
+        stats_title: "Scout Statistics",
+        status_skipped: "Not Watched",
+        watched_match: "Watched Match",
+        select_match_optional: "Select Match (Optional)",
+        optional: "Optional",
         view_list: "List",
         view_calendar: "Calendar",
         league_tournament: "League / Tournament",

@@ -128,7 +128,7 @@ class ScoutApp {
     }
 
     resetReport() {
-        return { name: '', teamId: '', position: '', role: '', age: '', height: '', foot: 'Sağ', marketValue: '', image: '', source: '', tmUrl: '', sofaUrl: '', potential: 'Düşük', stats: {} };
+        return { name: '', teamId: '', position: '', role: '', age: '', height: '', foot: 'Sağ', marketValue: '', image: '', source: '', matchId: '', tmUrl: '', sofaUrl: '', potential: 'Düşük', stats: {} };
     }
 
     navigate(page, params = null, isBack = false) {

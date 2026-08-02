@@ -56,6 +56,36 @@ ScoutApp.prototype.renderNewReport = function(c) {
                         </div>
                     </div>
                     ${this.createInput('rep-source', t('source'), 'Örn: Altyapı', 'text', this.state.newReport.source, "app.updateRep('source', this.value)")}
+                    
+                    ${(() => {
+                        const filteredMatches = this.getFilteredMatchesForPlayer(
+                            this.state.newReport.teamId,
+                            this.state.newReport.nationalTeamId,
+                            this.state.newReport.watchlistId
+                        );
+                        const noMatchesText = (this.state.newReport.teamId || this.state.newReport.nationalTeamId)
+                            ? (window.getLang && window.getLang() === 'en' ? 'No matches found for this team' : 'Bu takıma ait maç bulunamadı')
+                            : (window.getLang && window.getLang() === 'en' ? 'Select team to view matches' : 'Maçları görmek için takım seçiniz');
+
+                        return `
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-slate-400 ml-1 flex items-center justify-between">
+                                <span>${t('watched_match')} <span class="text-slate-500 font-normal">(${t('optional')})</span></span>
+                            </label>
+                            <div class="relative">
+                                <select id="rep-match-select" onchange="app.updateRep('matchId', this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none appearance-none text-sm cursor-pointer">
+                                    ${filteredMatches.length > 0 ? `
+                                        <option value="">-- ${t('select_match_optional')} --</option>
+                                        ${filteredMatches.map(m => `<option value="${m.id}" ${this.state.newReport.matchId == m.id ? 'selected' : ''}>${this.getMatchDisplay(m)}</option>`).join('')}
+                                    ` : `
+                                        <option value="">-- ${noMatchesText} --</option>
+                                    `}
+                                </select>
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                            </div>
+                        </div>
+                        `;
+                    })()}
                 </div>
                 
                 <div class="bg-dark-900 p-6 rounded-2xl border border-dark-800 space-y-4">
@@ -250,6 +280,29 @@ ScoutApp.prototype.updateRepStat = function(k, v, inputEl) {
     this.calculateAverage();
 };
 
+ScoutApp.prototype.updateReportMatchesDropdown = function() {
+    const selectEl = document.getElementById('rep-match-select');
+    if (!selectEl) return;
+    
+    const filteredMatches = this.getFilteredMatchesForPlayer(
+        this.state.newReport.teamId,
+        this.state.newReport.nationalTeamId,
+        this.state.newReport.watchlistId
+    );
+
+    let html = '';
+    if (filteredMatches.length > 0) {
+        html = `<option value="">-- ${t('select_match_optional')} --</option>` +
+            filteredMatches.map(m => `<option value="${m.id}" ${this.state.newReport.matchId == m.id ? 'selected' : ''}>${this.getMatchDisplay(m)}</option>`).join('');
+    } else {
+        const noMatchesText = (this.state.newReport.teamId || this.state.newReport.nationalTeamId) 
+            ? (window.getLang && window.getLang() === 'en' ? 'No matches found for this team' : 'Bu takıma ait maç bulunamadı')
+            : (window.getLang && window.getLang() === 'en' ? 'Select team to view matches' : 'Maçları görmek için takım seçiniz');
+        html = `<option value="">-- ${noMatchesText} --</option>`;
+    }
+    selectEl.innerHTML = html;
+};
+
 ScoutApp.prototype.updateRep = function(k, v) { 
     this.state.newReport[k] = v; 
     if (k === 'nationality') {
@@ -271,6 +324,9 @@ ScoutApp.prototype.updateRep = function(k, v) {
                 !this.state.newReport.nationality
             );
         }
+    }
+    if (k === 'teamId' || k === 'nationalTeamId' || k === 'nationality') {
+        this.updateReportMatchesDropdown();
     }
 };
 
@@ -377,10 +433,10 @@ ScoutApp.prototype.submitReport = function() {
     const teamIdInt = parseInt(r.teamId);
     const reportDate = new Date().toLocaleDateString('tr-TR');
     
-    const historyEntry = { date: reportDate, rating: avg, stats: {...r.stats}, potential: r.potential, source: r.source };
+    const historyEntry = { date: reportDate, rating: avg, stats: {...r.stats}, potential: r.potential, source: r.source, matchId: r.matchId || '' };
 
     this.state.data.players.push({
-        id: Date.now(), ...r, teamId: teamIdInt, rating: avg, status: 'Scouted', dateAdded: reportDate, socialNotes: [], history: [historyEntry], videos: []
+        id: Date.now(), ...r, matchId: r.matchId || '', teamId: teamIdInt, rating: avg, status: 'Scouted', dateAdded: reportDate, socialNotes: [], history: [historyEntry], videos: []
     });
 
     this.saveData(); 

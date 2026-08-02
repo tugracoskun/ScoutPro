@@ -58,3 +58,47 @@ ScoutApp.prototype.getTeamName = function(id) {
     
     return t.name;
 };
+
+// Maç İsmi/Detayı Formatlayıcı
+ScoutApp.prototype.getMatchDisplay = function(matchOrId) {
+    if (!matchOrId) return '';
+    let m = matchOrId;
+    if (typeof matchOrId === 'number' || typeof matchOrId === 'string') {
+        m = (this.state.data.matches || []).find(x => x.id == matchOrId);
+    }
+    if (!m) return '';
+    const home = this.getTeamName(m.homeId) || m.homeName || 'Ev';
+    const away = this.getTeamName(m.awayId) || m.awayName || 'Deplasman';
+    let dateStr = '';
+    if (m.date) {
+        const d = new Date(m.date);
+        if (!isNaN(d)) {
+            dateStr = ' (' + d.toLocaleDateString((window.getLang && window.getLang() === 'en') ? 'en-US' : 'tr-TR', { month: 'short', day: 'numeric' }) + ')';
+        }
+    }
+    return `${home} vs ${away}${dateStr}`;
+};
+
+// Oyuncunun Takımlarına Göre Maçları Filtreleyici
+ScoutApp.prototype.getFilteredMatchesForPlayer = function(teamId, nationalTeamId, targetPlayerId) {
+    const matches = this.state.data.matches || [];
+    const tIdStr = teamId !== null && teamId !== undefined && teamId !== '' ? String(teamId) : null;
+    const nIdStr = nationalTeamId !== null && nationalTeamId !== undefined && nationalTeamId !== '' ? String(nationalTeamId) : null;
+    const pIdStr = targetPlayerId !== null && targetPlayerId !== undefined && targetPlayerId !== '' ? String(targetPlayerId) : null;
+
+    return matches.filter(m => {
+        const homeStr = String(m.homeId);
+        const awayStr = String(m.awayId);
+        
+        // 1. Kulüp Takımı Maçı
+        if (tIdStr && (homeStr === tIdStr || awayStr === tIdStr)) return true;
+        
+        // 2. Milli Takım Maçı
+        if (nIdStr && (homeStr === nIdStr || awayStr === nIdStr)) return true;
+        
+        // 3. Özel Atanmış İzlenecek Oyuncu Maçı
+        if (pIdStr && m.targetPlayerId && String(m.targetPlayerId) === pIdStr) return true;
+        
+        return false;
+    });
+};
