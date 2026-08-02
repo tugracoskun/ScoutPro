@@ -159,9 +159,9 @@ ScoutApp.prototype.renderDashboard = function(c) {
                     <div class="absolute left-0 top-9 bottom-0 w-12 bg-gradient-to-r from-dark-950 to-transparent z-10 pointer-events-none"></div>
                     <div class="absolute right-0 top-9 bottom-0 w-12 bg-gradient-to-l from-dark-950 to-transparent z-10 pointer-events-none"></div>
 
-                    <!-- Karusel wrapper -->
-                    <div id="watchlist-carousel-track-wrapper" class="overflow-hidden w-full">
-                        <div id="watchlist-carousel-track" class="flex gap-4 pb-2" style="width: max-content;">
+                    <!-- Marquee wrapper: hover CSS ile durduruyor -->
+                    <div id="watchlist-carousel-track-wrapper" class="watchlist-marquee-wrapper overflow-hidden w-full">
+                        <div id="watchlist-carousel-track" class="watchlist-marquee-track pb-2${sortedWl.length <= 3 ? ' no-anim' : ''}">
                             ${cards}
                             ${cards}
                         </div>
@@ -255,68 +255,19 @@ ScoutApp.prototype.renderDashboard = function(c) {
         }, 10);
     }
 
-    // ═══ ADAY HAVUZU KARUSELİ ANİMASYONU ═══
-    if (window.watchlistCarouselRAF) {
-        cancelAnimationFrame(window.watchlistCarouselRAF);
-        window.watchlistCarouselRAF = null;
-    }
-
+    // ═══ ADAY HAVUZU MARQUEE ANİMASYONU (Saf CSS, GPU hızlandırmalı) ═══
+    // RAF döngüsü yok — hız sadece CSS --marquee-duration ile ayarlanıyor.
     setTimeout(() => {
         const track = document.getElementById('watchlist-carousel-track');
         if (!track) return;
-
-        const cards = track.querySelectorAll('.watchlist-carousel-card');
-        if (cards.length < 2) return; // İkiye kopyalandı, en az 2 olmalı
-
-        // Tek set genişliğini hesapla (kartlar + gap dahil)
-        const halfCount = Math.floor(cards.length / 2);
-        const gap = 16; // gap-4 = 1rem = 16px
-        let singleSetWidth = 0;
-        for (let i = 0; i < halfCount; i++) {
-            singleSetWidth += cards[i].offsetWidth + gap;
-        }
-
-        let offset = 0;
-        const speed = 0.6; // px/frame — hızı buradan ayarla
-        let paused = false;
-        let userDragging = false;
-        let dragStartX = 0;
-        let dragStartOffset = 0;
-
-        // Hover duraklatma
-        track.addEventListener('mouseenter', () => { paused = true; });
-        track.addEventListener('mouseleave', () => { paused = false; });
-
-        // Touch/drag scroll
-        track.addEventListener('mousedown', (e) => {
-            userDragging = true; paused = true;
-            dragStartX = e.clientX;
-            dragStartOffset = offset;
-        });
-        window.addEventListener('mouseup', () => { userDragging = false; paused = false; }, { once: false });
-        track.addEventListener('mousemove', (e) => {
-            if (!userDragging) return;
-            offset = dragStartOffset - (e.clientX - dragStartX);
-            if (offset < 0) offset += singleSetWidth;
-            offset = offset % singleSetWidth;
-            track.style.transform = `translateX(-${offset}px)`;
-        });
-
-        const animate = () => {
-            if (!document.getElementById('watchlist-carousel-track')) {
-                cancelAnimationFrame(window.watchlistCarouselRAF);
-                return;
-            }
-            if (!paused) {
-                offset += speed;
-                if (offset >= singleSetWidth) offset -= singleSetWidth;
-                track.style.transform = `translateX(-${offset}px)`;
-            }
-            window.watchlistCarouselRAF = requestAnimationFrame(animate);
-        };
-
-        window.watchlistCarouselRAF = requestAnimationFrame(animate);
-    }, 150);
+        // Her kart ~208px (w-52) + 16px gap ≈ 224px
+        // Kart sayısı × 224px / 60 (px/sn istenen hız) = saniye
+        const halfCount = Math.floor(track.querySelectorAll('.watchlist-carousel-card').length / 2) || 1;
+        const estimatedWidth = halfCount * 224;
+        const speedPxPerSec = 60;
+        const duration = Math.max(8, Math.round(estimatedWidth / speedPxPerSec));
+        track.style.setProperty('--marquee-duration', duration + 's');
+    }, 100);
 };
 
 ScoutApp.prototype.openActivityHistoryModal = function() {

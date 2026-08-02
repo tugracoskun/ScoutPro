@@ -230,6 +230,30 @@ input, textarea, select {
     overflow: hidden;
 }
 
+/* ═══ ADAY HAVUZU MARQUEE ANİMASYONU (Saf CSS, GPU hızlandırmalı) ═══ */
+@keyframes watchlist-marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.watchlist-marquee-track {
+    display: flex;
+    gap: 1rem;               /* gap-4 = 16px */
+    width: max-content;
+    will-change: transform;
+    animation: watchlist-marquee var(--marquee-duration, 30s) linear infinite;
+}
+
+/* Hover'da duraksın */
+.watchlist-marquee-wrapper:hover .watchlist-marquee-track {
+    animation-play-state: paused;
+}
+
+/* Tek kart olunca animasyon istemiyoruz */
+.watchlist-marquee-track.no-anim {
+    animation: none;
+}
+
 /* --- JSVECTORMAP TOOLTIP OVERRIDE --- */
 .jvm-tooltip {
     background-color: rgba(15, 23, 42, 0.9) !important; /* bg-dark-900 with slight transparency */
