@@ -4,8 +4,12 @@ ScoutApp.prototype.openNewReportMode = function(id) {
     const p = this.state.data.players.find(x => x.id === id);
     if(!p) return;
 
+    if (!this.state.newReport) {
+        this.state.newReport = typeof this.resetReport === 'function' ? this.resetReport() : { stats: {} };
+    }
+
     // Son istatistikleri kopyala
-    const lastStats = p.history[0] ? p.history[0].stats : {};
+    const lastStats = (p.history && p.history.length > 0 && p.history[0].stats) ? p.history[0].stats : (p.stats || {});
     this.state.newReport.stats = {...lastStats}; 
 
     // Oyuncunun takımlarına ait maçları filtrele
@@ -134,12 +138,21 @@ ScoutApp.prototype.getSliderHTMLForUpdate = function(attributeGroup, currentStat
     return html;
 };
 
+ScoutApp.prototype.openAddReportModal = function(id) {
+    this.openNewReportMode(id);
+};
+
 ScoutApp.prototype.saveNewPlayerReport = function(id) {
     const p = this.state.data.players.find(x => x.id === id);
     if(!p) return;
 
-    const newStats = this.state.newReport.stats;
-    const newPotential = document.getElementById('new-rep-potential').value;
+    if (!this.state.newReport) {
+        this.state.newReport = typeof this.resetReport === 'function' ? this.resetReport() : { stats: {} };
+    }
+
+    const newStats = this.state.newReport.stats || {};
+    const newPotentialEl = document.getElementById('new-rep-potential');
+    const newPotential = newPotentialEl ? newPotentialEl.value : (p.potential || 'Düşük');
     const newSourceElement = document.getElementById('new-rep-source');
     const newSource = newSourceElement ? newSourceElement.value : '';
     const newMatchElement = document.getElementById('new-rep-match');
@@ -148,7 +161,7 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
     // Ortalama Hesapla
     const statsArr = Object.values(newStats);
     const avg = statsArr.length > 0 ? Math.round(statsArr.reduce((a,b)=>a+b,0)/statsArr.length) : 50;
-    const lang = window.getLang() === 'en' ? 'en-US' : 'tr-TR';
+    const lang = (window.getLang && window.getLang() === 'en') ? 'en-US' : 'tr-TR';
     const today = new Date().toLocaleDateString(lang);
 
     const newHistoryEntry = {
@@ -160,6 +173,8 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
         matchId: newMatchId
     };
 
+    if (!p.history) p.history = [];
+
     // Geçmişe ekle
     p.history.unshift(newHistoryEntry);
     
@@ -170,8 +185,10 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
     p.dateAdded = today; 
 
     this.saveData(); // Kayıt
-    this.notify(t('success'));
+    this.notify(typeof t === 'function' ? t('success') : 'Rapor başarıyla kaydedildi');
 
-    this.state.newReport = this.resetReport(); 
+    if (typeof this.resetReport === 'function') {
+        this.state.newReport = this.resetReport(); 
+    }
     this.openPlayerModal(id); 
 };
