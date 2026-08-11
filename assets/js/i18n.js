@@ -75,8 +75,11 @@ const translations = {
 
         // --- Settings ---
         settings_title: "Ayarlar",
-        dark_mode: "Karanlık Mod",
+        dark_mode: "Karanlık",
         default_theme: "Varsayılan tema",
+        light_mode: "Aydınlık",
+        theme: "Görünüm Teması",
+        theme_desc: "Uygulamanın renk temasını seçin. Tercih otomatik kaydedilir.",
         data_management: "Veri Yönetimi",
         data_desc: "Verilerinizi yedekleyebilir veya başka bir cihazdan aldığınız yedeği yükleyebilirsiniz.",
         export: "Yedek Al (Export)",
@@ -359,8 +362,11 @@ const translations = {
 
         // --- Settings ---
         settings_title: "Settings",
-        dark_mode: "Dark Mode",
+        dark_mode: "Dark",
         default_theme: "Default theme",
+        light_mode: "Light",
+        theme: "Appearance Theme",
+        theme_desc: "Choose the color theme for the application. Preference is saved automatically.",
         data_management: "Data Management",
         data_desc: "You can backup your data or import a backup from another device.",
         export: "Export Backup",

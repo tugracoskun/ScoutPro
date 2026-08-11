@@ -295,7 +295,7 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
             ]
         } : {},
         grid: {
-            borderColor: '#1e293b',
+            borderColor: window.getTheme() === 'light' ? '#e2e8f0' : '#1e293b',
             xaxis: { lines: { show: true } },
             yaxis: { lines: { show: true } },
             padding: {
@@ -304,16 +304,16 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
                 right: 30
             }
         },
-        theme: { mode: 'dark' },
+        theme: { mode: window.getTheme() },
         markers: {
             size: 8,
             colors: ['#3b82f6'],
-            strokeColors: '#1e293b',
+            strokeColors: window.getTheme() === 'light' ? '#e2e8f0' : '#1e293b',
             strokeWidth: 2,
             hover: { size: 10 }
         },
         tooltip: {
-            theme: 'dark',
+            theme: window.getTheme(),
             custom: function({series, seriesIndex, dataPointIndex, w}) {
                 const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
                 const player = data.player;

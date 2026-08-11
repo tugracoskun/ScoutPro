@@ -35,3 +35,8 @@ ScoutApp.prototype.confirmAction = function(message, onConfirmCallback, confirmT
     document.getElementById('btn-cancel').onclick = () => modal.remove();
     document.getElementById('btn-confirm').onclick = () => { modal.remove(); onConfirmCallback(); };
 };
+
+// ─── Tema Yardımcısı ───
+window.getTheme = function() {
+    return document.documentElement.classList.contains('light') ? 'light' : 'dark';
+};

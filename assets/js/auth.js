@@ -43,17 +43,30 @@ class AuthManager {
                 }
                 
                 if (!this.app.state.data.settings) {
-                    this.app.state.data.settings = { offlineImages: true };
+                    this.app.state.data.settings = { offlineImages: true, theme: 'dark' };
+                }
+                if (!this.app.state.data.settings.theme) {
+                    this.app.state.data.settings.theme = 'dark';
                 }
                 if (!this.app.state.data.cachedImages) {
                     this.app.state.data.cachedImages = {};
+                }
+
+                // Tema uygula ve localStorage ile sync et
+                const savedTheme = this.app.state.data.settings.theme;
+                localStorage.setItem('scoutpro_theme', savedTheme);
+                if (savedTheme === 'light') {
+                    document.documentElement.classList.add('light');
+                } else {
+                    document.documentElement.classList.remove('light');
                 }
 
                 console.log("Veriler dosyadan yüklendi.");
             } else {
                 console.log("Kayıtlı veri bulunamadı, yeni dosya oluşturulacak.");
                 if (this.app.state.data) {
-                    if (!this.app.state.data.settings) this.app.state.data.settings = { offlineImages: true };
+                    if (!this.app.state.data.settings) this.app.state.data.settings = { offlineImages: true, theme: 'dark' };
+                    if (!this.app.state.data.settings.theme) this.app.state.data.settings.theme = 'dark';
                     if (!this.app.state.data.cachedImages) this.app.state.data.cachedImages = {};
                 }
             }

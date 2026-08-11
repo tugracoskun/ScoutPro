@@ -125,7 +125,7 @@ ScoutApp.prototype.initComparisonRadar = function(p, currentReport, prevReport) 
             xaxis: { 
                 labels: { 
                     style: { 
-                        colors: new Array(labels.length).fill('#cbd5e1'), // Tüm etiketler açık gri
+                        colors: new Array(labels.length).fill(window.getTheme() === 'light' ? '#475569' : '#cbd5e1'),
                         fontSize: '11px', 
                         fontWeight: 700, 
                         fontFamily: 'Inter' 
@@ -134,16 +134,16 @@ ScoutApp.prototype.initComparisonRadar = function(p, currentReport, prevReport) 
             },
             plotOptions: {
                 radar: {
-                    size: 110, // Grafiğin boyutu
+                    size: 110,
                     polygons: {
-                        strokeColors: 'rgba(255,255,255,0.1)', // Örümcek ağı çizgileri
-                        connectorColors: 'rgba(255,255,255,0.1)',
+                        strokeColors: window.getTheme() === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)',
+                        connectorColors: window.getTheme() === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)',
                         fill: { colors: ['transparent', 'transparent'] }
                     }
                 }
             },
-            theme: { mode: 'dark' },
-            tooltip: { theme: 'dark' },
+            theme: { mode: window.getTheme() },
+            tooltip: { theme: window.getTheme() },
             grid: { show: false, padding: { top: 0, bottom: 0 } }
         });
         

@@ -1,13 +1,47 @@
 ScoutApp.prototype.renderSettings = function(c) {
     const isOfflineImagesEnabled = !(this.state.data && this.state.data.settings && this.state.data.settings.offlineImages === false);
+    const currentTheme = (this.state.data && this.state.data.settings && this.state.data.settings.theme) || window.getTheme();
+    const isDark = currentTheme !== 'light';
 
     c.innerHTML = `
         <div class="max-w-3xl mx-auto fade-in space-y-6">
+
+            <!-- Tema Seçimi -->
             <div class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden">
-                <div class="p-6 border-b border-dark-800"><h3 class="text-lg font-bold text-white">Ayarlar</h3></div>
-                <div class="p-6 space-y-6">
-                    <div class="flex items-center justify-between p-4 bg-dark-950 rounded-xl border border-dark-800">
-                        <div class="flex items-center gap-4"><div class="p-3 bg-dark-800 rounded-lg"><i data-lucide="moon" class="w-5 h-5 text-slate-300"></i></div><div><div class="text-white font-medium">${t('dark_mode')}</div><div class="text-slate-500 text-xs">${t('default_theme')}</div></div></div>
+                <div class="p-6 border-b border-dark-800">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i data-lucide="palette" class="w-5 h-5 text-scout-500"></i>
+                        ${t('theme')}
+                    </h3>
+                    <p class="text-slate-500 text-xs mt-1">${t('theme_desc')}</p>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-4">
+
+                        <!-- Karanlık Mod Kart -->
+                        <button onclick="app.setTheme('dark')" class="relative p-5 rounded-xl border flex flex-col items-center gap-3 transition-all group ${isDark ? 'bg-slate-800 border-scout-500 ring-2 ring-scout-500/20' : 'bg-dark-950 border-dark-700 hover:border-slate-600'}">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner ${isDark ? 'bg-slate-700' : 'bg-dark-800'}">
+                                <i data-lucide="moon" class="w-6 h-6 ${isDark ? 'text-blue-400' : 'text-slate-500'}"></i>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-bold text-sm text-white">${t('dark_mode')}</div>
+                                <div class="text-slate-500 text-xs mt-0.5">Dark Mode</div>
+                            </div>
+                            ${isDark ? `<div class="absolute top-3 right-3 w-5 h-5 rounded-full bg-scout-500 flex items-center justify-center shadow-lg"><i data-lucide="check" class="w-3 h-3 text-white"></i></div>` : ''}
+                        </button>
+
+                        <!-- Aydınlık Mod Kart -->
+                        <button onclick="app.setTheme('light')" class="relative p-5 rounded-xl border flex flex-col items-center gap-3 transition-all group ${!isDark ? 'bg-amber-50 border-amber-400 ring-2 ring-amber-400/20' : 'bg-dark-950 border-dark-700 hover:border-amber-600/40'}">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner ${!isDark ? 'bg-amber-100' : 'bg-dark-800'}">
+                                <i data-lucide="sun" class="w-6 h-6 ${!isDark ? 'text-amber-500' : 'text-slate-500'}"></i>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-bold text-sm text-white">${t('light_mode')}</div>
+                                <div class="text-slate-500 text-xs mt-0.5">Light Mode</div>
+                            </div>
+                            ${!isDark ? `<div class="absolute top-3 right-3 w-5 h-5 rounded-full bg-amber-400 flex items-center justify-center shadow-lg"><i data-lucide="check" class="w-3 h-3 text-white"></i></div>` : ''}
+                        </button>
+
                     </div>
                 </div>
             </div>
@@ -128,6 +162,39 @@ ScoutApp.prototype.toggleOfflineImages = function(enabled) {
     this.state.data.settings.offlineImages = enabled;
     this.saveData();
     this.notify(enabled ? "Çevrimdışı görseller etkinleştirildi." : "Çevrimdışı görseller devredışı bırakıldı.");
+};
+
+ScoutApp.prototype.setTheme = function(theme) {
+    const isLight = theme === 'light';
+
+    // HTML element'e class uygula
+    if (isLight) {
+        document.documentElement.classList.add('light');
+    } else {
+        document.documentElement.classList.remove('light');
+    }
+
+    // Tercihi kaydet
+    if (!this.state.data.settings) this.state.data.settings = {};
+    this.state.data.settings.theme = theme;
+    this.saveData();
+    localStorage.setItem('scoutpro_theme', theme);
+
+    // Grafiklerin temasını güncelle için event gönder
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
+
+    // Ayarlar sayfasını yenile (aktif kart güncellenir)
+    const contentArea = document.getElementById('content-area');
+    if (contentArea && this.state.activePage === 'settings') {
+        this.renderSettings(contentArea);
+        setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 50);
+    }
+
+    const langIsEn = window.getLang && window.getLang() === 'en';
+    this.notify(isLight
+        ? (langIsEn ? 'Light theme activated' : 'Aydınlık tema aktif')
+        : (langIsEn ? 'Dark theme activated' : 'Karanlık tema aktif')
+    );
 };
 
 async function downloadImageFallback(url) {
