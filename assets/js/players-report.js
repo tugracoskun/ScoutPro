@@ -45,6 +45,8 @@ ScoutApp.prototype.renderNewReport = function(c) {
                         ${this.createSelect('rep-foot', t('foot'), [{val:'Sağ', txt:t('foot_right')||'Sağ'}, {val:'Sol', txt:t('foot_left')||'Sol'}, {val:'Her İkisi', txt:t('foot_both')||'Her İkisi'}, {val:'Bilinmiyor', txt:t('unknown')||'Bilinmiyor'}], this.state.newReport.foot, "app.updateRep('foot', this.value)")}
                     </div>
 
+                    ${this.createInput('rep-market-value', t('market_value'), 'Örn: 5000000 veya 5.000.000', 'number', this.state.newReport.marketValue, "app.updateRep('marketValue', this.value)")}
+
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-slate-400 ml-1">${t('potential')}</label>
                         <div class="relative">
@@ -433,7 +435,7 @@ ScoutApp.prototype.submitReport = function() {
     const teamIdInt = parseInt(r.teamId);
     const reportDate = new Date().toLocaleDateString('tr-TR');
     
-    const historyEntry = { date: reportDate, rating: avg, stats: {...r.stats}, potential: r.potential, source: r.source, matchId: r.matchId || '' };
+    const historyEntry = { date: reportDate, rating: avg, stats: {...r.stats}, potential: r.potential, source: r.source, matchId: r.matchId || '', marketValue: r.marketValue || '' };
 
     this.state.data.players.push({
         id: Date.now(), ...r, matchId: r.matchId || '', teamId: teamIdInt, rating: avg, status: 'Scouted', dateAdded: reportDate, socialNotes: [], history: [historyEntry], videos: []

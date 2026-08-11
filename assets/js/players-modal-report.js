@@ -35,17 +35,21 @@ ScoutApp.prototype.openNewReportMode = function(id) {
                 <button onclick="app.openPlayerModal(${id})" class="text-slate-400 hover:text-white flex items-center gap-1 text-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${t('cancel')}</button>
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-slate-400 ml-1">${t('market_value')}</label>
+                    <input type="number" id="new-rep-market-value" value="${p.marketValue || ''}" placeholder="Örn: 5000000" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white outline-none focus:border-green-500 text-sm">
+                </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-bold text-slate-400 ml-1">${t('potential')}</label>
                     <select id="new-rep-potential" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-green-500 outline-none text-sm cursor-pointer">
-                        <option value="Düşük" ${p.potential === 'Düşük' ? 'selected' : ''}>${t('potential_low')} (${t('standard')})</option>
-                        <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>${t('potential_high')} (${t('open_to_dev')})</option>
+                        <option value="Düşük" ${p.potential === 'Düşük' ? 'selected' : ''}>${t('potential_low')}</option>
+                        <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>${t('potential_high')}</option>
                     </select>
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-bold text-slate-400 ml-1">${t('source')}</label>
-                    <input type="text" id="new-rep-source" placeholder="Örn: Canlı İzleme, WyScout..." class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white outline-none focus:border-green-500 text-sm">
+                    <input type="text" id="new-rep-source" placeholder="Örn: Canlı İzleme..." class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white outline-none focus:border-green-500 text-sm">
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-bold text-slate-400 ml-1 flex items-center justify-between">
@@ -56,7 +60,7 @@ ScoutApp.prototype.openNewReportMode = function(id) {
                             <option value="">-- ${t('select_match_optional')} --</option>
                             ${filteredMatches.map(m => `<option value="${m.id}" ${defaultMatchId == m.id ? 'selected' : ''}>${this.getMatchDisplay(m)}</option>`).join('')}
                         ` : `
-                            <option value="">-- ${window.getLang && window.getLang() === 'en' ? 'No matches found for this team' : 'Bu takıma ait maç bulunamadı'} --</option>
+                            <option value="">-- ${window.getLang && window.getLang() === 'en' ? 'No matches found' : 'Maç bulunamadı'} --</option>
                         `}
                     </select>
                 </div>
@@ -153,6 +157,8 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
     const newStats = this.state.newReport.stats || {};
     const newPotentialEl = document.getElementById('new-rep-potential');
     const newPotential = newPotentialEl ? newPotentialEl.value : (p.potential || 'Düşük');
+    const newMarketValueEl = document.getElementById('new-rep-market-value');
+    const newMarketValue = newMarketValueEl ? newMarketValueEl.value : (p.marketValue || '');
     const newSourceElement = document.getElementById('new-rep-source');
     const newSource = newSourceElement ? newSourceElement.value : '';
     const newMatchElement = document.getElementById('new-rep-match');
@@ -169,6 +175,7 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
         rating: avg,
         stats: {...newStats},
         potential: newPotential,
+        marketValue: newMarketValue,
         source: newSource,
         matchId: newMatchId
     };
@@ -182,6 +189,7 @@ ScoutApp.prototype.saveNewPlayerReport = function(id) {
     p.rating = avg;
     p.stats = {...newStats};
     p.potential = newPotential;
+    if (newMarketValue) p.marketValue = newMarketValue;
     p.dateAdded = today; 
 
     this.saveData(); // Kayıt

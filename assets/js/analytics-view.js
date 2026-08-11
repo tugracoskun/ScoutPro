@@ -168,17 +168,23 @@ ScoutApp.prototype.populateAnalyticsDropdowns = function() {
     let html = '';
     let allOptions = [];
 
+    // Finansal Metrikler (Piyasa Değeri)
+    const mvKey = 'Piyasa Değeri (€)';
+    allOptions.push(mvKey);
+    html += `<optgroup label="─────────  FİNANSAL METRİK  ─────────" class="bg-dark-900 text-scout-400 font-bold text-center">`;
+    html += `<option value="${mvKey}" class="bg-dark-950 text-white font-normal text-left pl-4">💰 ${t('market_value')}</option>`;
+    html += `</optgroup>`;
+
     if (groupData) {
         if (groupData['Genel']) {
-            allOptions = groupData['Genel'].map(a => a.name);
-            allOptions.forEach(opt => {
-                const optLabel = window.tAttr ? window.tAttr(opt) : opt;
-                html += `<option value="${opt}">${optLabel}</option>`;
+            groupData['Genel'].forEach(a => {
+                allOptions.push(a.name);
+                const optLabel = window.tAttr ? window.tAttr(a.name) : a.name;
+                html += `<option value="${a.name}">${optLabel}</option>`;
             });
         } else {
             Object.entries(groupData).forEach(([catKey, attrList]) => {
                 const catLabel = (window.tCat ? window.tCat(catKey) : (window.tAttr ? window.tAttr(catKey) : catKey)).toUpperCase();
-                // Ortalı ve şık görünmesi için tire ile ortalama padding
                 const paddedLabel = `─────────  ${catLabel}  ─────────`;
                 html += `<optgroup label="${paddedLabel}" class="bg-dark-900 text-scout-400 font-bold text-center">`;
                 attrList.forEach(a => {
@@ -288,9 +294,29 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
     let sumY = 0;
     let validCount = 0;
 
+    const isXMarketValue = xAxisAttr === 'Piyasa Değeri (€)';
+    const isYMarketValue = yAxisAttr === 'Piyasa Değeri (€)';
+
+    let maxX = 100;
+    let maxY = 100;
+
     const seriesData = players.map(p => {
-        const xVal = p.stats[xAxisAttr] || 0;
-        const yVal = p.stats[yAxisAttr] || 0;
+        let xVal = 0;
+        let yVal = 0;
+
+        if (isXMarketValue) {
+            xVal = parseFloat(p.marketValue) || 0;
+            if (xVal > maxX) maxX = xVal;
+        } else {
+            xVal = (p.stats && p.stats[xAxisAttr]) ? parseFloat(p.stats[xAxisAttr]) || 0 : 0;
+        }
+
+        if (isYMarketValue) {
+            yVal = parseFloat(p.marketValue) || 0;
+            if (yVal > maxY) maxY = yVal;
+        } else {
+            yVal = (p.stats && p.stats[yAxisAttr]) ? parseFloat(p.stats[yAxisAttr]) || 0 : 0;
+        }
         
         sumX += xVal;
         sumY += yVal;
@@ -299,7 +325,7 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
         return {
             x: xVal,
             y: yVal,
-            player: p // store full player for tooltip/click
+            player: p
         };
     });
 
@@ -310,8 +336,8 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
         this.analyticsChartInstance.destroy();
     }
 
-    const xAxisLabel = window.tAttr ? window.tAttr(xAxisAttr) : xAxisAttr;
-    const yAxisLabel = window.tAttr ? window.tAttr(yAxisAttr) : yAxisAttr;
+    const xAxisLabel = isXMarketValue ? (typeof t === 'function' ? t('market_value') : 'Piyasa Değeri (€)') : (window.tAttr ? window.tAttr(xAxisAttr) : xAxisAttr);
+    const yAxisLabel = isYMarketValue ? (typeof t === 'function' ? t('market_value') : 'Piyasa Değeri (€)') : (window.tAttr ? window.tAttr(yAxisAttr) : yAxisAttr);
 
     const options = {
         series: [{
@@ -344,40 +370,52 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
         },
         xaxis: {
             title: { text: xAxisLabel, style: { color: '#94a3b8', fontSize: '12px', fontWeight: 600, fontFamily: 'Inter' } },
-            labels: { style: { colors: '#64748b' } },
+            labels: {
+                style: { colors: '#64748b' },
+                formatter: function(val) {
+                    if (isXMarketValue) return window.app && window.app.formatMarketValue ? window.app.formatMarketValue(val) : val;
+                    return val;
+                }
+            },
             min: 0,
-            max: 100,
+            max: isXMarketValue ? Math.ceil(maxX * 1.1) : 100,
             tickAmount: 10
         },
         yaxis: {
             title: { text: yAxisLabel, style: { color: '#94a3b8', fontSize: '12px', fontWeight: 600, fontFamily: 'Inter' } },
-            labels: { style: { colors: '#64748b' } },
+            labels: {
+                style: { colors: '#64748b' },
+                formatter: function(val) {
+                    if (isYMarketValue) return window.app && window.app.formatMarketValue ? window.app.formatMarketValue(val) : val;
+                    return val;
+                }
+            },
             min: 0,
-            max: 100,
+            max: isYMarketValue ? Math.ceil(maxY * 1.1) : 100,
             tickAmount: 10
         },
         annotations: this.state.analyticsFilter.quadrant ? {
             xaxis: [
                 {
-                    x: 50,
+                    x: isXMarketValue ? (maxX / 2) : 50,
                     borderColor: '#475569',
                     strokeDashArray: 4,
                     label: {
                         borderColor: '#334155',
                         style: { color: '#94a3b8', background: '#1e293b', padding: { left: 6, right: 6, top: 3, bottom: 3 } },
-                        text: `Baraj: 50`
+                        text: isXMarketValue ? `Baraj: ${window.app ? window.app.formatMarketValue(maxX / 2) : (maxX / 2)}` : `Baraj: 50`
                     }
                 }
             ],
             yaxis: [
                 {
-                    y: 50,
+                    y: isYMarketValue ? (maxY / 2) : 50,
                     borderColor: '#475569',
                     strokeDashArray: 4,
                     label: {
                         borderColor: '#334155',
                         style: { color: '#94a3b8', background: '#1e293b', padding: { left: 6, right: 6, top: 3, bottom: 3 } },
-                        text: `Baraj: 50`
+                        text: isYMarketValue ? `Baraj: ${window.app ? window.app.formatMarketValue(maxY / 2) : (maxY / 2)}` : `Baraj: 50`
                     }
                 }
             ]
@@ -415,9 +453,13 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
                         <div class="text-[10px] text-slate-400 mb-2">${teamName}</div>
                         <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                             <span class="text-slate-500">${xAxisLabel}:</span> 
-                            <span class="font-mono text-right font-bold ${window.app && window.app.getGrade ? window.app.getGrade(data.x).color : 'text-scout-400'}">${data.x}</span>
+                            <span class="font-mono text-right font-bold ${isXMarketValue ? 'text-scout-400' : (window.app && window.app.getGrade ? window.app.getGrade(data.x).color : 'text-scout-400')}">
+                                ${isXMarketValue ? (window.app ? window.app.formatMarketValue(data.x) : data.x) : data.x}
+                            </span>
                             <span class="text-slate-500">${yAxisLabel}:</span> 
-                            <span class="font-mono text-right font-bold ${window.app && window.app.getGrade ? window.app.getGrade(data.y).color : 'text-scout-400'}">${data.y}</span>
+                            <span class="font-mono text-right font-bold ${isYMarketValue ? 'text-scout-400' : (window.app && window.app.getGrade ? window.app.getGrade(data.y).color : 'text-scout-400')}">
+                                ${isYMarketValue ? (window.app ? window.app.formatMarketValue(data.y) : data.y) : data.y}
+                            </span>
                         </div>
                     </div>
                 `;

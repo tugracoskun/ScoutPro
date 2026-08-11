@@ -44,12 +44,15 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
                 <div class="grid grid-cols-2 gap-4">
                     ${this.createCustomSearchSelect('edit-p-nationality', t('nationality'), t('nat_search_ph'), [...this.state.data.countries].sort((a,b) => b.isFavorite - a.isFavorite || this.getCountryName(a).localeCompare(this.getCountryName(b))).map(c => ({val: c.id, txt: this.getCountryName(c), icon: c.flag})), p.nationality ? this.getCountryName(this.state.data.countries.find(c => c.name === p.nationality || c.nameEn === p.nationality || c.id == p.nationality) || {name: p.nationality}) : '')}
                     
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-400 ml-1">${t('potential')}</label>
-                        <select id="edit-p-potential" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none text-sm">
-                            <option value="Düşük" ${p.potential === 'Düşük' ? 'selected' : ''}>${t('potential_low')}</option>
-                            <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>${t('potential_high')}</option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-3">
+                        ${this.createInput('edit-p-market-value', t('market_value'), 'Örn: 5000000', 'number', p.marketValue || '')}
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-slate-400 ml-1">${t('potential')}</label>
+                            <select id="edit-p-potential" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none text-sm">
+                                <option value="Düşük" ${p.potential === 'Düşük' ? 'selected' : ''}>${t('potential_low')}</option>
+                                <option value="Yüksek" ${p.potential === 'Yüksek' ? 'selected' : ''}>${t('potential_high')}</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -128,6 +131,14 @@ ScoutApp.prototype.updatePlayer = function(id) {
 
     // Yaşı dinamik hesapla ve kaydet
     p.age = this.calculateAge(birthDate);
+
+    const mvEl = document.getElementById('edit-p-market-value');
+    if (mvEl) {
+        p.marketValue = mvEl.value;
+        if (p.history && p.history.length > 0) {
+            p.history[0].marketValue = mvEl.value;
+        }
+    }
 
     p.height = document.getElementById('edit-p-height').value;
     p.foot = document.getElementById('edit-p-foot').value;

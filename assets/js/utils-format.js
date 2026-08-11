@@ -38,6 +38,22 @@ ScoutApp.prototype.getGrade = function(score) {
     return { letter: 'D', color: 'text-red-500', border: 'border-red-600', shadow: 'shadow-red-600/50', bg: 'bg-red-600/10' };
 };
 
+// Piyasa Değeri Formatlayıcı (€ Cinsinden)
+ScoutApp.prototype.formatMarketValue = function(val) {
+    if (val === null || val === undefined || val === '') return '-';
+    let num = parseFloat(val);
+    if (isNaN(num)) return val;
+    if (num >= 1000000) {
+        let m = (num / 1000000);
+        return '€' + (m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)) + 'M';
+    }
+    if (num >= 1000) {
+        let k = (num / 1000);
+        return '€' + (k % 1 === 0 ? k.toFixed(0) : k.toFixed(0)) + 'K';
+    }
+    return '€' + num.toLocaleString();
+};
+
 // Link Formatlayıcı
 ScoutApp.prototype.formatLinks = function(text) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
