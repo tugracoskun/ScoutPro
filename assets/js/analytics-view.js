@@ -2,8 +2,11 @@
 
 ScoutApp.prototype.renderAnalytics = function(c) {
     if (!this.state.analyticsFilter) {
-        this.state.analyticsFilter = { pos: '', xAxis: '', yAxis: '', quadrant: true };
+        this.state.analyticsFilter = { pos: '', xAxis: '', yAxis: '', quadrant: true, minAge: 15, maxAge: 40, potential: 'all' };
     }
+    if (this.state.analyticsFilter.minAge === undefined) this.state.analyticsFilter.minAge = 15;
+    if (this.state.analyticsFilter.maxAge === undefined) this.state.analyticsFilter.maxAge = 40;
+    if (!this.state.analyticsFilter.potential) this.state.analyticsFilter.potential = 'all';
 
     let posOptions = `<option value="">-- ${t('dh_select_pos')} --</option>`;
     POSITIONS.forEach(p => {
@@ -12,41 +15,71 @@ ScoutApp.prototype.renderAnalytics = function(c) {
     });
 
     c.innerHTML = `
-        <div class="max-w-6xl mx-auto fade-in h-full flex flex-col">
-            <!-- Header & Filters -->
-            <div class="bg-dark-900 p-6 rounded-2xl border border-dark-800 mb-6 shrink-0 flex flex-col md:flex-row gap-4 items-end">
-                <div class="flex-1 w-full">
-                    <label class="text-xs font-bold text-slate-400 ml-1 mb-1.5 block">${t('dh_select_pos')}</label>
-                    <div class="relative">
-                        <select id="analytics-pos" onchange="app.updateAnalyticsPos(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none appearance-none text-sm cursor-pointer">
-                            ${posOptions}
-                        </select>
-                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+        <div class="max-w-6xl mx-auto fade-in h-full flex flex-col space-y-4">
+            <!-- Header & Primary Filters -->
+            <div class="bg-dark-900 p-5 rounded-2xl border border-dark-800 shrink-0 flex flex-col gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div class="w-full">
+                        <label class="text-xs font-bold text-slate-400 ml-1 mb-1.5 block">${t('dh_select_pos')}</label>
+                        <div class="relative">
+                            <select id="analytics-pos" onchange="app.updateAnalyticsPos(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer">
+                                ${posOptions}
+                            </select>
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></div>
+                        </div>
                     </div>
-                </div>
-                <div class="flex-1 w-full">
-                    <label class="text-xs font-bold text-slate-400 ml-1 mb-1.5 block">${t('dh_x_axis')}</label>
-                    <div class="relative">
-                        <select id="analytics-x" onchange="app.updateAnalyticsFilter('xAxis', this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none appearance-none text-sm cursor-pointer disabled:opacity-50" ${!this.state.analyticsFilter.pos ? 'disabled' : ''}>
-                        </select>
-                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                    <div class="w-full">
+                        <label class="text-xs font-bold text-slate-400 ml-1 mb-1.5 block">${t('dh_x_axis')}</label>
+                        <div class="relative">
+                            <select id="analytics-x" onchange="app.updateAnalyticsFilter('xAxis', this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer disabled:opacity-50" ${!this.state.analyticsFilter.pos ? 'disabled' : ''}>
+                            </select>
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></div>
+                        </div>
                     </div>
-                </div>
-                <div class="flex-1 w-full">
-                    <label class="text-xs font-bold text-slate-400 ml-1 mb-1.5 block">${t('dh_y_axis')}</label>
-                    <div class="relative">
-                        <select id="analytics-y" onchange="app.updateAnalyticsFilter('yAxis', this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white focus:border-scout-500 outline-none appearance-none text-sm cursor-pointer disabled:opacity-50" ${!this.state.analyticsFilter.pos ? 'disabled' : ''}>
-                        </select>
-                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                    <div class="w-full">
+                        <label class="text-xs font-bold text-slate-400 ml-1 mb-1.5 block">${t('dh_y_axis')}</label>
+                        <div class="relative">
+                            <select id="analytics-y" onchange="app.updateAnalyticsFilter('yAxis', this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer disabled:opacity-50" ${!this.state.analyticsFilter.pos ? 'disabled' : ''}>
+                            </select>
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></div>
+                        </div>
                     </div>
-                </div>
-                <div class="flex flex-col">
-                    <label class="text-xs font-bold text-transparent ml-1 mb-1.5 block hidden md:block">&nbsp;</label>
-                    <div class="h-[46px] flex items-center">
-                        <label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer hover:text-white transition-colors">
+                    <div class="w-full flex items-center justify-between h-[42px] px-2 bg-dark-950/50 rounded-xl border border-dark-800">
+                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer hover:text-white transition-colors">
                             <input type="checkbox" id="analytics-quadrant-toggle" onchange="app.updateAnalyticsFilter('quadrant', this.checked)" class="w-4 h-4 rounded border-dark-600 text-scout-500 focus:ring-scout-500 bg-dark-950" ${this.state.analyticsFilter.quadrant ? 'checked' : ''}>
-                            4'lü Görünüm
+                            4'lü Görünüm Ortalaması
                         </label>
+                    </div>
+                </div>
+
+                <!-- Secondary Advanced Filters (Yaş & Potansiyel) -->
+                <div class="pt-3 border-t border-dark-800/60 grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <!-- Yaş Aralığı Slider -->
+                    <div class="flex items-center gap-3 bg-dark-950/40 p-2 rounded-xl border border-dark-800">
+                        <div class="flex items-center gap-1.5 text-slate-400 text-xs font-bold shrink-0">
+                            <i data-lucide="user-check" class="w-3.5 h-3.5 text-scout-400"></i>
+                            Yaş Filtresi:
+                        </div>
+                        <div class="flex items-center gap-2 flex-1">
+                            <span class="text-xs text-slate-400 font-mono w-5 text-right" id="age-min-label">${this.state.analyticsFilter.minAge}</span>
+                            <input type="range" min="15" max="40" value="${this.state.analyticsFilter.minAge}" oninput="app.updateAnalyticsAgeMin(this.value)" class="w-full accent-scout-500 cursor-pointer h-1.5 bg-dark-800 rounded-lg">
+                            <span class="text-xs text-slate-400 font-mono">-</span>
+                            <input type="range" min="15" max="40" value="${this.state.analyticsFilter.maxAge}" oninput="app.updateAnalyticsAgeMax(this.value)" class="w-full accent-scout-500 cursor-pointer h-1.5 bg-dark-800 rounded-lg">
+                            <span class="text-xs text-slate-400 font-mono w-5" id="age-max-label">${this.state.analyticsFilter.maxAge}</span>
+                        </div>
+                    </div>
+
+                    <!-- Potansiyel Süzgeci -->
+                    <div class="flex items-center gap-3 bg-dark-950/40 p-2 rounded-xl border border-dark-800">
+                        <div class="flex items-center gap-1.5 text-slate-400 text-xs font-bold shrink-0">
+                            <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+                            Potansiyel:
+                        </div>
+                        <select onchange="app.updateAnalyticsFilter('potential', this.value)" class="flex-1 bg-dark-900 border border-dark-700 text-white text-xs rounded-lg px-3 py-1.5 outline-none focus:border-scout-500 cursor-pointer">
+                            <option value="all" ${this.state.analyticsFilter.potential === 'all' ? 'selected' : ''}>Tüm Potansiyeller</option>
+                            <option value="Yüksek" ${this.state.analyticsFilter.potential === 'Yüksek' ? 'selected' : ''}>Yalnızca Yüksek Potansiyel</option>
+                            <option value="Düşük" ${this.state.analyticsFilter.potential === 'Düşük' ? 'selected' : ''}>Düşük Potansiyel</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -164,6 +197,28 @@ ScoutApp.prototype.populateAnalyticsDropdowns = function() {
     ySelect.value = this.state.analyticsFilter.yAxis;
 };
 
+ScoutApp.prototype.updateAnalyticsAgeMin = function(val) {
+    let min = parseInt(val) || 15;
+    if (min > this.state.analyticsFilter.maxAge) min = this.state.analyticsFilter.maxAge;
+    this.state.analyticsFilter.minAge = min;
+    const label = document.getElementById('age-min-label');
+    if (label) label.innerText = min;
+    if (this.state.analyticsFilter.pos && this.state.analyticsFilter.xAxis && this.state.analyticsFilter.yAxis) {
+        this.drawAnalyticsChart();
+    }
+};
+
+ScoutApp.prototype.updateAnalyticsAgeMax = function(val) {
+    let max = parseInt(val) || 40;
+    if (max < this.state.analyticsFilter.minAge) max = this.state.analyticsFilter.minAge;
+    this.state.analyticsFilter.maxAge = max;
+    const label = document.getElementById('age-max-label');
+    if (label) label.innerText = max;
+    if (this.state.analyticsFilter.pos && this.state.analyticsFilter.xAxis && this.state.analyticsFilter.yAxis) {
+        this.drawAnalyticsChart();
+    }
+};
+
 ScoutApp.prototype.updateAnalyticsFilter = function(key, val) {
     this.state.analyticsFilter[key] = val;
     
@@ -187,11 +242,22 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
     emptyState.classList.remove('flex');
     chartArea.classList.remove('hidden');
 
-    // Sadece raporlanmış ve bu pozisyondaki oyuncuları al
-    const players = this.state.data.players.filter(p => p.position === pos && p.stats);
+    // Sadece raporlanmış, pozisyonu uyan, yaş ve potansiyel kriterlerini karşılayan oyuncuları al
+    const minAge = this.state.analyticsFilter.minAge || 15;
+    const maxAge = this.state.analyticsFilter.maxAge || 40;
+    const pot = this.state.analyticsFilter.potential || 'all';
+
+    const players = this.state.data.players.filter(p => {
+        if (p.position !== pos || !p.stats) return false;
+        const age = parseInt(p.age) || 0;
+        if (age && (age < minAge || age > maxAge)) return false;
+        if (pot !== 'all' && p.potential !== pot) return false;
+        return true;
+    });
 
     if (players.length === 0) {
-        chartArea.innerHTML = `<div class="w-full h-full flex items-center justify-center text-slate-500 font-medium">${t('dh_no_players')}</div>`;
+        chartArea.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-slate-500 font-medium gap-2"><i data-lucide="filter-x" class="w-8 h-8 opacity-40"></i>Kriterlere uyan oyuncu bulunamadı.</div>`;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
     }
 
