@@ -2,10 +2,12 @@
 
 ScoutApp.prototype.renderAnalytics = function(c) {
     if (!this.state.analyticsFilter) {
-        this.state.analyticsFilter = { pos: '', xAxis: '', yAxis: '', quadrant: true, minAge: 15, maxAge: 40, potential: 'all' };
+        this.state.analyticsFilter = { pos: '', xAxis: '', yAxis: '', quadrant: true, minAge: 15, maxAge: 40, minVal: 0, maxVal: 100, potential: 'all' };
     }
     if (this.state.analyticsFilter.minAge === undefined) this.state.analyticsFilter.minAge = 15;
     if (this.state.analyticsFilter.maxAge === undefined) this.state.analyticsFilter.maxAge = 40;
+    if (this.state.analyticsFilter.minVal === undefined) this.state.analyticsFilter.minVal = 0;
+    if (this.state.analyticsFilter.maxVal === undefined) this.state.analyticsFilter.maxVal = 100;
     if (!this.state.analyticsFilter.potential) this.state.analyticsFilter.potential = 'all';
 
     let posOptions = `<option value="">-- ${t('dh_select_pos')} --</option>`;
@@ -18,18 +20,20 @@ ScoutApp.prototype.renderAnalytics = function(c) {
         <div class="max-w-6xl mx-auto fade-in h-full flex flex-col space-y-4">
             <!-- Header & Filters (Kompakt ve Akıcı Tasarım) -->
             <div class="bg-dark-900 p-4 rounded-2xl border border-dark-800 shrink-0 space-y-3">
-                <!-- Üst Satır: Pozisyon, X Ekseni, Y Ekseni, 4'lü Görünüm Butonu -->
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                    <div class="md:col-span-3">
+                <!-- Üst Satır: Pozisyon (Dar), X Ekseni, Y Ekseni, 4'lü Görünüm, Potansiyel (En Sağda) -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                    <!-- Pozisyon Seçimi (Yatay olarak kısıldı: col-span-2) -->
+                    <div class="md:col-span-2">
                         <label class="text-[11px] font-bold text-slate-400 ml-1 mb-1 block">${t('dh_select_pos')}</label>
                         <div class="relative">
-                            <select id="analytics-pos" onchange="app.updateAnalyticsPos(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl pl-3 pr-8 py-2 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer">
+                            <select id="analytics-pos" onchange="app.updateAnalyticsPos(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl pl-3 pr-8 py-2 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer truncate">
                                 ${posOptions}
                             </select>
                             <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></div>
                         </div>
                     </div>
                     
+                    <!-- X Ekseni Özelliği (col-span-3) -->
                     <div class="md:col-span-3">
                         <label class="text-[11px] font-bold text-slate-400 ml-1 mb-1 block">${t('dh_x_axis')}</label>
                         <div class="relative">
@@ -39,6 +43,7 @@ ScoutApp.prototype.renderAnalytics = function(c) {
                         </div>
                     </div>
                     
+                    <!-- Y Ekseni Özelliği (col-span-3) -->
                     <div class="md:col-span-3">
                         <label class="text-[11px] font-bold text-slate-400 ml-1 mb-1 block">${t('dh_y_axis')}</label>
                         <div class="relative">
@@ -48,24 +53,38 @@ ScoutApp.prototype.renderAnalytics = function(c) {
                         </div>
                     </div>
 
-                    <div class="md:col-span-3 pt-5">
-                        <button onclick="app.toggleAnalyticsQuadrant()" class="w-full py-2 px-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-2 ${this.state.analyticsFilter.quadrant ? 'bg-scout-500/10 border-scout-500/50 text-scout-400 shadow-sm' : 'bg-dark-950 border-dark-700 text-slate-400 hover:text-white'}">
-                            <i data-lucide="grid" class="w-3.5 h-3.5"></i>
-                            <span>4'lü Matris Görünümü</span>
-                            <span class="w-2 h-2 rounded-full ${this.state.analyticsFilter.quadrant ? 'bg-scout-500 animate-pulse' : 'bg-slate-600'}"></span>
+                    <!-- 4'lü Matris Görünümü Butonu (Kompakt: col-span-2) -->
+                    <div class="md:col-span-2">
+                        <button onclick="app.toggleAnalyticsQuadrant()" class="w-full py-2 px-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${this.state.analyticsFilter.quadrant ? 'bg-scout-500/10 border-scout-500/50 text-scout-400 shadow-sm' : 'bg-dark-950 border-dark-700 text-slate-400 hover:text-white'}" title="4'lü Matris Görünümü">
+                            <i data-lucide="grid" class="w-3.5 h-3.5 shrink-0"></i>
+                            <span class="truncate">4'lü Matris</span>
+                            <span class="w-2 h-2 rounded-full shrink-0 ${this.state.analyticsFilter.quadrant ? 'bg-scout-500 animate-pulse' : 'bg-slate-600'}"></span>
                         </button>
+                    </div>
+
+                    <!-- Potansiyel Seçimi (En Sağ Üstte: col-span-2) -->
+                    <div class="md:col-span-2">
+                        <label class="text-[11px] font-bold text-slate-400 ml-1 mb-1 block">Potansiyel</label>
+                        <div class="relative">
+                            <select onchange="app.updateAnalyticsFilter('potential', this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl pl-3 pr-8 py-2 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer">
+                                <option value="all" class="bg-dark-900" ${this.state.analyticsFilter.potential === 'all' ? 'selected' : ''}>Tümü</option>
+                                <option value="Yüksek" class="bg-dark-900" ${this.state.analyticsFilter.potential === 'Yüksek' ? 'selected' : ''}>Yüksek</option>
+                                <option value="Düşük" class="bg-dark-900" ${this.state.analyticsFilter.potential === 'Düşük' ? 'selected' : ''}>Düşük</option>
+                            </select>
+                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Alt Satır: Yaş Slider & Potansiyel Seçimi (Kompakt Strip) -->
-                <div class="pt-2.5 border-t border-dark-800/60 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
-                    <!-- Yaş Aralığı Slider -->
-                    <div class="flex items-center gap-3 w-full md:w-auto flex-1 bg-dark-950/60 px-3 py-1.5 rounded-xl border border-dark-800">
-                        <div class="flex items-center gap-1.5 text-slate-400 font-bold shrink-0 text-[11px]">
+                <!-- Alt Satır: Yaş Slider & Piyasa Değeri Slider (Potansiyel Yerine Genişletildi) -->
+                <div class="pt-2.5 border-t border-dark-800/60 grid grid-cols-1 md:grid-cols-12 gap-3 text-xs">
+                    <!-- Yaş Aralığı Slider (col-span-5) -->
+                    <div class="md:col-span-5 flex items-center gap-2 bg-dark-950/60 px-3 py-1.5 rounded-xl border border-dark-800">
+                        <div class="flex items-center gap-1 text-slate-400 font-bold shrink-0 text-[11px]">
                             <i data-lucide="users" class="w-3.5 h-3.5 text-scout-400"></i>
                             Yaş:
                         </div>
-                        <div class="flex items-center gap-2 flex-1">
+                        <div class="flex items-center gap-1.5 flex-1">
                             <span class="text-[11px] text-scout-400 font-mono font-bold w-4 text-right" id="age-min-label">${this.state.analyticsFilter.minAge}</span>
                             <input type="range" min="15" max="40" value="${this.state.analyticsFilter.minAge}" oninput="app.updateAnalyticsAgeMin(this.value)" class="w-full accent-scout-500 cursor-pointer h-1.5 bg-dark-800 rounded-lg">
                             <span class="text-slate-600 font-mono">-</span>
@@ -74,17 +93,20 @@ ScoutApp.prototype.renderAnalytics = function(c) {
                         </div>
                     </div>
 
-                    <!-- Potansiyel Seçici -->
-                    <div class="flex items-center gap-2.5 w-full md:w-auto bg-dark-950/60 px-3 py-1.5 rounded-xl border border-dark-800 shrink-0">
-                        <div class="flex items-center gap-1.5 text-slate-400 font-bold text-[11px] shrink-0">
-                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
-                            Potansiyel:
+                    <!-- Piyasa Değeri Aralığı Slider (€M cinsinden 0M - 100M+) -->
+                    <div class="md:col-span-7 flex items-center gap-2 bg-dark-950/60 px-3 py-1.5 rounded-xl border border-dark-800">
+                        <div class="flex items-center gap-1 text-slate-400 font-bold shrink-0 text-[11px]">
+                            <i data-lucide="coins" class="w-3.5 h-3.5 text-green-400"></i>
+                            <span class="hidden sm:inline">Piyasa Değeri (€):</span>
+                            <span class="sm:hidden">Değer:</span>
                         </div>
-                        <select onchange="app.updateAnalyticsFilter('potential', this.value)" class="bg-transparent text-white text-xs font-medium outline-none cursor-pointer pr-2">
-                            <option value="all" class="bg-dark-900" ${this.state.analyticsFilter.potential === 'all' ? 'selected' : ''}>Tümü</option>
-                            <option value="Yüksek" class="bg-dark-900" ${this.state.analyticsFilter.potential === 'Yüksek' ? 'selected' : ''}>Yüksek Potansiyel</option>
-                            <option value="Düşük" class="bg-dark-900" ${this.state.analyticsFilter.potential === 'Düşük' ? 'selected' : ''}>Düşük Potansiyel</option>
-                        </select>
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                            <span class="text-[11px] text-green-400 font-mono font-bold shrink-0 text-right" id="val-min-label">${this.formatMarketValue(this.stepToEuro(this.state.analyticsFilter.minVal))}</span>
+                            <input type="range" min="0" max="100" value="${this.state.analyticsFilter.minVal}" oninput="app.updateAnalyticsValMin(this.value)" class="w-full accent-green-500 cursor-pointer h-1.5 bg-dark-800 rounded-lg min-w-[50px]">
+                            <span class="text-slate-600 font-mono shrink-0">-</span>
+                            <input type="range" min="0" max="100" value="${this.state.analyticsFilter.maxVal}" oninput="app.updateAnalyticsValMax(this.value)" class="w-full accent-green-500 cursor-pointer h-1.5 bg-dark-800 rounded-lg min-w-[50px]">
+                            <span class="text-[11px] text-green-400 font-mono font-bold shrink-0" id="val-max-label">${this.state.analyticsFilter.maxVal >= 100 ? '€100M+' : this.formatMarketValue(this.stepToEuro(this.state.analyticsFilter.maxVal))}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -239,6 +261,47 @@ ScoutApp.prototype.updateAnalyticsAgeMax = function(val) {
     }
 };
 
+// Non-linear Market Value Step Converter (0 to 100 slider steps -> € Euro)
+// 0: €0
+// 1-10: €10K - €100K (10K adım)
+// 11-28: €150K - €1M (50K adım)
+// 29-46: €1.5M - €10M (500K adım)
+// 47-82: €11M - €46M (1M adım)
+// 83-99: €50M - €98M (3M adım)
+// 100: €100M+
+ScoutApp.prototype.stepToEuro = function(step) {
+    step = parseInt(step) || 0;
+    if (step <= 0) return 0;
+    if (step <= 10) return step * 10000; // 10K - 100K
+    if (step <= 28) return 100000 + (step - 10) * 50000; // 150K - 1M
+    if (step <= 46) return 1000000 + (step - 28) * 500000; // 1.5M - 10M
+    if (step <= 82) return 10000000 + (step - 46) * 1000000; // 11M - 46M
+    if (step <= 99) return 46000000 + (step - 82) * 3000000; // 49M - 97M
+    return 100000000; // 100M+
+};
+
+ScoutApp.prototype.updateAnalyticsValMin = function(val) {
+    let min = parseInt(val) || 0;
+    if (min > this.state.analyticsFilter.maxVal) min = this.state.analyticsFilter.maxVal;
+    this.state.analyticsFilter.minVal = min;
+    const label = document.getElementById('val-min-label');
+    if (label) label.innerText = this.formatMarketValue(this.stepToEuro(min));
+    if (this.state.analyticsFilter.pos && this.state.analyticsFilter.xAxis && this.state.analyticsFilter.yAxis) {
+        this.drawAnalyticsChart();
+    }
+};
+
+ScoutApp.prototype.updateAnalyticsValMax = function(val) {
+    let max = parseInt(val) || 100;
+    if (max < this.state.analyticsFilter.minVal) max = this.state.analyticsFilter.minVal;
+    this.state.analyticsFilter.maxVal = max;
+    const label = document.getElementById('val-max-label');
+    if (label) label.innerText = max >= 100 ? '€100M+' : this.formatMarketValue(this.stepToEuro(max));
+    if (this.state.analyticsFilter.pos && this.state.analyticsFilter.xAxis && this.state.analyticsFilter.yAxis) {
+        this.drawAnalyticsChart();
+    }
+};
+
 ScoutApp.prototype.toggleAnalyticsQuadrant = function() {
     this.state.analyticsFilter.quadrant = !this.state.analyticsFilter.quadrant;
     const contentArea = document.getElementById('content-area');
@@ -270,15 +333,26 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
     emptyState.classList.remove('flex');
     chartArea.classList.remove('hidden');
 
-    // Sadece raporlanmış, pozisyonu uyan, yaş ve potansiyel kriterlerini karşılayan oyuncuları al
+    // Sadece raporlanmış, pozisyonu uyan, yaş, piyasa değeri ve potansiyel kriterlerini karşılayan oyuncuları al
     const minAge = this.state.analyticsFilter.minAge || 15;
     const maxAge = this.state.analyticsFilter.maxAge || 40;
+    const minValEUR = this.stepToEuro(this.state.analyticsFilter.minVal || 0);
+    const maxValEUR = this.stepToEuro(this.state.analyticsFilter.maxVal !== undefined ? this.state.analyticsFilter.maxVal : 100);
     const pot = this.state.analyticsFilter.potential || 'all';
 
     const players = this.state.data.players.filter(p => {
         if (p.position !== pos || !p.stats) return false;
         const age = parseInt(p.age) || 0;
         if (age && (age < minAge || age > maxAge)) return false;
+        
+        // Piyasa Değeri Filtresi
+        const mv = parseFloat(p.marketValue) || 0;
+        if (this.state.analyticsFilter.maxVal < 100) {
+            if (mv < minValEUR || mv > maxValEUR) return false;
+        } else {
+            if (mv < minValEUR) return false;
+        }
+
         if (pot !== 'all' && p.potential !== pot) return false;
         return true;
     });
