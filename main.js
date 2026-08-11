@@ -1,9 +1,78 @@
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const crypto = require('crypto');
+const { pathToFileURL } = require('url');
 
 // Verilerin kaydedileceği varsayılan dosya yolu (AppData içinde)
 const dataPath = path.join(app.getPath('userData'), 'scout_data.json');
+const imageCacheDir = path.join(app.getPath('userData'), 'image_cache');
+
+if (!fs.existsSync(imageCacheDir)) {
+    try { fs.mkdirSync(imageCacheDir, { recursive: true }); } catch(e) {}
+}
+
+function getUrlHash(url) {
+    return crypto.createHash('md5').update(url).digest('hex');
+}
+
+function downloadAndCacheImage(url, maxRedirects = 3) {
+    return new Promise((resolve) => {
+        if (!url || typeof url !== 'string' || (!url.startsWith('http://') && !url.startsWith('https://'))) {
+            return resolve(null);
+        }
+
+        const extMatch = url.split('?')[0].match(/\.(png|jpg|jpeg|svg|webp|gif|ico)$/i);
+        const ext = extMatch ? extMatch[1].toLowerCase() : 'png';
+        const hash = getUrlHash(url);
+        const filename = `${hash}.${ext}`;
+        const filePath = path.join(imageCacheDir, filename);
+
+        if (fs.existsSync(filePath)) {
+            try {
+                return resolve(pathToFileURL(filePath).href);
+            } catch (err) {
+                // Read error, fallback to re-downloading
+            }
+        }
+
+        const client = url.startsWith('https') ? https : http;
+        const req = client.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ScoutPro/1.0' } }, (res) => {
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location && maxRedirects > 0) {
+                let redirectUrl = res.headers.location;
+                if (redirectUrl.startsWith('/')) {
+                    const parsed = new URL(url);
+                    redirectUrl = `${parsed.protocol}//${parsed.host}${redirectUrl}`;
+                }
+                return downloadAndCacheImage(redirectUrl, maxRedirects - 1).then(resolve);
+            }
+
+            if (res.statusCode !== 200) {
+                return resolve(null);
+            }
+
+            const chunks = [];
+            res.on('data', (chunk) => chunks.push(chunk));
+            res.on('end', () => {
+                const buffer = Buffer.concat(chunks);
+                try {
+                    fs.writeFileSync(filePath, buffer);
+                    resolve(pathToFileURL(filePath).href);
+                } catch (e) {
+                    resolve(null);
+                }
+            });
+        });
+
+        req.on('error', () => resolve(null));
+        req.setTimeout(10000, () => {
+            req.destroy();
+            resolve(null);
+        });
+    });
+}
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -111,4 +180,60 @@ ipcMain.handle('import-backup', async () => {
 // 5. Harici Tarayıcıda Link Açma
 ipcMain.handle('open-external', async (event, url) => {
     shell.openExternal(url);
+});
+
+// 6. GÖRSEL ÖNBELLEKLEME HİZMETLERİ (Offline Media & Logo Caching)
+ipcMain.handle('cache-images', async (event, urls) => {
+    if (!Array.isArray(urls) || urls.length === 0) return {};
+    
+    const results = {};
+    const batchSize = 5; // Concurrency limit
+    for (let i = 0; i < urls.length; i += batchSize) {
+        const chunk = urls.slice(i, i + batchSize);
+        await Promise.all(chunk.map(async (url) => {
+            const cachedData = await downloadAndCacheImage(url);
+            if (cachedData) {
+                results[url] = cachedData;
+            }
+        }));
+    }
+    return results;
+});
+
+ipcMain.handle('get-cache-info', async () => {
+    try {
+        if (!fs.existsSync(imageCacheDir)) {
+            return { count: 0, sizeBytes: 0 };
+        }
+        const files = fs.readdirSync(imageCacheDir);
+        let totalSize = 0;
+        files.forEach((file) => {
+            try {
+                const stat = fs.statSync(path.join(imageCacheDir, file));
+                totalSize += stat.size;
+            } catch (e) {}
+        });
+        return { count: files.length, sizeBytes: totalSize };
+    } catch (e) {
+        return { count: 0, sizeBytes: 0 };
+    }
+});
+
+ipcMain.handle('clear-image-cache', async () => {
+    try {
+        if (fs.existsSync(imageCacheDir)) {
+            const files = fs.readdirSync(imageCacheDir);
+            files.forEach((file) => {
+                try { fs.unlinkSync(path.join(imageCacheDir, file)); } catch (e) {}
+            });
+        }
+        return { success: true };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+});
+
+ipcMain.handle('restart-app', async () => {
+    app.relaunch();
+    app.exit(0);
 });

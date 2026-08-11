@@ -144,7 +144,7 @@ ScoutApp.prototype.renderWatchlist = function(c, skipAnimation = false) {
                         </div>
                         
                         <div class="flex items-center gap-4 mb-4 pr-24">
-                            <img src="${w.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-14 h-14 rounded-xl object-cover bg-dark-950 border border-dark-700">
+                            <img src="${this.getImageUrl(w.image)}" class="w-14 h-14 rounded-xl object-cover bg-dark-950 border border-dark-700" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                             <div class="overflow-hidden min-w-0">
                                 <div class="flex items-center gap-2"><h4 class="font-bold text-white text-lg truncate">${w.name}</h4></div>
                                 <div class="text-xs text-slate-400 mt-0.5 truncate flex items-center gap-1"><i data-lucide="shield" class="w-3 h-3"></i> ${this.getTeamName(w.teamId)}${w.nationalTeam ? ` <span class="mx-1">•</span> <i data-lucide="flag" class="w-3 h-3 text-scout-400"></i> ${w.nationalTeam}` : ''}</div>

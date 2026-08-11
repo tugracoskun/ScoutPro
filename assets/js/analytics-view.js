@@ -321,7 +321,7 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
                 return `
                     <div class="p-3 bg-dark-900 border border-dark-700 shadow-xl rounded-xl">
                         <div class="font-bold text-white mb-1 flex items-center gap-2">
-                            ${player.image ? `<img src="${player.image}" class="w-6 h-6 rounded-full object-cover">` : `<i data-lucide="user" class="w-4 h-4 text-slate-400"></i>`}
+                            ${player.image ? `<img src="${window.app ? window.app.getImageUrl(player.image) : player.image}" class="w-6 h-6 rounded-full object-cover" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">` : `<i data-lucide="user" class="w-4 h-4 text-slate-400"></i>`}
                             ${player.name}
                         </div>
                         <div class="text-[10px] text-slate-400 mb-2">${teamName}</div>

@@ -85,7 +85,7 @@ ScoutApp.prototype.renderComparison = function() {
         <div class="bg-dark-900 border border-dark-800 rounded-xl p-4 flex flex-col items-center text-center relative overflow-hidden group hover:border-blue-500/30 transition-colors">
             <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent pointer-events-none"></div>
             <div class="w-16 h-16 rounded-full object-cover mb-3 border-2 border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.3)] group-hover:scale-105 transition-transform overflow-hidden bg-dark-950 flex items-center justify-center">
-                ${p1.image ? `<img src="${p1.image}" class="w-full h-full object-cover">` : '<i data-lucide="user" class="text-slate-600"></i>'}
+                ${p1.image ? `<img src="${this.getImageUrl(p1.image)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">` : '<i data-lucide="user" class="text-slate-600"></i>'}
             </div>
             <h3 class="font-bold text-white text-sm">${p1.name}</h3>
             <p class="text-[10px] uppercase font-bold tracking-wider text-blue-400 mt-1">${p1.position}</p>
@@ -97,7 +97,7 @@ ScoutApp.prototype.renderComparison = function() {
         <div class="bg-dark-900 border border-dark-800 rounded-xl p-4 flex flex-col items-center text-center relative overflow-hidden group hover:border-purple-500/30 transition-colors">
             <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent pointer-events-none"></div>
             <div class="w-16 h-16 rounded-full object-cover mb-3 border-2 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.3)] group-hover:scale-105 transition-transform overflow-hidden bg-dark-950 flex items-center justify-center">
-                ${p2.image ? `<img src="${p2.image}" class="w-full h-full object-cover">` : '<i data-lucide="user" class="text-slate-600"></i>'}
+                ${p2.image ? `<img src="${this.getImageUrl(p2.image)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">` : '<i data-lucide="user" class="text-slate-600"></i>'}
             </div>
             <h3 class="font-bold text-white text-sm">${p2.name}</h3>
             <p class="text-[10px] uppercase font-bold tracking-wider text-purple-400 mt-1">${p2.position}</p>

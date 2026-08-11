@@ -409,7 +409,7 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                 <!-- Hedef Oyuncu -->
                 <div class="w-full bg-dark-900/50 rounded-xl p-2.5 mt-3 border border-dark-800 flex items-center gap-3 ${p ? 'cursor-pointer hover:bg-dark-800 transition-colors' : ''}" ${clickAction}>
                     ${p ? `
-                        <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-7 h-7 rounded-full object-cover border border-dark-700">
+                        <img src="${this.getImageUrl(p.image)}" class="w-7 h-7 rounded-full object-cover border border-dark-700" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                         <div class="flex flex-col min-w-0">
                             <span class="text-[9px] ${targetIsWatchlist ? 'text-blue-400' : 'text-scout-400'} font-bold uppercase flex items-center gap-1">${iconHtml}</span>
                             <span class="text-xs font-bold text-white truncate">${p.name}</span>
@@ -465,7 +465,7 @@ ScoutApp.prototype.generateMatchCardHTML = function(m, isCompact = false) {
                 <div class="w-full bg-dark-950/80 rounded-xl p-3 border border-dark-800 flex items-center gap-3 ${p ? 'cursor-pointer hover:bg-dark-800 hover:border-scout-500/50 transition-colors' : ''}" 
                      ${clickAction}>
                     ${p ? `
-                        <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-10 h-10 rounded-full object-cover border-2 border-dark-700">
+                        <img src="${this.getImageUrl(p.image)}" class="w-10 h-10 rounded-full object-cover border-2 border-dark-700" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                         <div class="flex flex-col min-w-0">
                             <span class="text-[10px] ${targetIsWatchlist ? 'text-blue-400' : 'text-scout-400'} font-bold uppercase flex items-center gap-1">
                                 ${iconHtml}

@@ -164,7 +164,7 @@ ScoutApp.prototype.getPlayerCardHTML = function(p) {
                 <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-scout-500 to-transparent opacity-50"></div>
                 
                 <div class="flex items-start gap-4 mb-4">
-                    <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-14 h-14 rounded-xl object-cover bg-dark-950 border border-dark-700">
+                    <img src="${this.getImageUrl(p.image)}" class="w-14 h-14 rounded-xl object-cover bg-dark-950 border border-dark-700" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                     <div class="flex-1 min-w-0 pr-8">
                         <h4 class="font-bold text-white text-lg leading-tight truncate">${p.name}</h4>
                         <div class="text-xs text-scout-400 font-medium mt-1">${window.tPos ? window.tPos(p.position) : p.position}</div>

@@ -42,9 +42,20 @@ class AuthManager {
                     this.saveUserData();
                 }
                 
+                if (!this.app.state.data.settings) {
+                    this.app.state.data.settings = { offlineImages: true };
+                }
+                if (!this.app.state.data.cachedImages) {
+                    this.app.state.data.cachedImages = {};
+                }
+
                 console.log("Veriler dosyadan yüklendi.");
             } else {
                 console.log("Kayıtlı veri bulunamadı, yeni dosya oluşturulacak.");
+                if (this.app.state.data) {
+                    if (!this.app.state.data.settings) this.app.state.data.settings = { offlineImages: true };
+                    if (!this.app.state.data.cachedImages) this.app.state.data.cachedImages = {};
+                }
             }
             
             // FIX: Önce Layout'u çiz (Sidebar ve Header gelsin)

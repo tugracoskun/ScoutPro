@@ -274,7 +274,7 @@ class ScoutApp {
                         <button onclick="app.closeGlobalSearch(); app.openPlayerModal(${p.id})" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-dark-800 transition-colors group text-left">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-dark-800">
-                                    ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover">` : `<i data-lucide="user" class="w-4 h-4 text-slate-500"></i>`}
+                                    ${p.image ? `<img src="${this.getImageUrl(p.image)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">` : `<i data-lucide="user" class="w-4 h-4 text-slate-500"></i>`}
                                 </div>
                                 <div>
                                     <div class="text-sm font-medium text-slate-200 group-hover:text-white">${p.name}</div>
@@ -296,7 +296,7 @@ class ScoutApp {
                         <button onclick="app.closeGlobalSearch(); app.goToCandidate('${w.name}')" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-dark-800 transition-colors group text-left">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-dark-800 border-2 border-purple-500/20">
-                                    ${w.image ? `<img src="${w.image}" class="w-full h-full object-cover">` : `<i data-lucide="eye" class="w-4 h-4 text-purple-500/50"></i>`}
+                                    ${w.image ? `<img src="${this.getImageUrl(w.image)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">` : `<i data-lucide="eye" class="w-4 h-4 text-purple-500/50"></i>`}
                                 </div>
                                 <div>
                                     <div class="text-sm font-medium text-slate-200 group-hover:text-white">${w.name}</div>

@@ -131,9 +131,9 @@ ScoutApp.prototype.renderDashboard = function(c) {
                                 <div class="flex items-center gap-4 min-w-0">
                                     <!-- Fotoğraf -->
                                     <div class="relative shrink-0">
-                                        <img src="${w.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=200&h=200&fit=crop'}" 
+                                        <img src="${this.getImageUrl(w.image)}" 
                                              class="w-14 h-14 rounded-2xl object-cover border border-dark-700 bg-dark-900 shadow-md group-hover:border-blue-500/40 transition-colors"
-                                             onerror="this.src='https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=200&h=200&fit=crop'">
+                                             onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                                         ${w.isFavorite ? `<div class="absolute -top-1 -right-1 w-5 h-5 bg-dark-950 rounded-full border border-red-500/40 flex items-center justify-center text-red-400 shadow"><i data-lucide="heart" class="w-3 h-3 fill-red-400"></i></div>` : ''}
                                     </div>
                                     
@@ -332,9 +332,9 @@ ScoutApp.prototype.renderDashboard = function(c) {
                         <div class="flex items-center gap-4 min-w-0">
                             <!-- Fotoğraf -->
                             <div class="relative shrink-0">
-                                <img src="${w.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=200&h=200&fit=crop'}" 
+                                <img src="${this.getImageUrl(w.image)}" 
                                      class="w-14 h-14 rounded-2xl object-cover border border-dark-700 bg-dark-900 shadow-md group-hover:border-blue-500/40 transition-colors"
-                                     onerror="this.src='https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=200&h=200&fit=crop'">
+                                     onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                                 ${w.isFavorite ? `<div class="absolute -top-1 -right-1 w-5 h-5 bg-dark-950 rounded-full border border-red-500/40 flex items-center justify-center text-red-400 shadow"><i data-lucide="heart" class="w-3 h-3 fill-red-400"></i></div>` : ''}
                             </div>
                             
@@ -469,7 +469,7 @@ ScoutApp.prototype.openActivityHistoryModal = function() {
                     
                     <div class="bg-dark-900/50 rounded-lg p-2.5 mt-1 border border-dark-800/50 flex items-center gap-3">
                         ${p ? `
-                            <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-6 h-6 rounded-full object-cover border border-dark-700">
+                            <img src="${this.getImageUrl(p.image)}" class="w-6 h-6 rounded-full object-cover border border-dark-700" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                             <span class="text-xs font-bold text-slate-300 truncate">${p.name}</span>
                         ` : `
                             <div class="w-6 h-6 rounded-full bg-dark-900 border border-dark-800 flex items-center justify-center"><i data-lucide="eye" class="w-3 h-3 text-slate-600"></i></div>
@@ -1238,7 +1238,7 @@ ScoutApp.prototype.openReportHistoryModal = function() {
                     </div>
                     
                     <div class="flex items-center gap-3">
-                        <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-10 h-10 rounded-full object-cover border border-dark-700 shrink-0">
+                        <img src="${this.getImageUrl(p.image)}" class="w-10 h-10 rounded-full object-cover border border-dark-700 shrink-0" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                         <div class="flex flex-col flex-1 truncate">
                             <span class="text-sm font-bold text-white truncate">${p.name}</span>
                             <span class="text-[10px] text-slate-500 uppercase tracking-widest truncate flex items-center gap-1">

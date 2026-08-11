@@ -1,9 +1,25 @@
 // --- DOM (HTML) OLUŞTURUCULAR ---
 
+window.DEFAULT_AVATAR_DATA_URL = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M18 21a6 6 0 0 0-12 0'></path><circle cx='12' cy='10' r='4'></circle></svg>";
+
+// Görsel URL Çözümleyici (Çevrimdışı Önbellek Desteği)
+ScoutApp.prototype.getImageUrl = function(url) {
+    if (!url || typeof url !== 'string') return window.DEFAULT_AVATAR_DATA_URL;
+    if (url.startsWith('data:image') || url.startsWith('file:') || url.startsWith('assets/') || url.startsWith('./assets')) {
+        return url;
+    }
+    const cachedImages = (this.state && this.state.data && this.state.data.cachedImages) || {};
+    if (cachedImages[url]) {
+        return cachedImages[url];
+    }
+    return url;
+};
+
 // Resim/Logo Gösterimi
 ScoutApp.prototype.getLogoDisplayHTML = function(value, classes = "w-full h-full object-contain") {
-    if (value && (value.startsWith('http') || value.startsWith('data:image'))) {
-        return `<img src="${value}" class="${classes}" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex items-center justify-center bg-dark-800 text-slate-700"><i data-lucide="image-off" class="w-1/2 h-1/2"></i></div>`;
+    const src = this.getImageUrl(value);
+    if (src && (src.startsWith('http') || src.startsWith('data:image') || src.startsWith('assets/'))) {
+        return `<img src="${src}" class="${classes}" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex items-center justify-center bg-dark-800 text-slate-700"><i data-lucide="image-off" class="w-1/2 h-1/2"></i></div>`;
     }
     // Emoji veya kısa metin (örn: bayraklar) için destek
     if (value && value.length > 0 && value.length <= 15) {
@@ -14,13 +30,14 @@ ScoutApp.prototype.getLogoDisplayHTML = function(value, classes = "w-full h-full
 
 // Resim Yükleme Kontrolü
 ScoutApp.prototype.createImageUploadControl = function(id, label, value = '') {
-    const hasImage = value && (value.startsWith('http') || value.startsWith('data:image'));
+    const src = this.getImageUrl(value);
+    const hasImage = src && (src.startsWith('http') || src.startsWith('data:image'));
     return `
         <div class="flex flex-col gap-2">
             <label class="text-xs font-bold text-slate-400 ml-1">${label}</label>
             <div class="flex gap-3 items-start">
                 <div class="w-16 h-16 rounded-xl bg-dark-950 border border-dark-700 flex items-center justify-center overflow-hidden shrink-0 relative">
-                    <img id="${id}-preview" src="${hasImage ? value : ''}" class="${hasImage ? 'block' : 'hidden'} w-full h-full object-contain p-1">
+                    <img id="${id}-preview" src="${hasImage ? src : ''}" class="${hasImage ? 'block' : 'hidden'} w-full h-full object-contain p-1">
                     <div id="${id}-placeholder" class="${hasImage ? 'hidden' : 'flex'} w-full h-full items-center justify-center text-slate-700"><i data-lucide="image" class="w-6 h-6"></i></div>
                 </div>
                 <div class="flex-1 space-y-2">
@@ -34,8 +51,9 @@ ScoutApp.prototype.createImageUploadControl = function(id, label, value = '') {
 ScoutApp.prototype.handleImagePreview = function(id, value) {
     const imgPreview = document.getElementById(`${id}-preview`);
     const placeholder = document.getElementById(`${id}-placeholder`);
-    if (value && (value.startsWith('http') || value.startsWith('data:image'))) {
-        imgPreview.src = value; imgPreview.classList.remove('hidden'); placeholder.classList.add('hidden');
+    const src = this.getImageUrl(value);
+    if (src && (src.startsWith('http') || src.startsWith('data:image'))) {
+        imgPreview.src = src; imgPreview.classList.remove('hidden'); placeholder.classList.add('hidden');
     } else {
         imgPreview.src = ''; imgPreview.classList.add('hidden'); placeholder.classList.remove('hidden');
     }
@@ -69,15 +87,19 @@ ScoutApp.prototype.createCustomSearchSelect = function(id, label, ph, options, v
     const safeVal = (val === undefined || val === null) ? '' : val;
     const selectedOpt = options.find(o => o.txt === safeVal || o.val == safeVal);
     const displayValue = selectedOpt ? selectedOpt.txt : safeVal;
-    const displayIcon = selectedOpt && selectedOpt.icon ? `<img src="${selectedOpt.icon}" class="w-5 h-3.5 object-cover rounded-sm">` : '';
+    const resolvedSelectedIcon = selectedOpt && selectedOpt.icon ? this.getImageUrl(selectedOpt.icon) : '';
+    const displayIcon = resolvedSelectedIcon ? `<img src="${resolvedSelectedIcon}" class="w-5 h-3.5 object-cover rounded-sm">` : '';
 
-    const itemsHtml = options.map(o => `
+    const itemsHtml = options.map(o => {
+        const itemIcon = o.icon ? this.getImageUrl(o.icon) : '';
+        return `
         <div class="px-4 py-2.5 hover:bg-dark-800 cursor-pointer flex items-center gap-3 transition-colors text-slate-300 hover:text-white"
              onclick="app.handleCustomSelect('${id}', '${o.val}', '${o.txt.replace(/'/g, "\\'")}', '${o.icon || ''}', \`${evt}\`)">
-            ${o.icon ? `<img src="${o.icon}" class="w-5 h-3.5 object-cover rounded-sm shadow-sm">` : ''}
+            ${itemIcon ? `<img src="${itemIcon}" class="w-5 h-3.5 object-cover rounded-sm shadow-sm">` : ''}
             <span class="text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis">${o.txt}</span>
         </div>
-    `).join('');
+    `;
+    }).join('');
 
     return `
         <div class="flex flex-col gap-1.5 relative z-30" id="${id}-container" data-custom-select="true">
@@ -121,8 +143,9 @@ ScoutApp.prototype.handleCustomSelect = function(id, val, text, icon, evtCode) {
     hiddenInput.value = val; // Set the actual ID/value
     textInput.value = text;
     
-    if (icon) {
-        iconContainer.innerHTML = `<img src="${icon}" class="w-5 h-3.5 object-cover rounded-sm">`;
+    const resolvedIcon = icon ? this.getImageUrl(icon) : '';
+    if (resolvedIcon) {
+        iconContainer.innerHTML = `<img src="${resolvedIcon}" class="w-5 h-3.5 object-cover rounded-sm">`;
         textInput.classList.remove('pl-10');
         textInput.classList.add('pl-11');
     } else {

@@ -139,7 +139,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                     <div class="lg:col-span-3 flex flex-col gap-6">
                         <div class="bg-dark-900/50 backdrop-blur rounded-3xl border border-dark-800 p-6 flex flex-col items-center text-center shadow-xl">
                             <div class="relative mb-6 group">
-                                <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-48 h-48 rounded-2xl object-cover border-4 border-dark-800 shadow-2xl">
+                                <img src="${this.getImageUrl(p.image)}" class="w-48 h-48 rounded-2xl object-cover border-4 border-dark-800 shadow-2xl" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                                 <div class="absolute -bottom-4 -right-4 bg-dark-900 rounded-full p-1.5 shadow-xl"><div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold border-2 border-dark-800 bg-dark-950 ${grade.color}">${grade.letter}</div></div>
                             </div>
                             <div class="w-full py-4 px-5 rounded-xl border border-dashed flex justify-between items-center ${potClass} mb-6"><span class="text-xs font-bold opacity-70">${t('potential').toUpperCase()}</span><span class="text-sm font-black tracking-wider uppercase">${potTrans}</span></div>
@@ -416,7 +416,7 @@ ScoutApp.prototype.exportPlayerToPDF = async function(id, selectedHistoryIndex) 
             
             <!-- ═══ HEADER ═══ -->
             <div style="display:flex; align-items:center; gap:10px; padding-bottom:8px; border-bottom:2px solid #e2e8f0; margin-bottom:8px;">
-                <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" style="width:52px; height:52px; border-radius:8px; object-fit:cover; border:2px solid #e2e8f0; flex-shrink:0;" crossorigin="anonymous">
+                <img src="${this.getImageUrl(p.image)}" style="width:52px; height:52px; border-radius:8px; object-fit:cover; border:2px solid #e2e8f0; flex-shrink:0;" crossorigin="anonymous" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                 <div style="flex:1; min-width:0;">
                     <div style="font-size:15px; font-weight:900; color:#0f172a; margin-bottom:1px; line-height:1.2;">${p.name}</div>
                     <div style="font-size:9px; color:#16a34a; font-weight:700; text-transform:uppercase; letter-spacing:0.4px;">${p.position}${p.role ? ' — ' + (typeof t === 'function' ? t(p.role) : p.role) : ''}</div>

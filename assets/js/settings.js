@@ -1,21 +1,72 @@
 ScoutApp.prototype.renderSettings = function(c) {
+    const isOfflineImagesEnabled = !(this.state.data && this.state.data.settings && this.state.data.settings.offlineImages === false);
+
     c.innerHTML = `
         <div class="max-w-3xl mx-auto fade-in space-y-6">
             <div class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden">
                 <div class="p-6 border-b border-dark-800"><h3 class="text-lg font-bold text-white">Ayarlar</h3></div>
                 <div class="p-6 space-y-6">
                     <div class="flex items-center justify-between p-4 bg-dark-950 rounded-xl border border-dark-800">
-                        <div class="flex items-center gap-4"><div class="p-3 bg-dark-800 rounded-lg"><i data-lucide="moon" class="w-5 h-5 text-slate-300"></i></div><div><div class="text-white font-medium">Karanlık Mod</div><div class="text-slate-500 text-xs">Varsayılan tema</div></div></div>
+                        <div class="flex items-center gap-4"><div class="p-3 bg-dark-800 rounded-lg"><i data-lucide="moon" class="w-5 h-5 text-slate-300"></i></div><div><div class="text-white font-medium">${t('dark_mode')}</div><div class="text-slate-500 text-xs">${t('default_theme')}</div></div></div>
                     </div>
                 </div>
             </div>
+
+            <!-- Çevrimdışı Görseller & Logolar Modülü -->
             <div class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden">
-                <div class="p-6 border-b border-dark-800"><h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="hard-drive" class="text-scout-500"></i> Veri Yönetimi</h3></div>
-                <div class="p-6 space-y-4">
-                    <p class="text-sm text-slate-400 mb-4">Verilerinizi yedekleyebilir veya başka bir cihazdan aldığınız yedeği yükleyebilirsiniz.</p>
+                <div class="p-6 border-b border-dark-800 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="image" class="text-scout-500"></i> ${t('offline_media')}</h3>
+                    <div id="media-cache-badge" class="text-xs font-semibold px-3 py-1 bg-dark-800 text-slate-400 rounded-full border border-dark-700 flex items-center gap-2">
+                        <div class="w-3.5 h-3.5 border-2 border-scout-500/30 border-t-scout-500 rounded-full animate-spin"></div>
+                    </div>
+                </div>
+                <div class="p-6 space-y-6">
+                    <p class="text-sm text-slate-400 mb-4">${t('offline_media_desc')}</p>
+                    
+                    <div class="flex items-center justify-between p-4 bg-dark-950 rounded-xl border border-dark-800">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-dark-800 rounded-lg text-scout-400"><i data-lucide="wifi-off" class="w-5 h-5"></i></div>
+                            <div>
+                                <div class="text-white font-medium">${t('offline_mode_toggle')}</div>
+                                <div class="text-slate-500 text-xs">${t('offline_mode_toggle_desc')}</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="offline-images-toggle" onchange="app.toggleOfflineImages(this.checked)" class="sr-only peer" ${isOfflineImagesEnabled ? 'checked' : ''}>
+                            <div class="w-11 h-6 bg-dark-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-scout-500"></div>
+                        </label>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button onclick="app.backupData()" class="p-4 bg-dark-950 border border-dark-800 hover:border-scout-500/50 rounded-xl flex items-center gap-4 transition-all group"><div class="w-12 h-12 rounded-lg bg-scout-500/10 flex items-center justify-center text-scout-500 group-hover:bg-scout-500 group-hover:text-white transition-colors"><i data-lucide="download" class="w-6 h-6"></i></div><div class="text-left"><div class="text-white font-bold">Yedek Al (Export)</div><div class="text-xs text-slate-500">Verileri JSON dosyası olarak kaydet.</div></div></button>
-                        <button onclick="app.restoreData()" class="p-4 bg-dark-950 border border-dark-800 hover:border-blue-500/50 rounded-xl flex items-center gap-4 transition-all group"><div class="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors"><i data-lucide="upload" class="w-6 h-6"></i></div><div class="text-left"><div class="text-white font-bold">Yedek Yükle (Import)</div><div class="text-xs text-slate-500">JSON dosyasından verileri geri yükle.</div></div></button>
+                        <button id="btn-download-media" onclick="app.downloadAllMedia()" class="p-4 bg-dark-950 border border-dark-800 hover:border-scout-500/50 rounded-xl flex items-center gap-4 transition-all group">
+                            <div class="w-12 h-12 rounded-lg bg-scout-500/10 flex items-center justify-center text-scout-500 group-hover:bg-scout-500 group-hover:text-white transition-colors">
+                                <i data-lucide="download-cloud" class="w-6 h-6"></i>
+                            </div>
+                            <div class="text-left">
+                                <div class="text-white font-bold">${t('download_all_media')}</div>
+                                <div class="text-xs text-slate-500">${t('download_all_media_desc')}</div>
+                            </div>
+                        </button>
+                        <button onclick="app.clearMediaCache()" class="p-4 bg-dark-950 border border-dark-800 hover:border-red-500/50 rounded-xl flex items-center gap-4 transition-all group">
+                            <div class="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                                <i data-lucide="trash-2" class="w-6 h-6"></i>
+                            </div>
+                            <div class="text-left">
+                                <div class="text-white font-bold">${t('clear_media_cache')}</div>
+                                <div class="text-xs text-slate-500">${t('clear_media_cache_desc')}</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden">
+                <div class="p-6 border-b border-dark-800"><h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="hard-drive" class="text-scout-500"></i> ${t('data_management')}</h3></div>
+                <div class="p-6 space-y-4">
+                    <p class="text-sm text-slate-400 mb-4">${t('data_desc')}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button onclick="app.backupData()" class="p-4 bg-dark-950 border border-dark-800 hover:border-scout-500/50 rounded-xl flex items-center gap-4 transition-all group"><div class="w-12 h-12 rounded-lg bg-scout-500/10 flex items-center justify-center text-scout-500 group-hover:bg-scout-500 group-hover:text-white transition-colors"><i data-lucide="download" class="w-6 h-6"></i></div><div class="text-left"><div class="text-white font-bold">${t('export')}</div><div class="text-xs text-slate-500">${t('export_desc')}</div></div></button>
+                        <button onclick="app.restoreData()" class="p-4 bg-dark-950 border border-dark-800 hover:border-blue-500/50 rounded-xl flex items-center gap-4 transition-all group"><div class="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors"><i data-lucide="upload" class="w-6 h-6"></i></div><div class="text-left"><div class="text-white font-bold">${t('import')}</div><div class="text-xs text-slate-500">${t('import_desc')}</div></div></button>
                     </div>
                 </div>
             </div>
@@ -43,9 +94,163 @@ ScoutApp.prototype.renderSettings = function(c) {
                 </div>
             </div>
 
-            <button id="restart-app-btn" onclick="app.restartApp()" class="w-full p-4 bg-red-900/10 border border-red-900/30 rounded-xl hover:bg-red-900/20 text-red-400 transition-all duration-300 flex items-center justify-center gap-2"><i data-lucide="refresh-cw" class="w-5 h-5"></i> Uygulamayı Yeniden Başlat</button>
+            <button id="restart-app-btn" onclick="app.restartApp()" class="w-full p-4 bg-red-900/10 border border-red-900/30 rounded-xl hover:bg-red-900/20 text-red-400 transition-all duration-300 flex items-center justify-center gap-2"><i data-lucide="refresh-cw" class="w-5 h-5"></i> ${t('restart')}</button>
         </div>
     `;
+
+    setTimeout(() => {
+        this.updateCacheStatusUI();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }, 50);
+};
+
+ScoutApp.prototype.updateCacheStatusUI = async function() {
+    const badge = document.getElementById('media-cache-badge');
+    if (!badge) return;
+    try {
+        if (window.electronAPI && typeof window.electronAPI.getCacheInfo === 'function') {
+            const info = await window.electronAPI.getCacheInfo();
+            if (info && typeof info.count === 'number') {
+                const sizeMb = (info.sizeBytes / (1024 * 1024)).toFixed(2);
+                badge.innerHTML = `<span class="text-scout-400 font-bold">${info.count}</span> görsel (${sizeMb} MB)`;
+                return;
+            }
+        }
+    } catch (e) {
+        console.warn("Main process getCacheInfo error:", e);
+    }
+    const cachedCount = Object.keys((this.state.data && this.state.data.cachedImages) || {}).length;
+    badge.innerHTML = `<span class="text-scout-400 font-bold">${cachedCount}</span> görsel`;
+};
+
+ScoutApp.prototype.toggleOfflineImages = function(enabled) {
+    if (!this.state.data.settings) this.state.data.settings = {};
+    this.state.data.settings.offlineImages = enabled;
+    this.saveData();
+    this.notify(enabled ? "Çevrimdışı görseller etkinleştirildi." : "Çevrimdışı görseller devredışı bırakıldı.");
+};
+
+async function downloadImageFallback(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        const blob = await response.blob();
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+        });
+    } catch (e) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth || img.width || 100;
+                    canvas.height = img.naturalHeight || img.height || 100;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    resolve(canvas.toDataURL('image/png'));
+                } catch (err) {
+                    resolve(null);
+                }
+            };
+            img.onerror = () => resolve(null);
+            img.src = url;
+        });
+    }
+}
+
+ScoutApp.prototype.downloadAllMedia = async function() {
+    const btn = document.getElementById('btn-download-media');
+    const badge = document.getElementById('media-cache-badge');
+    if (btn) btn.disabled = true;
+    if (badge) {
+        badge.innerHTML = `<div class="w-3.5 h-3.5 border-2 border-scout-500/30 border-t-scout-500 rounded-full animate-spin"></div><span class="text-scout-400 font-medium ml-1">İndiriliyor...</span>`;
+    }
+
+    this.notify(t('downloading_media'));
+
+    // Extract all image URLs from database
+    const urls = new Set();
+    const data = this.state.data || {};
+
+    if (Array.isArray(data.teams)) {
+        data.teams.forEach(t => { if (t.logo && typeof t.logo === 'string' && t.logo.startsWith('http')) urls.add(t.logo); });
+    }
+    if (Array.isArray(data.leagues)) {
+        data.leagues.forEach(l => { if (l.logo && typeof l.logo === 'string' && l.logo.startsWith('http')) urls.add(l.logo); });
+    }
+    if (Array.isArray(data.countries)) {
+        data.countries.forEach(c => { if (c.flag && typeof c.flag === 'string' && c.flag.startsWith('http')) urls.add(c.flag); });
+    }
+    if (Array.isArray(data.players)) {
+        data.players.forEach(p => { if (p.image && typeof p.image === 'string' && p.image.startsWith('http')) urls.add(p.image); });
+    }
+    if (Array.isArray(data.watchlist)) {
+        data.watchlist.forEach(w => { if (w.image && typeof w.image === 'string' && w.image.startsWith('http')) urls.add(w.image); });
+    }
+    // Also default Unsplash images used in fallbacks
+    urls.add('https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop');
+    urls.add('https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=200&h=200&fit=crop');
+
+    const urlArray = Array.from(urls);
+    if (urlArray.length === 0) {
+        this.notify("İndirilecek harici görsel bulunamadı.");
+        if (btn) btn.disabled = false;
+        this.updateCacheStatusUI();
+        return;
+    }
+
+    let cachedMap = null;
+
+    // 1. IPC indirmesini dene (Arka plan Node.js servisi)
+    if (window.electronAPI && typeof window.electronAPI.cacheImages === 'function') {
+        try {
+            cachedMap = await window.electronAPI.cacheImages(urlArray);
+        } catch (ipcErr) {
+            console.warn("IPC cache-images kullanılamadı, alternatif indirme metoduna geçiliyor:", ipcErr);
+        }
+    }
+
+    // 2. IPC henüz yüklenmediyse (eski ana süreç) tarayıcı üzerinden indirme yedekleme mekanizması
+    if (!cachedMap || Object.keys(cachedMap).length === 0) {
+        cachedMap = {};
+        const batchSize = 5;
+        for (let i = 0; i < urlArray.length; i += batchSize) {
+            const chunk = urlArray.slice(i, i + batchSize);
+            await Promise.all(chunk.map(async (url) => {
+                const res = await downloadImageFallback(url);
+                if (res) cachedMap[url] = res;
+            }));
+        }
+    }
+
+    if (!this.state.data.cachedImages) this.state.data.cachedImages = {};
+    Object.assign(this.state.data.cachedImages, cachedMap);
+    this.saveData();
+
+    const count = Object.keys(cachedMap).length;
+    this.notify(`${count} ${t('download_complete')}`);
+
+    if (btn) btn.disabled = false;
+    this.updateCacheStatusUI();
+};
+
+ScoutApp.prototype.clearMediaCache = async function() {
+    this.confirmAction("İndirilen tüm görseller silinecek. Önbelleği temizlemek istediğinize emin misiniz?", async () => {
+        if (window.electronAPI && window.electronAPI.clearImageCache) {
+            await window.electronAPI.clearImageCache();
+        }
+        if (this.state.data) {
+            this.state.data.cachedImages = {};
+            this.saveData();
+        }
+        this.notify(t('cache_cleared'));
+        this.updateCacheStatusUI();
+    });
 };
 
 ScoutApp.prototype.backupData = async function() {
@@ -102,8 +307,11 @@ ScoutApp.prototype.restartApp = function() {
         });
     });
     
-    // Hard reload after transition completes
     setTimeout(() => {
-        window.location.reload();
+        if (window.electronAPI && typeof window.electronAPI.restartApp === 'function') {
+            window.electronAPI.restartApp();
+        } else {
+            window.location.reload();
+        }
     }, 600);
 };

@@ -143,7 +143,7 @@ class ScoutApp {
                             <div class="bg-dark-900 rounded-3xl border border-dark-800 p-6 flex flex-col items-center text-center shadow-lg relative overflow-hidden">
                                 <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-dark-800 to-transparent"></div>
                                 <div class="relative z-10 mb-4">
-                                    <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-40 h-40 rounded-2xl object-cover border-4 border-dark-800 shadow-2xl">
+                                    <img src="${this.getImageUrl(p.image)}" class="w-40 h-40 rounded-2xl object-cover border-4 border-dark-800 shadow-2xl" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                                     <div class="absolute -bottom-3 -right-3 bg-dark-900 rounded-full p-1">
                                         <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold border-2 border-dark-800 bg-dark-950 ${grade.color} shadow-lg">
                                             ${grade.letter}
@@ -438,7 +438,7 @@ class ScoutApp {
                             <button onclick="app.transferToReport(${w.id})" class="absolute top-4 right-4 p-2 bg-scout-500/10 text-scout-400 hover:bg-scout-500 hover:text-white rounded-lg transition-all" title="Raporla"><i data-lucide="clipboard-list" class="w-4 h-4"></i></button>
                             
                             <div class="flex items-center gap-4 mb-4 pr-10">
-                                <img src="${w.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-14 h-14 rounded-xl object-cover bg-dark-950 border border-dark-700">
+                                <img src="${this.getImageUrl(w.image)}" class="w-14 h-14 rounded-xl object-cover bg-dark-950 border border-dark-700" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                                 <div class="overflow-hidden min-w-0">
                                     <div class="flex items-center gap-2"><h4 class="font-bold text-white text-lg truncate">${w.name}</h4><span class="text-[10px] bg-dark-800 px-1.5 py-0.5 rounded text-slate-300 border border-dark-700">${w.age || '-'} Yaş</span></div>
                                     <div class="text-xs text-slate-400 mt-0.5 truncate flex items-center gap-1"><i data-lucide="shield" class="w-3 h-3"></i> ${this.getTeamName(w.teamId)}</div>
@@ -627,7 +627,7 @@ class ScoutApp {
                                     </div>
                                 </div>
                                 <div class="w-full md:w-64 bg-dark-950/50 rounded-lg p-3 border border-dark-800/50 flex items-center gap-3">
-                                    ${p ? `<img src="${p.image}" class="w-8 h-8 rounded-full object-cover"><div class="flex flex-col min-w-0"><span class="text-xs text-scout-400 font-bold uppercase">Hedef</span><span class="text-sm text-white truncate">${p.name}</span></div>` : `<div class="w-8 h-8 rounded-full bg-dark-800 flex items-center justify-center"><i data-lucide="eye" class="w-4 h-4 text-slate-500"></i></div><span class="text-sm text-slate-500 italic w-full">Genel Takip</span>`}
+                                    ${p ? `<img src="${this.getImageUrl(p.image)}" class="w-8 h-8 rounded-full object-cover" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL"><div class="flex flex-col min-w-0"><span class="text-xs text-scout-400 font-bold uppercase">Hedef</span><span class="text-sm text-white truncate">${p.name}</span></div>` : `<div class="w-8 h-8 rounded-full bg-dark-800 flex items-center justify-center"><i data-lucide="eye" class="w-4 h-4 text-slate-500"></i></div><span class="text-sm text-slate-500 italic w-full">Genel Takip</span>`}
                                 </div>
                                 <a href="${m.sofaUrl}" target="_blank" class="p-2 hover:bg-dark-700 rounded-lg text-slate-400 transition-colors"><i data-lucide="external-link" class="w-5 h-5"></i></a>
                             </div>
@@ -1284,7 +1284,7 @@ class ScoutApp {
                         <button onclick="app.closeGlobalSearch(); app.openPlayerModal(${p.id})" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-dark-800 transition-colors group text-left">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-dark-800">
-                                    ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover">` : `<i data-lucide="user" class="w-4 h-4 text-slate-500"></i>`}
+                                    ${p.image ? `<img src="${this.getImageUrl(p.image)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">` : `<i data-lucide="user" class="w-4 h-4 text-slate-500"></i>`}
                                 </div>
                                 <div>
                                     <div class="text-sm font-medium text-slate-200 group-hover:text-white">${p.name}</div>
@@ -1306,7 +1306,7 @@ class ScoutApp {
                         <button onclick="app.closeGlobalSearch(); app.goToCandidate('${w.name}')" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-dark-800 transition-colors group text-left">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-dark-800 border-2 border-purple-500/20">
-                                    ${w.image ? `<img src="${w.image}" class="w-full h-full object-cover">` : `<i data-lucide="eye" class="w-4 h-4 text-purple-500/50"></i>`}
+                                    ${w.image ? `<img src="${this.getImageUrl(w.image)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">` : `<i data-lucide="eye" class="w-4 h-4 text-purple-500/50"></i>`}
                                 </div>
                                 <div>
                                     <div class="text-sm font-medium text-slate-200 group-hover:text-white">${w.name}</div>
@@ -1461,7 +1461,7 @@ class ScoutApp {
             <div onclick="app.openPlayerModal(${p.id})" class="scout-card bg-dark-900 rounded-2xl p-5 relative group overflow-hidden cursor-pointer">
                 <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-scout-500 to-transparent opacity-50"></div>
                 <div class="flex items-start gap-4 mb-4">
-                    <img src="${p.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=100&h=100&fit=crop'}" class="w-14 h-14 rounded-xl object-cover bg-dark-950 border border-dark-800">
+                    <img src="${this.getImageUrl(p.image)}" class="w-14 h-14 rounded-xl object-cover bg-dark-950 border border-dark-800" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                     <div class="flex-1 min-w-0">
                         <h4 class="font-bold text-white text-lg leading-tight truncate">${p.name}</h4>
                         <div class="text-xs text-scout-400 font-medium mt-1">${p.position}</div>
