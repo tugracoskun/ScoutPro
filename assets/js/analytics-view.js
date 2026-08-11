@@ -16,69 +16,74 @@ ScoutApp.prototype.renderAnalytics = function(c) {
 
     c.innerHTML = `
         <div class="max-w-6xl mx-auto fade-in h-full flex flex-col space-y-4">
-            <!-- Header & Primary Filters -->
-            <div class="bg-dark-900 p-5 rounded-2xl border border-dark-800 shrink-0 flex flex-col gap-4">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div class="w-full">
-                        <label class="text-xs font-bold text-slate-400 ml-1 mb-1.5 block">${t('dh_select_pos')}</label>
+            <!-- Header & Filters (Kompakt ve Akıcı Tasarım) -->
+            <div class="bg-dark-900 p-4 rounded-2xl border border-dark-800 shrink-0 space-y-3">
+                <!-- Üst Satır: Pozisyon, X Ekseni, Y Ekseni, 4'lü Görünüm Butonu -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <div class="md:col-span-3">
+                        <label class="text-[11px] font-bold text-slate-400 ml-1 mb-1 block">${t('dh_select_pos')}</label>
                         <div class="relative">
-                            <select id="analytics-pos" onchange="app.updateAnalyticsPos(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer">
+                            <select id="analytics-pos" onchange="app.updateAnalyticsPos(this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl pl-3 pr-8 py-2 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer">
                                 ${posOptions}
                             </select>
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></div>
+                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></div>
                         </div>
                     </div>
-                    <div class="w-full">
-                        <label class="text-xs font-bold text-slate-400 ml-1 mb-1.5 block">${t('dh_x_axis')}</label>
+                    
+                    <div class="md:col-span-3">
+                        <label class="text-[11px] font-bold text-slate-400 ml-1 mb-1 block">${t('dh_x_axis')}</label>
                         <div class="relative">
-                            <select id="analytics-x" onchange="app.updateAnalyticsFilter('xAxis', this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer disabled:opacity-50" ${!this.state.analyticsFilter.pos ? 'disabled' : ''}>
+                            <select id="analytics-x" onchange="app.updateAnalyticsFilter('xAxis', this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl pl-3 pr-8 py-2 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer disabled:opacity-50" ${!this.state.analyticsFilter.pos ? 'disabled' : ''}>
                             </select>
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></div>
+                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></div>
                         </div>
                     </div>
-                    <div class="w-full">
-                        <label class="text-xs font-bold text-slate-400 ml-1 mb-1.5 block">${t('dh_y_axis')}</label>
+                    
+                    <div class="md:col-span-3">
+                        <label class="text-[11px] font-bold text-slate-400 ml-1 mb-1 block">${t('dh_y_axis')}</label>
                         <div class="relative">
-                            <select id="analytics-y" onchange="app.updateAnalyticsFilter('yAxis', this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer disabled:opacity-50" ${!this.state.analyticsFilter.pos ? 'disabled' : ''}>
+                            <select id="analytics-y" onchange="app.updateAnalyticsFilter('yAxis', this.value)" class="w-full bg-dark-950 border border-dark-700 rounded-xl pl-3 pr-8 py-2 text-white focus:border-scout-500 outline-none appearance-none text-xs cursor-pointer disabled:opacity-50" ${!this.state.analyticsFilter.pos ? 'disabled' : ''}>
                             </select>
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></div>
+                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></div>
                         </div>
                     </div>
-                    <div class="w-full flex items-center justify-between h-[42px] px-2 bg-dark-950/50 rounded-xl border border-dark-800">
-                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer hover:text-white transition-colors">
-                            <input type="checkbox" id="analytics-quadrant-toggle" onchange="app.updateAnalyticsFilter('quadrant', this.checked)" class="w-4 h-4 rounded border-dark-600 text-scout-500 focus:ring-scout-500 bg-dark-950" ${this.state.analyticsFilter.quadrant ? 'checked' : ''}>
-                            4'lü Görünüm Ortalaması
-                        </label>
+
+                    <div class="md:col-span-3 pt-5">
+                        <button onclick="app.toggleAnalyticsQuadrant()" class="w-full py-2 px-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-2 ${this.state.analyticsFilter.quadrant ? 'bg-scout-500/10 border-scout-500/50 text-scout-400 shadow-sm' : 'bg-dark-950 border-dark-700 text-slate-400 hover:text-white'}">
+                            <i data-lucide="grid" class="w-3.5 h-3.5"></i>
+                            <span>4'lü Matris Görünümü</span>
+                            <span class="w-2 h-2 rounded-full ${this.state.analyticsFilter.quadrant ? 'bg-scout-500 animate-pulse' : 'bg-slate-600'}"></span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Secondary Advanced Filters (Yaş & Potansiyel) -->
-                <div class="pt-3 border-t border-dark-800/60 grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                <!-- Alt Satır: Yaş Slider & Potansiyel Seçimi (Kompakt Strip) -->
+                <div class="pt-2.5 border-t border-dark-800/60 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
                     <!-- Yaş Aralığı Slider -->
-                    <div class="flex items-center gap-3 bg-dark-950/40 p-2 rounded-xl border border-dark-800">
-                        <div class="flex items-center gap-1.5 text-slate-400 text-xs font-bold shrink-0">
-                            <i data-lucide="user-check" class="w-3.5 h-3.5 text-scout-400"></i>
-                            Yaş Filtresi:
+                    <div class="flex items-center gap-3 w-full md:w-auto flex-1 bg-dark-950/60 px-3 py-1.5 rounded-xl border border-dark-800">
+                        <div class="flex items-center gap-1.5 text-slate-400 font-bold shrink-0 text-[11px]">
+                            <i data-lucide="users" class="w-3.5 h-3.5 text-scout-400"></i>
+                            Yaş:
                         </div>
                         <div class="flex items-center gap-2 flex-1">
-                            <span class="text-xs text-slate-400 font-mono w-5 text-right" id="age-min-label">${this.state.analyticsFilter.minAge}</span>
+                            <span class="text-[11px] text-scout-400 font-mono font-bold w-4 text-right" id="age-min-label">${this.state.analyticsFilter.minAge}</span>
                             <input type="range" min="15" max="40" value="${this.state.analyticsFilter.minAge}" oninput="app.updateAnalyticsAgeMin(this.value)" class="w-full accent-scout-500 cursor-pointer h-1.5 bg-dark-800 rounded-lg">
-                            <span class="text-xs text-slate-400 font-mono">-</span>
+                            <span class="text-slate-600 font-mono">-</span>
                             <input type="range" min="15" max="40" value="${this.state.analyticsFilter.maxAge}" oninput="app.updateAnalyticsAgeMax(this.value)" class="w-full accent-scout-500 cursor-pointer h-1.5 bg-dark-800 rounded-lg">
-                            <span class="text-xs text-slate-400 font-mono w-5" id="age-max-label">${this.state.analyticsFilter.maxAge}</span>
+                            <span class="text-[11px] text-scout-400 font-mono font-bold w-4" id="age-max-label">${this.state.analyticsFilter.maxAge}</span>
                         </div>
                     </div>
 
-                    <!-- Potansiyel Süzgeci -->
-                    <div class="flex items-center gap-3 bg-dark-950/40 p-2 rounded-xl border border-dark-800">
-                        <div class="flex items-center gap-1.5 text-slate-400 text-xs font-bold shrink-0">
-                            <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+                    <!-- Potansiyel Seçici -->
+                    <div class="flex items-center gap-2.5 w-full md:w-auto bg-dark-950/60 px-3 py-1.5 rounded-xl border border-dark-800 shrink-0">
+                        <div class="flex items-center gap-1.5 text-slate-400 font-bold text-[11px] shrink-0">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
                             Potansiyel:
                         </div>
-                        <select onchange="app.updateAnalyticsFilter('potential', this.value)" class="flex-1 bg-dark-900 border border-dark-700 text-white text-xs rounded-lg px-3 py-1.5 outline-none focus:border-scout-500 cursor-pointer">
-                            <option value="all" ${this.state.analyticsFilter.potential === 'all' ? 'selected' : ''}>Tüm Potansiyeller</option>
-                            <option value="Yüksek" ${this.state.analyticsFilter.potential === 'Yüksek' ? 'selected' : ''}>Yalnızca Yüksek Potansiyel</option>
-                            <option value="Düşük" ${this.state.analyticsFilter.potential === 'Düşük' ? 'selected' : ''}>Düşük Potansiyel</option>
+                        <select onchange="app.updateAnalyticsFilter('potential', this.value)" class="bg-transparent text-white text-xs font-medium outline-none cursor-pointer pr-2">
+                            <option value="all" class="bg-dark-900" ${this.state.analyticsFilter.potential === 'all' ? 'selected' : ''}>Tümü</option>
+                            <option value="Yüksek" class="bg-dark-900" ${this.state.analyticsFilter.potential === 'Yüksek' ? 'selected' : ''}>Yüksek Potansiyel</option>
+                            <option value="Düşük" class="bg-dark-900" ${this.state.analyticsFilter.potential === 'Düşük' ? 'selected' : ''}>Düşük Potansiyel</option>
                         </select>
                     </div>
                 </div>
@@ -160,22 +165,31 @@ ScoutApp.prototype.populateAnalyticsDropdowns = function() {
     const mapping = typeof POSITION_MAPPING !== 'undefined' && POSITION_MAPPING[pos] ? POSITION_MAPPING[pos] : { group: 'Default' };
     const groupData = typeof ATTRIBUTE_GROUPS !== 'undefined' ? ATTRIBUTE_GROUPS[mapping.group] : null;
 
-    let options = [];
+    let html = '';
+    let allOptions = [];
+
     if (groupData) {
         if (groupData['Genel']) {
-            options = groupData['Genel'].map(a => a.name);
+            allOptions = groupData['Genel'].map(a => a.name);
+            allOptions.forEach(opt => {
+                const optLabel = window.tAttr ? window.tAttr(opt) : opt;
+                html += `<option value="${opt}">${optLabel}</option>`;
+            });
         } else {
-            Object.values(groupData).forEach(cat => {
-                cat.forEach(a => options.push(a.name));
+            Object.entries(groupData).forEach(([catKey, attrList]) => {
+                const catLabel = (window.tCat ? window.tCat(catKey) : (window.tAttr ? window.tAttr(catKey) : catKey)).toUpperCase();
+                // Ortalı ve şık görünmesi için tire ile ortalama padding
+                const paddedLabel = `─────────  ${catLabel}  ─────────`;
+                html += `<optgroup label="${paddedLabel}" class="bg-dark-900 text-scout-400 font-bold text-center">`;
+                attrList.forEach(a => {
+                    allOptions.push(a.name);
+                    const optLabel = window.tAttr ? window.tAttr(a.name) : a.name;
+                    html += `<option value="${a.name}" class="bg-dark-950 text-white font-normal text-left pl-4">${optLabel}</option>`;
+                });
+                html += `</optgroup>`;
             });
         }
     }
-
-    let html = '';
-    options.forEach(opt => {
-        const optLabel = window.tAttr ? window.tAttr(opt) : opt;
-        html += `<option value="${opt}">${optLabel}</option>`;
-    });
 
     const xSelect = document.getElementById('analytics-x');
     const ySelect = document.getElementById('analytics-y');
@@ -184,12 +198,12 @@ ScoutApp.prototype.populateAnalyticsDropdowns = function() {
     ySelect.innerHTML = html;
 
     // Set defaults if possible (1st and 2nd items)
-    if (options.length > 0) {
-        if (!this.state.analyticsFilter.xAxis || !options.includes(this.state.analyticsFilter.xAxis)) {
-            this.state.analyticsFilter.xAxis = options[0];
+    if (allOptions.length > 0) {
+        if (!this.state.analyticsFilter.xAxis || !allOptions.includes(this.state.analyticsFilter.xAxis)) {
+            this.state.analyticsFilter.xAxis = allOptions[0];
         }
-        if (!this.state.analyticsFilter.yAxis || !options.includes(this.state.analyticsFilter.yAxis)) {
-            this.state.analyticsFilter.yAxis = options.length > 1 ? options[1] : options[0];
+        if (!this.state.analyticsFilter.yAxis || !allOptions.includes(this.state.analyticsFilter.yAxis)) {
+            this.state.analyticsFilter.yAxis = allOptions.length > 1 ? allOptions[1] : allOptions[0];
         }
     }
 
@@ -216,6 +230,14 @@ ScoutApp.prototype.updateAnalyticsAgeMax = function(val) {
     if (label) label.innerText = max;
     if (this.state.analyticsFilter.pos && this.state.analyticsFilter.xAxis && this.state.analyticsFilter.yAxis) {
         this.drawAnalyticsChart();
+    }
+};
+
+ScoutApp.prototype.toggleAnalyticsQuadrant = function() {
+    this.state.analyticsFilter.quadrant = !this.state.analyticsFilter.quadrant;
+    const contentArea = document.getElementById('content-area');
+    if (contentArea && this.state.activePage === 'data-hub') {
+        this.renderAnalytics(contentArea);
     }
 };
 
