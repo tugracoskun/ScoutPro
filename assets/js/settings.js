@@ -7,42 +7,26 @@ ScoutApp.prototype.renderSettings = function(c) {
         <div class="max-w-3xl mx-auto fade-in space-y-6">
 
             <!-- Tema Seçimi -->
-            <div class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden">
-                <div class="p-6 border-b border-dark-800">
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i data-lucide="palette" class="w-5 h-5 text-scout-500"></i>
-                        ${t('theme')}
-                    </h3>
-                    <p class="text-slate-500 text-xs mt-1">${t('theme_desc')}</p>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-2 gap-4">
-
-                        <!-- Karanlık Mod Kart -->
-                        <button onclick="app.setTheme('dark')" class="relative p-5 rounded-xl border flex flex-col items-center gap-3 transition-all group ${isDark ? 'bg-slate-800 border-scout-500 ring-2 ring-scout-500/20' : 'bg-dark-950 border-dark-700 hover:border-slate-600'}">
-                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner ${isDark ? 'bg-slate-700' : 'bg-dark-800'}">
-                                <i data-lucide="moon" class="w-6 h-6 ${isDark ? 'text-blue-400' : 'text-slate-500'}"></i>
-                            </div>
-                            <div class="text-center">
-                                <div class="font-bold text-sm text-white">${t('dark_mode')}</div>
-                                <div class="text-slate-500 text-xs mt-0.5">Dark Mode</div>
-                            </div>
-                            ${isDark ? `<div class="absolute top-3 right-3 w-5 h-5 rounded-full bg-scout-500 flex items-center justify-center shadow-lg"><i data-lucide="check" class="w-3 h-3 text-white"></i></div>` : ''}
-                        </button>
-
-                        <!-- Aydınlık Mod Kart -->
-                        <button onclick="app.setTheme('light')" class="relative p-5 rounded-xl border flex flex-col items-center gap-3 transition-all group ${!isDark ? 'bg-amber-50 border-amber-400 ring-2 ring-amber-400/20' : 'bg-dark-950 border-dark-700 hover:border-amber-600/40'}">
-                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner ${!isDark ? 'bg-amber-100' : 'bg-dark-800'}">
-                                <i data-lucide="sun" class="w-6 h-6 ${!isDark ? 'text-amber-500' : 'text-slate-500'}"></i>
-                            </div>
-                            <div class="text-center">
-                                <div class="font-bold text-sm text-white">${t('light_mode')}</div>
-                                <div class="text-slate-500 text-xs mt-0.5">Light Mode</div>
-                            </div>
-                            ${!isDark ? `<div class="absolute top-3 right-3 w-5 h-5 rounded-full bg-amber-400 flex items-center justify-center shadow-lg"><i data-lucide="check" class="w-3 h-3 text-white"></i></div>` : ''}
-                        </button>
-
+            <div class="bg-dark-900 border border-dark-800 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-dark-800 rounded-lg text-scout-500">
+                        <i data-lucide="${isDark ? 'moon' : 'sun'}" class="w-5 h-5 ${isDark ? 'text-blue-400' : 'text-amber-500'}"></i>
                     </div>
+                    <div>
+                        <div class="text-white font-bold">${t('theme')}</div>
+                        <div class="text-slate-500 text-xs">${t('theme_desc')}</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center bg-dark-950 p-1.5 rounded-xl border border-dark-800 self-start sm:self-auto shrink-0">
+                    <button onclick="app.setTheme('dark')" class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${isDark ? 'bg-slate-800 text-white shadow border border-slate-700' : 'text-slate-400 hover:text-white'}">
+                        <i data-lucide="moon" class="w-3.5 h-3.5 text-blue-400"></i>
+                        ${t('dark_mode')}
+                    </button>
+                    <button onclick="app.setTheme('light')" class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${!isDark ? 'bg-amber-100 text-slate-900 shadow border border-amber-300' : 'text-slate-400 hover:text-white'}">
+                        <i data-lucide="sun" class="w-3.5 h-3.5 text-amber-500"></i>
+                        ${t('light_mode')}
+                    </button>
                 </div>
             </div>
 
