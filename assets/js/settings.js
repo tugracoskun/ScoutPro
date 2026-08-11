@@ -95,7 +95,12 @@ ScoutApp.prototype.renderSettings = function(c) {
             </div>
 
             <div class="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden">
-                <div class="p-6 border-b border-dark-800"><h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="hard-drive" class="text-scout-500"></i> ${t('data_management')}</h3></div>
+                <div class="p-6 border-b border-dark-800 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="hard-drive" class="text-scout-500"></i> ${t('data_management')}</h3>
+                    <div id="data-size-badge" class="text-xs font-semibold px-3 py-1 bg-dark-800 text-slate-400 rounded-full border border-dark-700 flex items-center gap-2">
+                        <div class="w-3.5 h-3.5 border-2 border-scout-500/30 border-t-scout-500 rounded-full animate-spin"></div>
+                    </div>
+                </div>
                 <div class="p-6 space-y-4">
                     <p class="text-sm text-slate-400 mb-4">${t('data_desc')}</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -139,22 +144,49 @@ ScoutApp.prototype.renderSettings = function(c) {
 };
 
 ScoutApp.prototype.updateCacheStatusUI = async function() {
+    // 1. Çevrimdışı Görseller Boyutu & Rozeti
     const badge = document.getElementById('media-cache-badge');
-    if (!badge) return;
-    try {
-        if (window.electronAPI && typeof window.electronAPI.getCacheInfo === 'function') {
-            const info = await window.electronAPI.getCacheInfo();
-            if (info && typeof info.count === 'number') {
-                const sizeMb = (info.sizeBytes / (1024 * 1024)).toFixed(2);
-                badge.innerHTML = `<span class="text-scout-400 font-bold">${info.count}</span> görsel (${sizeMb} MB)`;
-                return;
+    if (badge) {
+        let updated = false;
+        try {
+            if (window.electronAPI && typeof window.electronAPI.getCacheInfo === 'function') {
+                const info = await window.electronAPI.getCacheInfo();
+                if (info && typeof info.count === 'number') {
+                    const sizeMb = (info.sizeBytes / (1024 * 1024)).toFixed(2);
+                    badge.innerHTML = `<span class="text-scout-400 font-bold">${info.count}</span> görsel (<span class="text-scout-400 font-bold">${sizeMb} MB</span>)`;
+                    updated = true;
+                }
             }
+        } catch (e) {
+            console.warn("Main process getCacheInfo error:", e);
         }
-    } catch (e) {
-        console.warn("Main process getCacheInfo error:", e);
+        if (!updated) {
+            const cachedImages = (this.state.data && this.state.data.cachedImages) || {};
+            const cachedCount = Object.keys(cachedImages).length;
+            let approxBytes = 0;
+            Object.values(cachedImages).forEach(v => { if (typeof v === 'string') approxBytes += v.length; });
+            const sizeMb = (approxBytes / (1024 * 1024)).toFixed(2);
+            badge.innerHTML = `<span class="text-scout-400 font-bold">${cachedCount}</span> görsel (<span class="text-scout-400 font-bold">${sizeMb} MB</span>)`;
+        }
     }
-    const cachedCount = Object.keys((this.state.data && this.state.data.cachedImages) || {}).length;
-    badge.innerHTML = `<span class="text-scout-400 font-bold">${cachedCount}</span> görsel`;
+
+    // 2. Veri Yönetimi (JSON Veri Boyutu) Rozeti
+    const dataBadge = document.getElementById('data-size-badge');
+    if (dataBadge) {
+        try {
+            const jsonStr = JSON.stringify(this.state.data || {});
+            const bytes = new Blob([jsonStr]).size;
+            let sizeText = '';
+            if (bytes >= 1024 * 1024) {
+                sizeText = (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+            } else {
+                sizeText = (bytes / 1024).toFixed(1) + ' KB';
+            }
+            dataBadge.innerHTML = `Veri Boyutu: <span class="text-scout-400 font-bold">${sizeText}</span>`;
+        } catch (e) {
+            dataBadge.innerHTML = `Veri Boyutu: <span class="text-slate-400">-</span>`;
+        }
+    }
 };
 
 ScoutApp.prototype.toggleOfflineImages = function(enabled) {
