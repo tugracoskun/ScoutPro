@@ -359,25 +359,25 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
         annotations: this.state.analyticsFilter.quadrant ? {
             xaxis: [
                 {
-                    x: parseFloat(avgX),
-                    borderColor: '#4ade80',
+                    x: 50,
+                    borderColor: '#475569',
                     strokeDashArray: 4,
                     label: {
-                        borderColor: '#4ade80',
-                        style: { color: '#fff', background: '#22c55e', padding: { left: 5, right: 5, top: 2, bottom: 2 } },
-                        text: `Ort: ${avgX}`
+                        borderColor: '#334155',
+                        style: { color: '#94a3b8', background: '#1e293b', padding: { left: 6, right: 6, top: 3, bottom: 3 } },
+                        text: `Baraj: 50`
                     }
                 }
             ],
             yaxis: [
                 {
-                    y: parseFloat(avgY),
-                    borderColor: '#4ade80',
+                    y: 50,
+                    borderColor: '#475569',
                     strokeDashArray: 4,
                     label: {
-                        borderColor: '#4ade80',
-                        style: { color: '#fff', background: '#22c55e', padding: { left: 5, right: 5, top: 2, bottom: 2 } },
-                        text: `Ort: ${avgY}`
+                        borderColor: '#334155',
+                        style: { color: '#94a3b8', background: '#1e293b', padding: { left: 6, right: 6, top: 3, bottom: 3 } },
+                        text: `Baraj: 50`
                     }
                 }
             ]
@@ -414,8 +414,10 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
                         </div>
                         <div class="text-[10px] text-slate-400 mb-2">${teamName}</div>
                         <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                            <span class="text-slate-500">${xAxisLabel}:</span> <span class="font-mono text-scout-400 text-right font-bold">${data.x}</span>
-                            <span class="text-slate-500">${yAxisLabel}:</span> <span class="font-mono text-scout-400 text-right font-bold">${data.y}</span>
+                            <span class="text-slate-500">${xAxisLabel}:</span> 
+                            <span class="font-mono text-right font-bold ${window.app && window.app.getGrade ? window.app.getGrade(data.x).color : 'text-scout-400'}">${data.x}</span>
+                            <span class="text-slate-500">${yAxisLabel}:</span> 
+                            <span class="font-mono text-right font-bold ${window.app && window.app.getGrade ? window.app.getGrade(data.y).color : 'text-scout-400'}">${data.y}</span>
                         </div>
                     </div>
                 `;
@@ -431,10 +433,22 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
     const overlayDiv = document.getElementById('analytics-quadrant-labels');
     if (this.state.analyticsFilter.quadrant) {
         overlayDiv.innerHTML = `
-            <div class="absolute top-16 left-16 text-[10px] sm:text-[11px] font-bold text-orange-400 max-w-[120px] sm:max-w-none">Düşük ${xAxisLabel}<br>Yüksek ${yAxisLabel}</div>
-            <div class="absolute top-16 right-16 text-[10px] sm:text-[11px] font-bold text-green-400 text-right max-w-[120px] sm:max-w-none">Yüksek ${xAxisLabel}<br>Yüksek ${yAxisLabel}</div>
-            <div class="absolute bottom-16 left-16 text-[10px] sm:text-[11px] font-bold text-red-500 max-w-[120px] sm:max-w-none">Düşük ${xAxisLabel}<br>Düşük ${yAxisLabel}</div>
-            <div class="absolute bottom-16 right-16 text-[10px] sm:text-[11px] font-bold text-orange-400 text-right max-w-[120px] sm:max-w-none">Yüksek ${xAxisLabel}<br>Düşük ${yAxisLabel}</div>
+            <div class="absolute top-16 left-16 text-[10px] sm:text-[11px] font-bold max-w-[140px] sm:max-w-none leading-relaxed">
+                <span class="text-red-500">Düşük ${xAxisLabel}</span><br>
+                <span class="text-green-400">Yüksek ${yAxisLabel}</span>
+            </div>
+            <div class="absolute top-16 right-16 text-[10px] sm:text-[11px] font-bold text-right max-w-[140px] sm:max-w-none leading-relaxed">
+                <span class="text-green-400">Yüksek ${xAxisLabel}</span><br>
+                <span class="text-green-400">Yüksek ${yAxisLabel}</span>
+            </div>
+            <div class="absolute bottom-16 left-16 text-[10px] sm:text-[11px] font-bold max-w-[140px] sm:max-w-none leading-relaxed">
+                <span class="text-red-500">Düşük ${xAxisLabel}</span><br>
+                <span class="text-red-500">Düşük ${yAxisLabel}</span>
+            </div>
+            <div class="absolute bottom-16 right-16 text-[10px] sm:text-[11px] font-bold text-right max-w-[140px] sm:max-w-none leading-relaxed">
+                <span class="text-green-400">Yüksek ${xAxisLabel}</span><br>
+                <span class="text-red-500">Düşük ${yAxisLabel}</span>
+            </div>
         `;
         overlayDiv.classList.remove('hidden');
     } else {
