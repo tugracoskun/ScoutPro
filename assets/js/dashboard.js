@@ -121,31 +121,32 @@ ScoutApp.prototype.renderDashboard = function(c) {
                 });
 
                 // Kart iç HTML'i
+                // Kart iç HTML'i
                 const renderCardInner = (data, idx) => {
                     const { w, teamName, matchDisplay } = data;
                     const posLabel = (typeof tPos === 'function' ? tPos(w.position) : w.position) || '-';
                     return `
-                        <div class="wl-slider-card flex flex-col gap-4">
+                        <div class="wl-slider-card flex flex-col gap-2.5">
                             <!-- Üst Oyuncu Bilgi Satırı -->
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                <div class="flex items-center gap-4 min-w-0">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                <div class="flex items-center gap-3 min-w-0">
                                     <!-- Fotoğraf -->
                                     <div class="relative shrink-0">
                                         <img src="${this.getImageUrl(w.image)}" 
-                                             class="w-14 h-14 rounded-2xl object-cover border border-dark-700 bg-dark-900 shadow-md group-hover:border-blue-500/40 transition-colors"
+                                             class="w-11 h-11 rounded-xl object-cover border border-dark-700 bg-dark-900 shadow-md group-hover:border-blue-500/40 transition-colors"
                                              onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
-                                        ${w.isFavorite ? `<div class="absolute -top-1 -right-1 w-5 h-5 bg-dark-950 rounded-full border border-red-500/40 flex items-center justify-center text-red-400 shadow"><i data-lucide="heart" class="w-3 h-3 fill-red-400"></i></div>` : ''}
+                                        ${w.isFavorite ? `<div class="absolute -top-1 -right-1 w-4 h-4 bg-dark-950 rounded-full border border-red-500/40 flex items-center justify-center text-red-400 shadow"><i data-lucide="heart" class="w-2.5 h-2.5 fill-red-400"></i></div>` : ''}
                                     </div>
                                     
                                     <!-- İsim ve Detaylar -->
-                                    <div class="min-w-0 flex flex-col gap-1">
+                                    <div class="min-w-0 flex flex-col gap-0.5">
                                         <div class="flex items-center gap-2 flex-wrap">
-                                            <h4 class="text-base font-bold text-white group-hover:text-blue-400 transition-colors truncate max-w-[220px]">${w.name}</h4>
-                                            <span class="px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[11px] font-bold shrink-0">${posLabel}</span>
+                                            <h4 class="text-sm font-bold text-white group-hover:text-blue-400 transition-colors truncate max-w-[200px]">${w.name}</h4>
+                                            <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-bold shrink-0">${posLabel}</span>
                                         </div>
-                                        <div class="flex items-center gap-2 text-xs text-slate-400 truncate">
-                                            <span class="flex items-center gap-1.5 truncate">
-                                                <i data-lucide="shield" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
+                                        <div class="flex items-center gap-2 text-[11px] text-slate-400 truncate">
+                                            <span class="flex items-center gap-1 truncate">
+                                                <i data-lucide="shield" class="w-3 h-3 text-slate-500 shrink-0"></i>
                                                 <span class="truncate">${teamName}${w.nationalTeam ? ' · ' + w.nationalTeam : ''}</span>
                                             </span>
                                             ${w.age ? `<span class="text-slate-600">•</span><span class="font-medium text-slate-400 shrink-0">${w.age} yaş</span>` : ''}
@@ -154,16 +155,16 @@ ScoutApp.prototype.renderDashboard = function(c) {
                                 </div>
 
                                 <!-- Profile Git Butonu -->
-                                <button onclick="app.goToWatchlistAndHighlight(${w.id})" class="px-4 py-2 bg-blue-500/10 hover:bg-blue-500 hover:text-white border border-blue-500/30 text-blue-400 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shrink-0 self-end sm:self-center">
-                                    ${isEn ? 'View Profile' : 'Profile Git'} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                                <button onclick="app.goToWatchlistAndHighlight(${w.id})" class="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500 hover:text-white border border-blue-500/30 text-blue-400 rounded-lg text-xs font-bold flex items-center gap-1 transition-all shadow-sm shrink-0 self-end sm:self-center">
+                                    ${isEn ? 'View Profile' : 'Profile Git'} <i data-lucide="arrow-right" class="w-3 h-3"></i>
                                 </button>
                             </div>
 
                             <!-- Etiketler Satırı -->
-                            <div class="flex items-center gap-2 flex-wrap pt-3 border-t border-dark-800/80">
-                                ${w.foot ? `<span class="px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="footprints" class="w-3 h-3"></i> ${w.foot === 'Sağ' ? (isEn ? 'Right Foot' : 'Sağ Ayak') : w.foot === 'Sol' ? (isEn ? 'Left Foot' : 'Sol Ayak') : w.foot}</span>` : ''}
-                                ${matchDisplay ? `<span class="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="tv" class="w-3 h-3"></i> ${matchDisplay}</span>` : ''}
-                                ${w.notes ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> ${isEn ? 'Scout Notes' : 'Scout Notu Ekli'}</span>` : ''}
+                            <div class="flex items-center gap-1.5 flex-wrap pt-2 border-t border-dark-800/80 text-[11px]">
+                                ${w.foot ? `<span class="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-semibold flex items-center gap-1"><i data-lucide="footprints" class="w-3 h-3"></i> ${w.foot === 'Sağ' ? (isEn ? 'Right Foot' : 'Sağ Ayak') : w.foot === 'Sol' ? (isEn ? 'Left Foot' : 'Sol Ayak') : w.foot}</span>` : ''}
+                                ${matchDisplay ? `<span class="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold flex items-center gap-1"><i data-lucide="tv" class="w-3 h-3"></i> ${matchDisplay}</span>` : ''}
+                                ${w.notes ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> ${isEn ? 'Scout Notes' : 'Scout Notu Ekli'}</span>` : ''}
                             </div>
                         </div>
                     `;
@@ -174,38 +175,35 @@ ScoutApp.prototype.renderDashboard = function(c) {
                 ).join('') : '';
 
                 return `
-                <div class="bg-gradient-to-br from-dark-900 to-dark-950 border border-dark-800 rounded-2xl p-6 relative group transition-all shadow-lg hover:border-blue-500/30">
-                    <!-- Kart Üst Başlık Alanı (Dashboard Stat Kartları ile Uyumlu) -->
-                    <div class="flex justify-between items-start mb-5">
-                        <div class="flex items-center gap-3">
-                            <div class="p-3 rounded-xl bg-blue-500/10 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all">
-                                <i data-lucide="eye" class="w-6 h-6"></i>
-                            </div>
-                            <div>
-                                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-0.5">${isEn ? 'Candidate Pool Preview' : 'Aday Oyuncu Önizleme'}</p>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xl font-black text-white font-mono" id="wl-slider-counter">1 / ${sortedWl.length}</span>
-                                    <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">(${watchlist.length} ${isEn ? 'Players' : 'Oyuncu'})</span>
-                                </div>
-                            </div>
+                <div class="bg-gradient-to-br from-dark-900 to-dark-950 border border-dark-800 rounded-2xl p-4 sm:p-5 relative group transition-all shadow-lg hover:border-blue-500/30">
+                    <!-- Kart Üst Başlık Alanı -->
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <h3 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2 drop-shadow-md">
+                                <i data-lucide="eye" class="w-4 h-4 text-blue-400"></i> ${isEn ? 'Candidate Pool Preview' : 'Aday Oyuncu Önizleme'}
+                            </h3>
+                            <span class="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-black font-mono border border-blue-500/20" id="wl-slider-counter">1 / ${sortedWl.length}</span>
                         </div>
-                        <button onclick="app.navigate('watchlist')" class="px-3.5 py-2 bg-dark-800/80 hover:bg-dark-700 border border-dark-700 text-slate-300 hover:text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
+                        <button onclick="app.navigate('watchlist')" class="px-3 py-1.5 bg-dark-800/80 hover:bg-dark-700 border border-dark-700 text-slate-300 hover:text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
                             ${isEn ? 'View All' : 'Tümünü Gör'} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
 
                     <!-- Kart İçeriği Viewport -->
-                    <div id="wl-slider-viewport" class="min-h-[110px]">
+                    <div id="wl-slider-viewport" class="min-h-[82px]">
                         ${renderCardInner(cardsData[0], 0)}
                     </div>
 
                     <!-- Alt Kontroller (Oklar ve Noktalar) -->
-                    <div class="flex items-center justify-between mt-5 pt-3 border-t border-dark-800/60">
-                        <span class="text-[11px] text-slate-500 font-medium">${isEn ? 'Use arrows to switch players' : 'Oyuncuları incelemek için okları kullanın'}</span>
-                        <div class="flex items-center gap-2">
-                            ${sortedWl.length > 1 ? `<button class="wl-slider-btn" onclick="window._wlSliderPrev()" title="${isEn ? 'Previous' : 'Önceki'}"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>` : ''}
+                    <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-dark-800/60">
+                        <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-400 animate-pulse"></i>
+                            <span>${isEn ? 'Explore pool candidates' : 'Aday havuzunda gezin'}</span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-dark-950/80 border border-dark-800/80 rounded-full px-2 py-1 shadow-inner backdrop-blur-md">
+                            ${sortedWl.length > 1 ? `<button class="wl-slider-btn" onclick="window._wlSliderPrev()" title="${isEn ? 'Previous' : 'Önceki'}"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>` : ''}
                             <div class="flex items-center gap-1.5 px-1">${dotsHtml}</div>
-                            ${sortedWl.length > 1 ? `<button class="wl-slider-btn" onclick="window._wlSliderNext()" title="${isEn ? 'Next' : 'Sonraki'}"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>` : ''}
+                            ${sortedWl.length > 1 ? `<button class="wl-slider-btn" onclick="window._wlSliderNext()" title="${isEn ? 'Next' : 'Sonraki'}"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>` : ''}
                         </div>
                     </div>
                 </div>
@@ -326,27 +324,27 @@ ScoutApp.prototype.renderDashboard = function(c) {
             const { w, teamName, matchDisplay } = data;
             const posLabel = (typeof tPos === 'function' ? tPos(w.position) : w.position) || '-';
             return `
-                <div class="wl-slider-card flex flex-col gap-4">
+                <div class="wl-slider-card flex flex-col gap-2.5">
                     <!-- Üst Oyuncu Bilgi Satırı -->
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div class="flex items-center gap-4 min-w-0">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
                             <!-- Fotoğraf -->
                             <div class="relative shrink-0">
                                 <img src="${this.getImageUrl(w.image)}" 
-                                     class="w-14 h-14 rounded-2xl object-cover border border-dark-700 bg-dark-900 shadow-md group-hover:border-blue-500/40 transition-colors"
+                                     class="w-11 h-11 rounded-xl object-cover border border-dark-700 bg-dark-900 shadow-md group-hover:border-blue-500/40 transition-colors"
                                      onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
-                                ${w.isFavorite ? `<div class="absolute -top-1 -right-1 w-5 h-5 bg-dark-950 rounded-full border border-red-500/40 flex items-center justify-center text-red-400 shadow"><i data-lucide="heart" class="w-3 h-3 fill-red-400"></i></div>` : ''}
+                                ${w.isFavorite ? `<div class="absolute -top-1 -right-1 w-4 h-4 bg-dark-950 rounded-full border border-red-500/40 flex items-center justify-center text-red-400 shadow"><i data-lucide="heart" class="w-2.5 h-2.5 fill-red-400"></i></div>` : ''}
                             </div>
                             
                             <!-- İsim ve Detaylar -->
-                            <div class="min-w-0 flex flex-col gap-1">
+                            <div class="min-w-0 flex flex-col gap-0.5">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <h4 class="text-base font-bold text-white group-hover:text-blue-400 transition-colors truncate max-w-[220px]">${w.name}</h4>
-                                    <span class="px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[11px] font-bold shrink-0">${posLabel}</span>
+                                    <h4 class="text-sm font-bold text-white group-hover:text-blue-400 transition-colors truncate max-w-[200px]">${w.name}</h4>
+                                    <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-bold shrink-0">${posLabel}</span>
                                 </div>
-                                <div class="flex items-center gap-2 text-xs text-slate-400 truncate">
-                                    <span class="flex items-center gap-1.5 truncate">
-                                        <i data-lucide="shield" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
+                                <div class="flex items-center gap-2 text-[11px] text-slate-400 truncate">
+                                    <span class="flex items-center gap-1 truncate">
+                                        <i data-lucide="shield" class="w-3 h-3 text-slate-500 shrink-0"></i>
                                         <span class="truncate">${teamName}${w.nationalTeam ? ' · ' + w.nationalTeam : ''}</span>
                                     </span>
                                     ${w.age ? `<span class="text-slate-600">•</span><span class="font-medium text-slate-400 shrink-0">${w.age} yaş</span>` : ''}
@@ -355,16 +353,16 @@ ScoutApp.prototype.renderDashboard = function(c) {
                         </div>
 
                         <!-- Profile Git Butonu -->
-                        <button onclick="app.goToWatchlistAndHighlight(${w.id})" class="px-4 py-2 bg-blue-500/10 hover:bg-blue-500 hover:text-white border border-blue-500/30 text-blue-400 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shrink-0 self-end sm:self-center">
-                            ${isEn ? 'View Profile' : 'Profile Git'} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        <button onclick="app.goToWatchlistAndHighlight(${w.id})" class="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500 hover:text-white border border-blue-500/30 text-blue-400 rounded-lg text-xs font-bold flex items-center gap-1 transition-all shadow-sm shrink-0 self-end sm:self-center">
+                            ${isEn ? 'View Profile' : 'Profile Git'} <i data-lucide="arrow-right" class="w-3 h-3"></i>
                         </button>
                     </div>
 
                     <!-- Etiketler Satırı -->
-                    <div class="flex items-center gap-2 flex-wrap pt-3 border-t border-dark-800/80">
-                        ${w.foot ? `<span class="px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="footprints" class="w-3 h-3"></i> ${w.foot === 'Sağ' ? (isEn ? 'Right Foot' : 'Sağ Ayak') : w.foot === 'Sol' ? (isEn ? 'Left Foot' : 'Sol Ayak') : w.foot}</span>` : ''}
-                        ${matchDisplay ? `<span class="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="tv" class="w-3 h-3"></i> ${matchDisplay}</span>` : ''}
-                        ${w.notes ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> ${isEn ? 'Scout Notes' : 'Scout Notu Ekli'}</span>` : ''}
+                    <div class="flex items-center gap-1.5 flex-wrap pt-2 border-t border-dark-800/80 text-[11px]">
+                        ${w.foot ? `<span class="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-semibold flex items-center gap-1"><i data-lucide="footprints" class="w-3 h-3"></i> ${w.foot === 'Sağ' ? (isEn ? 'Right Foot' : 'Sağ Ayak') : w.foot === 'Sol' ? (isEn ? 'Left Foot' : 'Sol Ayak') : w.foot}</span>` : ''}
+                        ${matchDisplay ? `<span class="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold flex items-center gap-1"><i data-lucide="tv" class="w-3 h-3"></i> ${matchDisplay}</span>` : ''}
+                        ${w.notes ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> ${isEn ? 'Scout Notes' : 'Scout Notu Ekli'}</span>` : ''}
                     </div>
                 </div>
             `;

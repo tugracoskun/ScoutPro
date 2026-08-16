@@ -17,7 +17,7 @@ ScoutApp.prototype.renderNewReport = function(c) {
                     
                     ${this.createCustomSearchSelect('rep-nationality', t('nationality'), t('nat_search_ph'), [...this.state.data.countries].sort((a,b) => b.isFavorite - a.isFavorite || this.getCountryName(a).localeCompare(this.getCountryName(b))).map(c => ({val: c.id, txt: this.getCountryName(c), icon: c.flag})), this.state.newReport.nationality, "app.updateRep('nationality', this.value)")}
 
-                    ${teams.length > 0 ? this.createCustomSearchSelect('rep-team', 'Kulüp Takımı', 'Ara...', teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") : ''}
+                    ${teams.length > 0 ? this.createCustomSearchSelect('rep-team', 'Kulüp / Gençlik Takımı', 'Ara...', teams, this.state.newReport.teamId, "app.updateRep('teamId', this.value)") : ''}
                     ${this.createCustomSearchSelect('rep-national-team', 'Milli Takımı', this.state.newReport.nationality ? 'Ara...' : 'Seçilemez', nationalTeams, this.state.newReport.nationalTeamId, "app.updateRep('nationalTeamId', this.value)", !this.state.newReport.nationality)}
                     ${teams.length === 0 ? '<div class="p-3 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-xs">' + t('db_empty') + '</div>' : ''}
 

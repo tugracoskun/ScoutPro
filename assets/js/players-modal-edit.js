@@ -19,7 +19,7 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
                 ${this.createInput('edit-p-name', t('player_name'), 'Ad Soyad', 'text', p.name)}
                 
                 <div class="grid grid-cols-2 gap-4">
-                    ${this.createCustomSearchSelect('edit-p-team', 'Kulüp Takımı', 'Kulüp Ara...', teams, p.teamId)}
+                    ${this.createCustomSearchSelect('edit-p-team', 'Kulüp / Gençlik Takımı', 'Takım Ara...', teams, p.teamId)}
                     ${this.createCustomSearchSelect('edit-p-national-team', 'Milli Takımı', 'Milli Takım Ara...', nationalTeams, p.nationalTeamId)}
                 </div>
 

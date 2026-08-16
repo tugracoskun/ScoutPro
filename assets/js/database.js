@@ -180,6 +180,41 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                                                 </div>
                                             </div>
 
+                                            <!-- GENÇLİK TAKIMLARI -->
+                                            <div>
+                                                <div class="flex items-center justify-between mb-3">
+                                                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> Gençlik Takımları</h4>
+                                                    <button onclick="app.openAddYouthTeamModal(${country.id})" class="text-[10px] bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20 transition-colors flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Takım Ekle</button>
+                                                </div>
+                                                <div class="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                                                    ${(() => {
+                            const youthTeams = this.state.data.teams.filter(t => t.countryId === country.id && t.type === 'youth');
+                            const youthTeamsWithCount = youthTeams.map(team => ({
+                                team,
+                                playerCount: this.state.data.players.filter(p => p.teamId === team.id).length
+                            })).sort((a, b) => b.playerCount - a.playerCount || a.team.name.localeCompare(b.team.name));
+                            
+                            return youthTeamsWithCount.map(({team, playerCount}) => `
+                                                                <div class="relative group/team">
+                                                                    <div onclick="app.navigate('team-detail', ${team.id})" class="flex items-center gap-3 p-2 rounded-lg bg-dark-900 hover:bg-dark-800 cursor-pointer transition-colors border border-dark-800 hover:border-emerald-500/30">
+                                                                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-lg relative overflow-hidden">
+                                                                            ${this.getLogoDisplayHTML(team.logo, "w-full h-full object-contain")}
+                                                                        </div>
+                                                                        <div class="flex flex-col min-w-0">
+                                                                            <span class="text-sm text-slate-300 group-hover:text-white truncate font-medium">${team.name}</span>
+                                                                            <span class="text-[10px] ${playerCount > 0 ? 'text-emerald-400 font-bold' : 'text-slate-500'}">${playerCount} ${t('players_count')}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="absolute top-1 right-1 hidden group-hover/team:flex gap-1 bg-dark-950 rounded-lg p-1 border border-dark-700 z-10">
+                                                                            <button onclick="app.openEditTeamModal(${team.id})" class="p-1 hover:text-white text-slate-400"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                                                                            <button onclick="app.deleteTeam(${team.id})" class="p-1 hover:text-red-400 text-slate-400"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                                    </div>
+                                                                </div>
+                                                            `).join('') + (youthTeams.length === 0 ? `<span class="text-xs text-slate-600 p-2">Gençlik takımı yok.</span>` : '');
+                        })()}
+                                                </div>
+                                            </div>
+
                                             <!-- MİLLİ TAKIMLAR -->
                                             <div>
                                                 <div class="flex items-center justify-between mb-3">
@@ -214,6 +249,7 @@ ScoutApp.prototype.renderDatabase = function (c, skipAnimation = false) {
                         })()}
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 `;
@@ -250,6 +286,9 @@ ScoutApp.prototype.renderTeamDetail = function (c, teamId) {
     if (team.type === 'national') {
         country = this.state.data.countries.find(co => co.id === team.countryId);
         leagueName = 'Milli Takım';
+    } else if (team.type === 'youth') {
+        country = this.state.data.countries.find(co => co.id === team.countryId);
+        leagueName = 'Gençlik Ligi';
     } else {
         const league = this.state.data.leagues.find(l => l.id === team.leagueId);
         country = this.state.data.countries.find(co => co.id === (league ? league.countryId : team.countryId));
@@ -328,18 +367,45 @@ ScoutApp.prototype.openAddLeagueModal = function (cId) {
 ScoutApp.prototype.openAddTeamModal = function (lId) {
     if (!lId) return this.openQuickAddTeamModal();
     this.state.tempData.leagueId = lId;
+    // Lig'e ait ülkeyi bul
+    const league = this.state.data.leagues.find(l => l.id === lId);
+    const countryId = league ? league.countryId : null;
+    this.state.tempData.teamModalCountryId = countryId;
     this.showModal(`
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-white">Takım Ekle</h3><button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400"></i></button></div>
+        <div class="p-6 space-y-5">
+            <div class="flex justify-between items-center"><h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="shield" class="w-5 h-5 text-scout-400"></i> Takım Ekle</h3><button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400"></i></button></div>
             <div class="space-y-4">
                 ${this.createInput('modal-team-name', 'Takım Adı', 'Örn: Napoli')}
                 ${this.createImageUploadControl('modal-team-logo', 'Takım Logosu (URL veya Dosya)')}
                 ${this.createInput('modal-team-tm', 'Transfermarkt Link', 'https://...')}
                 ${this.createInput('modal-team-sofa', 'Sofascore Link', 'https://...')}
-                <button onclick="app.saveTeam()" class="w-full bg-scout-600 hover:bg-scout-500 text-white py-3 rounded-xl font-bold mt-2">Kaydet</button>
             </div>
+            <!-- Gençlik Takımı Opsiyonu -->
+            <div class="border border-emerald-500/20 rounded-xl p-4 bg-emerald-500/5">
+                <div class="flex items-center gap-2 mb-3">
+                    <input type="checkbox" id="modal-add-youth-toggle" onchange="app.toggleYouthTeamSection(this.checked)" class="w-4 h-4 accent-emerald-500 cursor-pointer">
+                    <label for="modal-add-youth-toggle" class="text-sm font-semibold text-emerald-400 cursor-pointer flex items-center gap-1.5"><i data-lucide="graduation-cap" class="w-4 h-4"></i> Gençlik Takımı da Ekle</label>
+                </div>
+                <div id="youth-team-extra-section" class="hidden space-y-3">
+                    <p class="text-[11px] text-slate-500">Bu kulüp için gençlik takımı otomatik oluşturulacak. Katman seçin:</p>
+                    <div class="flex flex-wrap gap-2" id="youth-level-selector">
+                        ${['U21','U19','U18','U17','U16','U15','Hepsi'].map(lvl => `
+                            <label class="flex items-center gap-1 cursor-pointer">
+                                <input type="checkbox" value="${lvl}" class="youth-level-cb w-3.5 h-3.5 accent-emerald-500">
+                                <span class="text-xs font-bold text-slate-300 px-2 py-0.5 rounded bg-dark-800 border border-dark-700 hover:border-emerald-500/50 transition-colors">${lvl}</span>
+                            </label>`).join('')}
+                    </div>
+                </div>
+            </div>
+            <button onclick="app.saveTeam()" class="w-full bg-scout-600 hover:bg-scout-500 text-white py-3 rounded-xl font-bold">Kaydet</button>
         </div>
     `);
+    setTimeout(() => { if (window.lucide) window.lucide.createIcons(); }, 10);
+};
+
+ScoutApp.prototype.toggleYouthTeamSection = function(checked) {
+    const sec = document.getElementById('youth-team-extra-section');
+    if (sec) sec.classList.toggle('hidden', !checked);
 };
 
 ScoutApp.prototype.openAddNationalTeamModal = function (cId) {
@@ -480,7 +546,7 @@ ScoutApp.prototype.saveTeam = async function () {
         return alert("Lig bilgisi bulunamadı.");
     }
 
-    this.state.data.teams.push({
+    const newTeam = {
         id: Date.now(),
         leagueId: this.state.tempData.leagueId,
         name: name,
@@ -488,7 +554,30 @@ ScoutApp.prototype.saveTeam = async function () {
         tmUrl: tmUrl,
         sofaUrl: sofaUrl,
         type: 'club'
-    });
+    };
+    this.state.data.teams.push(newTeam);
+
+    // Gençlik takımı ekleme opsiyonu kontrolü
+    const youthToggle = document.getElementById('modal-add-youth-toggle');
+    if (youthToggle && youthToggle.checked) {
+        const selectedLevels = Array.from(document.querySelectorAll('.youth-level-cb:checked')).map(cb => cb.value);
+        const allLevels = ['U21', 'U19', 'U18', 'U17', 'U16', 'U15'];
+        const levelsToAdd = selectedLevels.includes('Hepsi') ? allLevels : selectedLevels;
+        const countryId = this.state.tempData.teamModalCountryId;
+        if (countryId && levelsToAdd.length > 0) {
+            levelsToAdd.forEach(lvl => {
+                this.state.data.teams.push({
+                    id: Date.now() + Math.random(),
+                    countryId: countryId,
+                    name: `${name} ${lvl}`,
+                    logo: logo,
+                    tmUrl: '',
+                    sofaUrl: '',
+                    type: 'youth'
+                });
+            });
+        }
+    }
 
     this.saveData();
     this.closeModal();
@@ -530,6 +619,134 @@ ScoutApp.prototype.saveNationalTeam = function () {
     else this.renderDatabase(document.getElementById('content-area'));
 
     this.notify("Milli takım başarıyla eklendi.");
+};
+
+ScoutApp.prototype.openAddYouthTeamModal = function (cId) {
+    this.state.tempData.countryIdForYouth = cId;
+    // Bu ülkeye ait mevcut kulüp takımlarını bul (sadece club type)
+    const clubTeamsInCountry = this.state.data.teams.filter(t => {
+        if (t.type !== 'club' && t.type !== undefined && t.type !== '') return false;
+        const league = this.state.data.leagues.find(l => l.id === t.leagueId);
+        return league && league.countryId === cId;
+    });
+    const clubTeamOptions = clubTeamsInCountry.map(t => `<option value="${t.id}" data-logo="${t.logo || ''}" data-name="${t.name}">${t.name}</option>`).join('');
+    const hasClubs = clubTeamsInCountry.length > 0;
+
+    this.showModal(`
+        <div class="p-6 space-y-5">
+            <div class="flex justify-between items-center"><h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="graduation-cap" class="w-5 h-5 text-emerald-400"></i> Gençlik Takımı Ekle</h3><button onclick="app.closeModal()"><i data-lucide="x" class="text-slate-400"></i></button></div>
+
+            ${hasClubs ? `
+            <!-- Hazır Takımdan Seç -->
+            <div class="border border-emerald-500/20 rounded-xl p-4 bg-emerald-500/5">
+                <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2 flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Hızlı Oluştur — Mevcut Kulüpten</p>
+                <p class="text-[11px] text-slate-500 mb-3">Bu ülkedeki bir kulübü seçin, gençlik takımı otomatik oluşturulsun.</p>
+                <div class="grid grid-cols-1 gap-3">
+                    <select id="youth-base-club-select" onchange="app.onYouthBaseClubChange(this)" class="w-full bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:border-emerald-500 outline-none">
+                        <option value="">-- Kulüp Seçin --</option>
+                        ${clubTeamOptions}
+                    </select>
+                    <div id="youth-level-selector-quick" class="hidden">
+                        <p class="text-[11px] text-slate-500 mb-2">Katman seçin (birden fazla seçebilirsiniz):</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${['U21','U19','U18','U17','U16','U15'].map(lvl => `
+                                <label class="flex items-center gap-1 cursor-pointer">
+                                    <input type="checkbox" value="${lvl}" class="youth-lvl-quick w-3.5 h-3.5 accent-emerald-500">
+                                    <span class="text-xs font-bold text-slate-300 px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700 hover:border-emerald-500/50 transition-colors select-none">${lvl}</span>
+                                </label>`).join('')}
+                        </div>
+                        <button onclick="app.saveYouthTeamsFromClub()" class="mt-3 w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl font-bold text-sm">Seçili Katmanları Oluştur</button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3"><div class="flex-1 h-px bg-dark-700"></div><span class="text-xs text-slate-600 font-semibold">veya</span><div class="flex-1 h-px bg-dark-700"></div></div>
+            ` : ''}
+
+            <!-- Manuel Ekleme -->
+            <div class="space-y-4">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Manuel Ekle</p>
+                ${this.createInput('modal-youth-team-name', 'Takım Adı', 'Örn: Barcelona U19, Ajax Gençlik...')}
+                ${this.createImageUploadControl('modal-youth-team-logo', 'Takım Logosu (URL veya Dosya)')}
+                ${this.createInput('modal-youth-team-tm', 'Transfermarkt Link', 'https://...')}
+                ${this.createInput('modal-youth-team-sofa', 'Sofascore Link', 'https://...')}
+                <button onclick="app.saveYouthTeam()" class="w-full bg-dark-700 hover:bg-dark-600 border border-dark-600 text-white py-2.5 rounded-xl font-bold text-sm">Manuel Kaydet</button>
+            </div>
+        </div>
+    `);
+    setTimeout(() => { if (window.lucide) window.lucide.createIcons(); }, 10);
+};
+
+ScoutApp.prototype.onYouthBaseClubChange = function(selectEl) {
+    const val = selectEl.value;
+    const sec = document.getElementById('youth-level-selector-quick');
+    if (sec) sec.classList.toggle('hidden', !val);
+};
+
+ScoutApp.prototype.saveYouthTeamsFromClub = function () {
+    const selectEl = document.getElementById('youth-base-club-select');
+    const clubId = selectEl ? selectEl.value : '';
+    if (!clubId) return alert('Lütfen bir kulüp seçin.');
+    const club = this.state.data.teams.find(t => t.id == clubId);
+    if (!club) return;
+
+    const levels = Array.from(document.querySelectorAll('.youth-lvl-quick:checked')).map(cb => cb.value);
+    if (levels.length === 0) return alert('En az bir katman seçin.');
+
+    const countryId = this.state.tempData.countryIdForYouth;
+    let addedCount = 0;
+    levels.forEach(lvl => {
+        const name = `${club.name} ${lvl}`;
+        // Aynı isimde zaten varsa ekleme
+        const exists = this.state.data.teams.some(t => t.name === name && t.countryId === countryId && t.type === 'youth');
+        if (!exists) {
+            this.state.data.teams.push({
+                id: Date.now() + Math.random(),
+                countryId: countryId,
+                name: name,
+                logo: club.logo || '',
+                tmUrl: '',
+                sofaUrl: '',
+                type: 'youth'
+            });
+            addedCount++;
+        }
+    });
+
+    this.saveData();
+    this.closeModal();
+    if (this.state.activePage === 'watchlist') this.renderWatchlist(document.getElementById('content-area'));
+    else if (this.state.activePage === 'matches') this.renderMatches(document.getElementById('content-area'));
+    else this.renderDatabase(document.getElementById('content-area'));
+    this.notify(`${addedCount} gençlik takımı oluşturuldu.`);
+};
+
+ScoutApp.prototype.saveYouthTeam = function () {
+    const name = document.getElementById('modal-youth-team-name').value.trim();
+    const logo = document.getElementById('modal-youth-team-logo').value;
+    const tmUrl = document.getElementById('modal-youth-team-tm').value;
+    const sofaUrl = document.getElementById('modal-youth-team-sofa').value;
+
+    if (!name) return alert("Takım adı zorunludur.");
+    if (!this.state.tempData.countryIdForYouth) return alert("Ülke bilgisi bulunamadı.");
+
+    this.state.data.teams.push({
+        id: Date.now(),
+        countryId: this.state.tempData.countryIdForYouth,
+        name: name,
+        logo: logo,
+        tmUrl: tmUrl,
+        sofaUrl: sofaUrl,
+        type: 'youth'
+    });
+
+    this.saveData();
+    this.closeModal();
+
+    if (this.state.activePage === 'watchlist') this.renderWatchlist(document.getElementById('content-area'));
+    else if (this.state.activePage === 'matches') this.renderMatches(document.getElementById('content-area'));
+    else this.renderDatabase(document.getElementById('content-area'));
+
+    this.notify("Gençlik takımı başarıyla eklendi.");
 };
 
 ScoutApp.prototype.updateCountry = function (id) {
