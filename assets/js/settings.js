@@ -1,5 +1,6 @@
 ScoutApp.prototype.renderSettings = function(c) {
     const isOfflineImagesEnabled = !(this.state.data && this.state.data.settings && this.state.data.settings.offlineImages === false);
+    const isYouthTipsEnabled = !(this.state.data && this.state.data.settings && this.state.data.settings.youthTips === false);
     const currentTheme = (this.state.data && this.state.data.settings && this.state.data.settings.theme) || window.getTheme();
     const isDark = currentTheme !== 'light';
 
@@ -28,6 +29,23 @@ ScoutApp.prototype.renderSettings = function(c) {
                         ${t('light_mode')}
                     </button>
                 </div>
+            </div>
+
+            <!-- Gençlik Gelişim İpuçları (Raporlama) -->
+            <div class="bg-dark-900 border border-dark-800 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-dark-800 rounded-lg text-amber-400">
+                        <i data-lucide="lightbulb" class="w-5 h-5 text-amber-400"></i>
+                    </div>
+                    <div>
+                        <div class="text-white font-bold">${t('youth_tips_title')}</div>
+                        <div class="text-slate-500 text-xs">${t('youth_tips_desc')}</div>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer shrink-0 self-start sm:self-auto">
+                    <input type="checkbox" id="youth-tips-toggle" onchange="app.toggleYouthTips(this.checked)" class="sr-only peer" ${isYouthTipsEnabled ? 'checked' : ''}>
+                    <div class="w-11 h-6 bg-dark-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-scout-500"></div>
+                </label>
             </div>
 
             <!-- Çevrimdışı Görseller & Logolar Modülü -->
@@ -178,6 +196,14 @@ ScoutApp.prototype.toggleOfflineImages = function(enabled) {
     this.state.data.settings.offlineImages = enabled;
     this.saveData();
     this.notify(enabled ? "Çevrimdışı görseller etkinleştirildi." : "Çevrimdışı görseller devredışı bırakıldı.");
+};
+
+ScoutApp.prototype.toggleYouthTips = function(enabled) {
+    if (!this.state.data.settings) this.state.data.settings = {};
+    this.state.data.settings.youthTips = enabled;
+    this.saveData();
+    const isEn = window.getLang && window.getLang() === 'en';
+    this.notify(enabled ? (isEn ? "Youth development tips enabled." : "Gençlik gelişim ipuçları açıldı.") : (isEn ? "Youth development tips disabled." : "Gençlik gelişim ipuçları kapatıldı."));
 };
 
 ScoutApp.prototype.setTheme = function(theme) {

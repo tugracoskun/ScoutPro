@@ -281,9 +281,13 @@ const translations = {
         status_skipped: "İzlenmedi",
         watched_match: "İzlenen Maç",
         select_match_optional: "Maç Seçiniz (Opsiyonel)",
-        optional: "Opsiyonel"
+        optional: "Opsiyonel",
+        youth_tips_title: "Gençlik Gelişim İpuçları",
+        youth_tips_desc: "Oyuncu raporu hazırlarken yaşa bağlı gelişim aşaması (U9-U12, U13-U16, U17-U21) tavsiyelerini ve hedeflerini gösterir."
     },
     en: {
+        youth_tips_title: "Youth Development Tips",
+        youth_tips_desc: "Displays age-specific development phase (U9-U12, U13-U16, U17-U21) guidelines when creating a player report.",
         // --- YENİ EKLENENLER: Maç İzleme & İstatistik ---
         mark_watched: "Watched",
         mark_skipped: "Skipped",
