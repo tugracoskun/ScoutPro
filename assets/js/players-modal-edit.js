@@ -176,7 +176,7 @@ ScoutApp.prototype.deletePlayer = function(id) {
     });
 };
 
-// --- TRANSFER TESPETİ & DİYALOG ---
+// --- TRANSFER TESPİTİ & DİYALOG ---
 ScoutApp.prototype.onEditTeamChange = function(playerId, newTeamId, newTeamTxt, newTeamIcon) {
     const teamInput = document.getElementById('edit-p-team');
     const originalTeamId = teamInput ? (teamInput.dataset.originalTeamId || '') : '';
@@ -190,33 +190,99 @@ ScoutApp.prototype.onEditTeamChange = function(playerId, newTeamId, newTeamTxt, 
     this.state.tempData.pendingTransfer = { playerId, newTeamId: parseInt(newTeamId), newTeamTxt, newTeamIcon };
 
     const oldTeam = this.state.data.teams.find(t => t.id == originalTeamId);
-    const oldTeamName = oldTeam ? this.getTeamName(oldTeam.id) : 'Bilinmiyor';
+    const oldTeamName = oldTeam ? this.getTeamName(oldTeam.id) : 'Önceki Takım';
+    const oldTeamLogo = oldTeam ? oldTeam.logo : '';
+    
+    const newTeam = this.state.data.teams.find(t => t.id == newTeamId);
+    const newTeamLogo = newTeam ? newTeam.logo : (newTeamIcon || '');
 
-    // Transfer sorgu modalı
+    // Transfer sorgu modalı - Ultra Modern ScoutPro UI
     const modalHtml = `
-        <div class="p-6 space-y-4 max-w-md">
-            <div class="flex items-start gap-4">
-                <div class="p-3 rounded-xl bg-amber-500/10 text-amber-400 shrink-0">
-                    <i data-lucide="arrow-right-left" class="w-6 h-6"></i>
+        <div class="p-7 max-w-lg mx-auto space-y-6 animate-fade-in">
+            <!-- Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-dark-800/80">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shadow-lg shadow-amber-500/5">
+                        <i data-lucide="arrow-right-left" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white tracking-wide">Takım Değişikliği Algılandı</h3>
+                        <p class="text-xs text-slate-400">Bu işlem için bir işlem türü belirleyin</p>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="text-base font-bold text-white mb-1">Takım değiştirildi</h3>
-                    <p class="text-sm text-slate-400">Oyuncunun takımını <span class="text-white font-semibold">${oldTeamName}</span>'dan <span class="text-white font-semibold">${newTeamTxt}</span>'a geçirmek istiyorsunuz. Sebebi nedir?</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="app.confirmTransferChoice('mistake')" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-dark-700 bg-dark-800 hover:border-slate-500 hover:bg-dark-700 transition-all text-center">
-                    <i data-lucide="rotate-ccw" class="w-5 h-5 text-slate-400"></i>
-                    <span class="text-xs font-bold text-slate-300">Yanlışlığı Düzelttim</span>
-                    <span class="text-[10px] text-slate-600">Sadece hatayı düzelttim</span>
-                </button>
-                <button onclick="app.confirmTransferChoice('transfer')" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/60 hover:bg-emerald-500/10 transition-all text-center">
-                    <i data-lucide="trending-up" class="w-5 h-5 text-emerald-400"></i>
-                    <span class="text-xs font-bold text-emerald-300">Transfer Oldu</span>
-                    <span class="text-[10px] text-slate-500">Transfer detayı gir</span>
+                <button onclick="app.cancelTransferChoice()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-dark-800 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
-            <button onclick="app.cancelTransferChoice()" class="w-full text-xs text-slate-500 hover:text-slate-300 py-2 transition-colors">Vazgeç (eski takımı koru)</button>
+
+            <!-- Transfer Görsel Özeti -->
+            <div class="bg-gradient-to-r from-dark-900 via-dark-800/50 to-dark-900 p-4 rounded-2xl border border-dark-750/70 flex items-center justify-between shadow-inner">
+                <!-- Eski Takım -->
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <div class="w-11 h-11 rounded-xl bg-dark-950 border border-dark-700/80 p-1.5 flex items-center justify-center shrink-0 shadow-md">
+                        ${this.getLogoDisplayHTML(oldTeamLogo, "w-full h-full object-contain")}
+                    </div>
+                    <div class="min-w-0">
+                        <span class="text-[10px] uppercase font-bold text-slate-500 block tracking-wider">Eski Kulüp</span>
+                        <span class="text-xs font-bold text-slate-200 truncate block">${oldTeamName}</span>
+                    </div>
+                </div>
+
+                <!-- Transfer Oku -->
+                <div class="px-3 flex flex-col items-center justify-center">
+                    <div class="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shadow-sm">
+                        <i data-lucide="arrow-right" class="w-4 h-4 animate-pulse"></i>
+                    </div>
+                </div>
+
+                <!-- Yeni Takım -->
+                <div class="flex items-center gap-3 min-w-0 flex-1 justify-end text-right">
+                    <div class="min-w-0">
+                        <span class="text-[10px] uppercase font-bold text-emerald-400 block tracking-wider">Yeni Kulüp</span>
+                        <span class="text-xs font-bold text-white truncate block">${newTeamTxt}</span>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-dark-950 border border-emerald-500/30 p-1.5 flex items-center justify-center shrink-0 shadow-md">
+                        ${this.getLogoDisplayHTML(newTeamLogo, "w-full h-full object-contain")}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seçenek Kartları -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                <!-- Yanlışlığı Düzeltiyorum -->
+                <button onclick="app.confirmTransferChoice('mistake')" 
+                        class="group p-5 rounded-2xl border border-dark-700/80 bg-dark-900/60 hover:bg-dark-800 hover:border-slate-500/60 transition-all duration-200 text-left flex flex-col justify-between relative overflow-hidden shadow-lg hover:shadow-dark-900">
+                    <div class="w-10 h-10 rounded-xl bg-dark-800 border border-dark-700 text-slate-400 group-hover:text-white group-hover:border-slate-600 flex items-center justify-center mb-3 transition-colors">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <span class="text-sm font-bold text-white block mb-1 group-hover:text-slate-100">Yanlışlığı Düzelttim</span>
+                        <span class="text-[11px] text-slate-400 leading-relaxed block">Transfer kaydı oluşturulmaz. Sadece hatalı kulüp seçimi güncellenir.</span>
+                    </div>
+                </button>
+
+                <!-- Transfer Oldu -->
+                <button onclick="app.confirmTransferChoice('transfer')" 
+                        class="group p-5 rounded-2xl border border-emerald-500/40 bg-gradient-to-b from-emerald-500/10 to-dark-900/80 hover:from-emerald-500/20 hover:border-emerald-400 transition-all duration-200 text-left flex flex-col justify-between relative overflow-hidden shadow-lg shadow-emerald-950/20">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5 mb-1">
+                            <span class="text-sm font-bold text-emerald-300">Oyuncu Transfer Oldu</span>
+                        </div>
+                        <span class="text-[11px] text-emerald-200/60 leading-relaxed block">Bonservis, kiralık vb. detayları girip oyuncunun kariyer geçmişine işleyin.</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Alt İptal Butonu -->
+            <div class="pt-2">
+                <button onclick="app.cancelTransferChoice()" class="w-full py-3 rounded-xl border border-dark-700/60 hover:bg-dark-800/80 text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="undo-2" class="w-3.5 h-3.5"></i>
+                    Vazgeç ve Eski Takımı Koru
+                </button>
+            </div>
         </div>
     `;
     this.showModal(modalHtml);
@@ -224,84 +290,189 @@ ScoutApp.prototype.onEditTeamChange = function(playerId, newTeamId, newTeamTxt, 
 };
 
 ScoutApp.prototype.confirmTransferChoice = function(choice) {
-    this.closeModal();
     const pending = this.state.tempData.pendingTransfer;
-    if (!pending) return;
+    if (!pending) {
+        this.closeModal();
+        return;
+    }
+
+    const p = this.state.data.players.find(x => x.id === pending.playerId);
 
     if (choice === 'mistake') {
-        // Sadece takımı güncelle, kayıt yok
+        // Takımı doğrudan yeni takıma güncelle ve kaydet
+        if (p) {
+            p.teamId = pending.newTeamId;
+            this.saveData();
+        }
         this.state.tempData.pendingTransfer = null;
-        this.notify('Takım güncellendi.');
+        
+        // Düzenleme ekranına yeni takımla geri dön
+        this.openEditPlayerModal(pending.playerId);
+        this.notify('Kulüp bilgisi güncellendi.');
         return;
     }
 
     // Transfer detay modalı
-    const teams = this.state.data.teams.filter(t => t.type !== 'national');
-    const newTeam = teams.find(t => t.id === pending.newTeamId);
+    const oldTeamId = (p && p.teamId) || (document.getElementById('edit-p-team')?.dataset.originalTeamId);
+    const oldTeam = this.state.data.teams.find(t => t.id == oldTeamId);
+    const oldTeamName = oldTeam ? this.getTeamName(oldTeam.id) : 'Önceki Takım';
+    const oldTeamLogo = oldTeam ? oldTeam.logo : '';
+
+    const newTeam = this.state.data.teams.find(t => t.id === pending.newTeamId);
+    const newTeamLogo = newTeam ? newTeam.logo : (pending.newTeamIcon || '');
+
+    const transferTypes = [
+        { id: 'Bonservis', label: 'Bonservis', icon: 'banknote', desc: 'Kalıcı Transfer' },
+        { id: 'Kiralık', label: 'Kiralık', icon: 'clock', desc: 'Geçici Transfer' },
+        { id: 'Serbest Transfer', label: 'Serbest', icon: 'user-check', desc: 'Bedelsiz İmza' },
+        { id: 'Yetiştirme Tazminatı', label: 'Altyapı / Yetiştirme', icon: 'graduation-cap', desc: 'Akademi Geçişi' }
+    ];
 
     const detailHtml = `
-        <div class="p-6 space-y-4 max-w-md">
-            <div class="flex items-center gap-3 mb-1">
-                <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400">
-                    <i data-lucide="trending-up" class="w-5 h-5"></i>
+        <div class="p-7 max-w-xl mx-auto space-y-6 animate-fade-in">
+            <!-- Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-dark-800/80">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/5">
+                        <i data-lucide="trending-up" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white tracking-wide">Transfer Detayları</h3>
+                        <p class="text-xs text-slate-400">Tüm alanlar opsiyoneldir, dilediğinizi doldurabilirsiniz</p>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="text-base font-bold text-white">Transfer Detayları</h3>
-                    <p class="text-xs text-slate-500">${pending.newTeamTxt} &mdash; Tüm alanlar opsiyoneldir</p>
+                <button onclick="app.cancelTransferChoice()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-dark-800 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Mini Takım Özeti -->
+            <div class="bg-dark-900/90 border border-dark-750 p-3.5 rounded-2xl flex items-center justify-between px-5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-dark-950 p-1 border border-dark-700 flex items-center justify-center shrink-0">
+                        ${this.getLogoDisplayHTML(oldTeamLogo, "w-full h-full object-contain")}
+                    </div>
+                    <span class="text-xs font-bold text-slate-300 truncate max-w-[140px]">${oldTeamName}</span>
+                </div>
+                <div class="flex items-center gap-2 text-emerald-400">
+                    <span class="text-[11px] font-bold uppercase tracking-wider">Transfer</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <span class="text-xs font-bold text-white truncate max-w-[140px]">${pending.newTeamTxt}</span>
+                    <div class="w-8 h-8 rounded-lg bg-dark-950 p-1 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                        ${this.getLogoDisplayHTML(newTeamLogo, "w-full h-full object-contain")}
+                    </div>
                 </div>
             </div>
 
-            <div class="space-y-3">
-                <!-- Transfer Şekli -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-bold text-slate-400">Transfer Şekli</label>
-                    <div class="flex gap-2">
-                        ${['Bonservis','Kiralık','Serbest Transfer','Yetisştirme Tazminatı'].map(s =>
-                            `<label class="flex items-center gap-1.5 cursor-pointer">
-                                <input type="radio" name="transfer-type" value="${s}" class="accent-emerald-500">
-                                <span class="text-xs text-slate-300">${s}</span>
-                            </label>`
-                        ).join('')}
+            <!-- Transfer Şekli (Seçilebilir Butonlar) -->
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                    <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-400"></i> Transfer Şekli
+                </label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="transfer-type-selector">
+                    ${transferTypes.map((t, idx) => `
+                        <button type="button" 
+                                onclick="app.selectTransferType('${t.id}')"
+                                id="tr-type-btn-${t.id.replace(/[^a-zA-Z0-9]/g, '')}"
+                                class="tr-type-btn p-3 rounded-xl border text-left transition-all duration-200 flex flex-col justify-between gap-1.5 ${idx === 0 ? 'bg-emerald-500/15 border-emerald-500 text-white shadow-md shadow-emerald-950/30' : 'bg-dark-900 border-dark-700 text-slate-400 hover:text-slate-200 hover:border-dark-600'}">
+                            <div class="flex items-center justify-between w-full">
+                                <i data-lucide="${t.icon}" class="w-4 h-4 ${idx === 0 ? 'text-emerald-400' : 'text-slate-500'}"></i>
+                                <span class="w-2 h-2 rounded-full ${idx === 0 ? 'bg-emerald-400 shadow-sm shadow-emerald-400' : 'bg-dark-700'}"></span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold block leading-tight">${t.label}</span>
+                                <span class="text-[9px] opacity-60 block">${t.desc}</span>
+                            </div>
+                        </button>
+                    `).join('')}
+                </div>
+                <input type="hidden" id="selected-transfer-type" value="Bonservis">
+            </div>
+
+            <!-- Form Alanları -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Transfer Bedeli -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                        <i data-lucide="circle-dollar-sign" class="w-3.5 h-3.5 text-emerald-400"></i> Transfer Bedeli (€)
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-sm">€</span>
+                        <input type="number" id="transfer-fee" placeholder="Örn: 2500000" class="w-full bg-dark-950 border border-dark-700 rounded-xl pl-8 pr-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 transition-all placeholder:text-slate-600">
                     </div>
                 </div>
 
-                <!-- Transfer Bedeli -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-bold text-slate-400">Transfer Bedeli (€)</label>
-                    <input type="number" id="transfer-fee" placeholder="Örn: 2000000" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600">
-                </div>
-
-                <!-- Sözleşme -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-bold text-slate-400">Sözleşme Süresi</label>
-                    <input type="text" id="transfer-contract" placeholder="Örn: 2026-07 veya 2 yıl" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600">
+                <!-- Sözleşme Süresi -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-400"></i> Sözleşme Süresi
+                    </label>
+                    <input type="text" id="transfer-contract" placeholder="Örn: 3 Yıl (2029)" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 transition-all placeholder:text-slate-600">
                 </div>
 
                 <!-- Transfer Tarihi -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-bold text-slate-400">Transfer Tarihi</label>
-                    <input type="date" id="transfer-date" value="${new Date().toISOString().split('T')[0]}" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 transition-colors">
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i> Transfer Tarihi
+                    </label>
+                    <input type="date" id="transfer-date" value="${new Date().toISOString().split('T')[0]}" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 transition-all">
                 </div>
 
-                <!-- Not -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-bold text-slate-400">Not (opsiyonel)</label>
-                    <textarea id="transfer-note" rows="2" placeholder="Ek notlar..." class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600 resize-none"></textarea>
+                <!-- Not / Detay -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                        <i data-lucide="message-square" class="w-3.5 h-3.5 text-emerald-400"></i> Not (Opsiyonel)
+                    </label>
+                    <input type="text" id="transfer-note" placeholder="Örn: %20 sonraki satış payı" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 transition-all placeholder:text-slate-600">
                 </div>
             </div>
 
-            <div class="flex gap-3 pt-1">
-                <button onclick="app.saveTransferData(${pending.playerId})" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm flex items-center justify-center gap-2 transition-all">
-                    <i data-lucide="check" class="w-4 h-4"></i> Transferi Kaydet
-                </button>
-                <button onclick="app.cancelTransferChoice()" class="px-5 py-3 bg-dark-800 hover:bg-dark-700 text-slate-300 font-bold rounded-xl text-sm transition-all">
+            <!-- Butonlar -->
+            <div class="flex items-center gap-3 pt-3 border-t border-dark-800/80">
+                <button onclick="app.cancelTransferChoice()" class="w-1/3 py-3 px-4 rounded-xl border border-dark-700 bg-dark-900 hover:bg-dark-800 text-slate-300 text-xs font-bold transition-all text-center">
                     Vazgeç
+                </button>
+                <button onclick="app.saveTransferData(${pending.playerId})" class="w-2/3 py-3 px-4 bg-gradient-to-r from-emerald-600 to-scout-600 hover:from-emerald-500 hover:to-scout-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/30 transition-all">
+                    <i data-lucide="check" class="w-4 h-4"></i> Transferi Onayla & Kaydet
                 </button>
             </div>
         </div>
     `;
     this.showModal(detailHtml);
     setTimeout(() => { if (window.lucide) window.lucide.createIcons(); }, 10);
+};
+
+ScoutApp.prototype.selectTransferType = function(typeId) {
+    const hiddenInput = document.getElementById('selected-transfer-type');
+    if (hiddenInput) hiddenInput.value = typeId;
+
+    const allButtons = document.querySelectorAll('.tr-type-btn');
+    allButtons.forEach(btn => {
+        btn.classList.remove('bg-emerald-500/15', 'border-emerald-500', 'text-white', 'shadow-md', 'shadow-emerald-950/30');
+        btn.classList.add('bg-dark-900', 'border-dark-700', 'text-slate-400');
+        
+        const dot = btn.querySelector('span.rounded-full');
+        if (dot) {
+            dot.className = 'w-2 h-2 rounded-full bg-dark-700';
+        }
+        const icon = btn.querySelector('svg');
+        if (icon) icon.classList.remove('text-emerald-400');
+    });
+
+    const activeBtn = document.getElementById(`tr-type-btn-${typeId.replace(/[^a-zA-Z0-9]/g, '')}`);
+    if (activeBtn) {
+        activeBtn.classList.remove('bg-dark-900', 'border-dark-700', 'text-slate-400');
+        activeBtn.classList.add('bg-emerald-500/15', 'border-emerald-500', 'text-white', 'shadow-md', 'shadow-emerald-950/30');
+        
+        const dot = activeBtn.querySelector('span.rounded-full');
+        if (dot) {
+            dot.className = 'w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400';
+        }
+        const icon = activeBtn.querySelector('svg');
+        if (icon) icon.classList.add('text-emerald-400');
+    }
 };
 
 ScoutApp.prototype.saveTransferData = function(playerId) {
@@ -311,7 +482,7 @@ ScoutApp.prototype.saveTransferData = function(playerId) {
     const p = this.state.data.players.find(x => x.id === playerId);
     if (!p) { this.closeModal(); return; }
 
-    const typeEl = document.querySelector('input[name="transfer-type"]:checked');
+    const type = document.getElementById('selected-transfer-type')?.value || 'Bonservis';
     const fee = document.getElementById('transfer-fee')?.value || '';
     const contract = document.getElementById('transfer-contract')?.value || '';
     const date = document.getElementById('transfer-date')?.value || new Date().toISOString().split('T')[0];
@@ -327,39 +498,32 @@ ScoutApp.prototype.saveTransferData = function(playerId) {
         fromTeamId: oldTeamId || null,
         toTeamId: pending.newTeamId,
         toTeamName: pending.newTeamTxt,
-        type: typeEl ? typeEl.value : '',
+        type: type,
         fee: fee ? parseInt(fee) : null,
         contract,
         note
     });
 
-    // Oyuncunun takımını güncelle
+    // Oyuncunun takımını güncelle ve kalıcı kaydet
     p.teamId = pending.newTeamId;
 
     this.saveData();
     this.state.tempData.pendingTransfer = null;
-    this.closeModal();
-
-    // Edit modal'daki orijinal teamId'yi güncelle
-    const teamInput = document.getElementById('edit-p-team');
-    if (teamInput) teamInput.dataset.originalTeamId = String(pending.newTeamId);
+    
+    // Düzenleme ekranına güncel takımla geri dön
+    this.openEditPlayerModal(playerId);
 
     this.notify(`✅ Transfer kaydedildi — ${pending.newTeamTxt}`);
 };
 
 ScoutApp.prototype.cancelTransferChoice = function() {
     const pending = this.state.tempData.pendingTransfer;
-    if (pending) {
-        // Eski takımı geri yükle
-        const teamInput = document.getElementById('edit-p-team');
-        const originalTeamId = teamInput ? (teamInput.dataset.originalTeamId || '') : '';
-        if (teamInput && originalTeamId) {
-            const oldTeam = this.state.data.teams.find(t => t.id == originalTeamId);
-            teamInput.value = originalTeamId;
-            const textInput = document.getElementById('edit-p-team-input');
-            if (textInput && oldTeam) textInput.value = this.getTeamName(oldTeam.id);
-        }
+    if (pending && pending.playerId) {
+        const playerId = pending.playerId;
         this.state.tempData.pendingTransfer = null;
+        // Eski takımı koruyarak düzenleme modalına dön
+        this.openEditPlayerModal(playerId);
+    } else {
+        this.closeModal();
     }
-    this.closeModal();
 };
