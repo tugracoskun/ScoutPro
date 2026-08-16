@@ -368,8 +368,8 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
     let sumY = 0;
     let validCount = 0;
 
-    const isXMarketValue = xAxisAttr === 'Piyasa Değeri (€)';
-    const isYMarketValue = yAxisAttr === 'Piyasa Değeri (€)';
+    const isXMarketValue = xAxisAttr === 'Piyasa Değeri (€)' || xAxisAttr === 'Piyasa Değeri' || (typeof xAxisAttr === 'string' && (xAxisAttr.includes('Piyasa') || xAxisAttr.includes('Market')));
+    const isYMarketValue = yAxisAttr === 'Piyasa Değeri (€)' || yAxisAttr === 'Piyasa Değeri' || (typeof yAxisAttr === 'string' && (yAxisAttr.includes('Piyasa') || yAxisAttr.includes('Market')));
 
     let maxX = 100;
     let maxY = 100;
@@ -447,7 +447,7 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
             labels: {
                 style: { colors: '#64748b' },
                 formatter: function(val) {
-                    if (isXMarketValue) return window.app && window.app.formatMarketValue ? window.app.formatMarketValue(val) : val;
+                    if (isXMarketValue) return window.formatMarketValue ? window.formatMarketValue(val) : (window.app ? window.app.formatMarketValue(val) : val);
                     return val;
                 }
             },
@@ -460,7 +460,7 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
             labels: {
                 style: { colors: '#64748b' },
                 formatter: function(val) {
-                    if (isYMarketValue) return window.app && window.app.formatMarketValue ? window.app.formatMarketValue(val) : val;
+                    if (isYMarketValue) return window.formatMarketValue ? window.formatMarketValue(val) : (window.app ? window.app.formatMarketValue(val) : val);
                     return val;
                 }
             },
@@ -477,7 +477,7 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
                     label: {
                         borderColor: '#334155',
                         style: { color: '#94a3b8', background: '#1e293b', padding: { left: 6, right: 6, top: 3, bottom: 3 } },
-                        text: isXMarketValue ? `Baraj: ${window.app ? window.app.formatMarketValue(maxX / 2) : (maxX / 2)}` : `Baraj: 50`
+                        text: isXMarketValue ? `Baraj: ${window.formatMarketValue ? window.formatMarketValue(maxX / 2) : (maxX / 2)}` : `Baraj: 50`
                     }
                 }
             ],
@@ -489,7 +489,7 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
                     label: {
                         borderColor: '#334155',
                         style: { color: '#94a3b8', background: '#1e293b', padding: { left: 6, right: 6, top: 3, bottom: 3 } },
-                        text: isYMarketValue ? `Baraj: ${window.app ? window.app.formatMarketValue(maxY / 2) : (maxY / 2)}` : `Baraj: 50`
+                        text: isYMarketValue ? `Baraj: ${window.formatMarketValue ? window.formatMarketValue(maxY / 2) : (maxY / 2)}` : `Baraj: 50`
                     }
                 }
             ]
@@ -518,6 +518,9 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
                 const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
                 const player = data.player;
                 const teamName = player.teamId && window.app ? window.app.getTeamName(player.teamId) : '';
+                const fmtX = isXMarketValue ? (window.formatMarketValue ? window.formatMarketValue(data.x) : data.x) : data.x;
+                const fmtY = isYMarketValue ? (window.formatMarketValue ? window.formatMarketValue(data.y) : data.y) : data.y;
+
                 return `
                     <div class="p-3 bg-dark-900 border border-dark-700 shadow-xl rounded-xl">
                         <div class="font-bold text-white mb-1 flex items-center gap-2">
@@ -528,11 +531,11 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
                         <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                             <span class="text-slate-500">${xAxisLabel}:</span> 
                             <span class="font-mono text-right font-bold ${isXMarketValue ? 'text-scout-400' : (window.app && window.app.getGrade ? window.app.getGrade(data.x).color : 'text-scout-400')}">
-                                ${isXMarketValue ? (window.app ? window.app.formatMarketValue(data.x) : data.x) : data.x}
+                                ${fmtX}
                             </span>
                             <span class="text-slate-500">${yAxisLabel}:</span> 
                             <span class="font-mono text-right font-bold ${isYMarketValue ? 'text-scout-400' : (window.app && window.app.getGrade ? window.app.getGrade(data.y).color : 'text-scout-400')}">
-                                ${isYMarketValue ? (window.app ? window.app.formatMarketValue(data.y) : data.y) : data.y}
+                                ${fmtY}
                             </span>
                         </div>
                     </div>
