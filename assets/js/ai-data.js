@@ -1,12 +1,46 @@
 // --- HIZLI ASİSTAN BİLGİ BANKASI (DATA) ---
 
 const ASSISTANT_CATEGORIES = [
-    { id: 'all', name: 'Tümü', icon: 'sparkles' },
-    { id: 'app', name: 'ScoutPro', icon: 'app-window' },
-    { id: 'positions', name: 'Mevkiler & Roller', icon: 'shield' },
-    { id: 'scouting', name: 'Metodoloji & 4 Köşe', icon: 'compass' },
-    { id: 'development', name: 'Gelişim & Yaş', icon: 'trending-up' },
-    { id: 'faq', name: 'Sık Sorulanlar', icon: 'help-circle' }
+    { 
+        id: 'app', 
+        name: 'ScoutPro Kılavuzu', 
+        icon: 'app-window', 
+        color: 'from-blue-500/20 to-cyan-500/20 border-cyan-500/30 text-cyan-400',
+        iconBg: 'bg-cyan-500/10 text-cyan-400',
+        desc: 'Raporlama, veritabanı, transfer geçmişi ve Data Hub kullanımı.' 
+    },
+    { 
+        id: 'positions', 
+        name: 'Mevkiler & Roller', 
+        icon: 'shield', 
+        color: 'from-emerald-500/20 to-green-500/20 border-emerald-500/30 text-emerald-400',
+        iconBg: 'bg-emerald-500/10 text-emerald-400',
+        desc: 'Modern stoper, kanat bek, regista ve forvet profilleri.' 
+    },
+    { 
+        id: 'scouting', 
+        name: 'Metodoloji & 4 Köşe', 
+        icon: 'compass', 
+        color: 'from-purple-500/20 to-indigo-500/20 border-purple-500/30 text-purple-400',
+        iconBg: 'bg-purple-500/10 text-purple-400',
+        desc: '4 Köşe modeli, tarama (scanning) ve canlı scouting.' 
+    },
+    { 
+        id: 'development', 
+        name: 'Gelişim & Yaş Evreleri', 
+        icon: 'trending-up', 
+        color: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30 text-amber-400',
+        iconBg: 'bg-amber-500/10 text-amber-400',
+        desc: 'U9-U21 yaş grupları, PHV dönemi ve Halo etkisi tuzakları.' 
+    },
+    { 
+        id: 'faq', 
+        name: 'Sık Sorulan Sorular', 
+        icon: 'help-circle', 
+        color: 'from-rose-500/20 to-pink-500/20 border-rose-500/30 text-rose-400',
+        iconBg: 'bg-rose-500/10 text-rose-400',
+        desc: 'Puan hesaplama formülü, karşılaştırma ve çevrimdışı kullanım.' 
+    }
 ];
 
 const AI_TUTORIALS = {

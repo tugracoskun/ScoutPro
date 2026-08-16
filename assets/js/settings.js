@@ -52,17 +52,13 @@ ScoutApp.prototype.renderSettings = function(c) {
                 </div>
 
                 <div class="pt-3 border-t border-dark-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${isAssistantEnabled ? '' : 'opacity-40 pointer-events-none'}">
-                    <div class="text-xs text-slate-400">
-                        <b class="text-white">Asistan Buton Konumu:</b> Ekrandaki sabit köşe yerleşimi
+                    <div class="text-xs text-slate-400 leading-relaxed">
+                        <b class="text-white flex items-center gap-1.5"><i data-lucide="move" class="w-3.5 h-3.5 text-scout-400"></i> Serbest Konumlandırma:</b> 
+                        Ekrandaki asistan ikonuna basılı tutarak istediğiniz yere sürükleyip bırakabilirsiniz.
                     </div>
-                    <div class="flex items-center gap-2">
-                        <select id="assistant-pos-select" onchange="app.setAssistantPosition(this.value)" class="bg-dark-950 border border-dark-750 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-scout-500 cursor-pointer">
-                            <option value="bottom-right" ${assistantPosition === 'bottom-right' ? 'selected' : ''}>Sağ Alt (Varsayılan)</option>
-                            <option value="bottom-left" ${assistantPosition === 'bottom-left' ? 'selected' : ''}>Sol Alt</option>
-                            <option value="top-right" ${assistantPosition === 'top-right' ? 'selected' : ''}>Sağ Üst</option>
-                            <option value="top-left" ${assistantPosition === 'top-left' ? 'selected' : ''}>Sol Üst</option>
-                        </select>
-                    </div>
+                    <button onclick="window.scoutAI && window.scoutAI.resetPosition()" class="px-3.5 py-1.5 bg-dark-950 hover:bg-dark-850 border border-dark-750 text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 shrink-0">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-slate-400"></i> Varsayılana Sıfırla (Sağ Alt)
+                    </button>
                 </div>
             </div>
 
