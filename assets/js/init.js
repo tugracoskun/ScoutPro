@@ -1,8 +1,9 @@
 // 1. Uygulamayı oluştur
 const app = new ScoutApp();
 
-// 2. Yapay Zeka Asistanını Başlat
-const scoutAI = new ScoutAI(app); // <-- EKLENDİ
+// 2. Hızlı Asistanı Başlat
+const scoutAI = new ScoutAI(app);
+window.scoutAI = scoutAI;
 
 // 3. Kimlik Yöneticisi
 const auth = new AuthManager(app);

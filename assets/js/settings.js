@@ -1,6 +1,8 @@
 ScoutApp.prototype.renderSettings = function(c) {
     const isOfflineImagesEnabled = !(this.state.data && this.state.data.settings && this.state.data.settings.offlineImages === false);
     const isYouthTipsEnabled = !(this.state.data && this.state.data.settings && this.state.data.settings.youthTips === false);
+    const isAssistantEnabled = !(this.state.data && this.state.data.settings && this.state.data.settings.assistantEnabled === false);
+    const assistantPosition = (this.state.data && this.state.data.settings && this.state.data.settings.assistantPosition) || 'bottom-right';
     const currentTheme = (this.state.data && this.state.data.settings && this.state.data.settings.theme) || window.getTheme();
     const isDark = currentTheme !== 'light';
 
@@ -28,6 +30,39 @@ ScoutApp.prototype.renderSettings = function(c) {
                         <i data-lucide="sun" class="w-3.5 h-3.5 text-amber-500"></i>
                         ${t('light_mode')}
                     </button>
+                </div>
+            </div>
+
+            <!-- Hızlı Asistan Modülü (Aç/Kapa & Konum) -->
+            <div class="bg-dark-900 border border-dark-800 rounded-2xl p-6 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-dark-800 rounded-lg text-emerald-400">
+                            <i data-lucide="compass" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-bold">Hızlı Asistan (Bilgi Bankası)</div>
+                            <div class="text-slate-500 text-xs">Scouting metodolojisi, 4 köşe modeli ve soru-cevap rehberi butonunu gösterir.</div>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer shrink-0 self-start sm:self-auto">
+                        <input type="checkbox" id="assistant-toggle" onchange="app.toggleAssistant(this.checked)" class="sr-only peer" ${isAssistantEnabled ? 'checked' : ''}>
+                        <div class="w-11 h-6 bg-dark-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-scout-500"></div>
+                    </label>
+                </div>
+
+                <div class="pt-3 border-t border-dark-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${isAssistantEnabled ? '' : 'opacity-40 pointer-events-none'}">
+                    <div class="text-xs text-slate-400">
+                        <b class="text-white">Asistan Buton Konumu:</b> Ekrandaki sabit köşe yerleşimi
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <select id="assistant-pos-select" onchange="app.setAssistantPosition(this.value)" class="bg-dark-950 border border-dark-750 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-scout-500 cursor-pointer">
+                            <option value="bottom-right" ${assistantPosition === 'bottom-right' ? 'selected' : ''}>Sağ Alt (Varsayılan)</option>
+                            <option value="bottom-left" ${assistantPosition === 'bottom-left' ? 'selected' : ''}>Sol Alt</option>
+                            <option value="top-right" ${assistantPosition === 'top-right' ? 'selected' : ''}>Sağ Üst</option>
+                            <option value="top-left" ${assistantPosition === 'top-left' ? 'selected' : ''}>Sol Üst</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -204,6 +239,30 @@ ScoutApp.prototype.toggleYouthTips = function(enabled) {
     this.saveData();
     const isEn = window.getLang && window.getLang() === 'en';
     this.notify(enabled ? (isEn ? "Youth development tips enabled." : "Gençlik gelişim ipuçları açıldı.") : (isEn ? "Youth development tips disabled." : "Gençlik gelişim ipuçları kapatıldı."));
+};
+
+ScoutApp.prototype.toggleAssistant = function(enabled) {
+    if (window.scoutAI) {
+        window.scoutAI.toggleAssistant(enabled);
+    } else {
+        if (!this.state.data.settings) this.state.data.settings = {};
+        this.state.data.settings.assistantEnabled = enabled;
+        this.saveData();
+    }
+    const contentArea = document.getElementById('content-area');
+    if (contentArea && this.state.activePage === 'settings') {
+        this.renderSettings(contentArea);
+    }
+};
+
+ScoutApp.prototype.setAssistantPosition = function(pos) {
+    if (window.scoutAI) {
+        window.scoutAI.setPosition(pos);
+    } else {
+        if (!this.state.data.settings) this.state.data.settings = {};
+        this.state.data.settings.assistantPosition = pos;
+        this.saveData();
+    }
 };
 
 ScoutApp.prototype.setTheme = function(theme) {
