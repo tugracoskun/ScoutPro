@@ -1158,26 +1158,27 @@ ScoutApp.prototype.renderStatistics = function(c) {
 
                     if (finalLevel > 0) {
                         tooltip.text(
-                            `<div class="flex flex-col gap-1 min-w-[140px] p-3">
-                                <div class="flex items-center gap-2 border-b border-white/10 pb-2 mb-1">
+                            `<div class="flex flex-col gap-2.5 min-w-[200px] p-3.5 select-none">
+                                <div class="flex items-center justify-between border-b border-dark-700/80 pb-2">
                                     <span class="text-xs font-bold text-white uppercase tracking-wider">${tooltip.text()}</span>
+                                    <span class="w-2 h-2 rounded-full ${levelObj.bgClass || 'bg-emerald-500'}"></span>
                                 </div>
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-[10px] text-slate-400 font-medium">Scout Edilen</span>
-                                    <span class="text-[10px] font-black text-white bg-dark-700 px-1.5 py-0.5 rounded">${count} Oyuncu</span>
+                                <div class="flex items-center justify-between gap-4 text-xs">
+                                    <span class="text-slate-400 font-medium">Scout Edilen</span>
+                                    <span class="font-bold text-white font-mono bg-dark-800/80 border border-dark-700 px-2 py-0.5 rounded-md text-[11px] shrink-0">${count} Oyuncu</span>
                                 </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs text-slate-300 font-medium">Bilgi Seviyesi</span>
-                                    <span class="text-xs font-black ${levelObj.textClass}">${levelObj.text} ${isFromRegion ? '<span class="text-[8px] opacity-60 ml-1 font-medium">(Bölge)</span>' : ''}</span>
+                                <div class="flex items-center justify-between gap-4 text-xs">
+                                    <span class="text-slate-400 font-medium">Bilgi Seviyesi</span>
+                                    <span class="font-bold ${levelObj.textClass} text-right shrink-0">${levelObj.text} ${isFromRegion ? '<span class="text-[9px] opacity-60 ml-0.5 font-normal">(Bölge)</span>' : ''}</span>
                                 </div>
                             </div>`,
                             true
                         );
                     } else {
                         tooltip.text(
-                            `<div class="p-2 px-3">
-                                <span class="text-xs font-bold text-slate-400">${tooltip.text()}</span>
-                                <div class="text-[10px] text-slate-500 mt-1">Veri yok</div>
+                            `<div class="p-3 px-4 select-none min-w-[150px]">
+                                <span class="text-xs font-bold text-white uppercase tracking-wider block">${tooltip.text()}</span>
+                                <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5"><i data-lucide="info" class="w-3 h-3"></i> Kayıtlı veri yok</div>
                             </div>`,
                             true
                         );

@@ -131,38 +131,52 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
                 </div>
             </div>
 
-            <!-- CONTENT BODY (3 KOLONLU YAPI) -->
+            <!-- CONTENT BODY (DİKEY KAYDIRILABİLİR FERAH YAPI) -->
             <div id="modal-content-body" class="flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-10 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-dark-900 via-dark-950 to-dark-950">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-[1920px] mx-auto h-full">
+                <div class="max-w-[1920px] mx-auto space-y-8 pb-12">
                     
-                    <!-- 1. SOL KOLON: KİMLİK KARTI (Sabit) -->
-                    <div class="lg:col-span-3 flex flex-col gap-6">
-                        <div class="bg-dark-900/50 backdrop-blur rounded-3xl border border-dark-800 p-6 flex flex-col items-center text-center shadow-xl">
-                            <div class="relative mb-6 group">
-                                <img src="${this.getImageUrl(p.image)}" class="w-48 h-48 rounded-2xl object-cover border-4 border-dark-800 shadow-2xl" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
-                                <div class="absolute -bottom-4 -right-4 bg-dark-900 rounded-full p-1.5 shadow-xl"><div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold border-2 border-dark-800 bg-dark-950 ${grade.color}">${grade.letter}</div></div>
+                    <!-- ÜST BÖLÜM: 3 KOLONLU KİMLİK, ÖZELLİKLER VE RADAR -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        
+                        <!-- 1. SOL KOLON: KİMLİK KARTI & KÜNYE -->
+                        <div class="lg:col-span-3 flex flex-col gap-6">
+                            <div class="bg-dark-900/50 backdrop-blur rounded-3xl border border-dark-800 p-6 flex flex-col items-center text-center shadow-xl">
+                                <div class="relative mb-6 group">
+                                    <img src="${this.getImageUrl(p.image)}" class="w-48 h-48 rounded-2xl object-cover border-4 border-dark-800 shadow-2xl" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
+                                    <div class="absolute -bottom-4 -right-4 bg-dark-900 rounded-full p-1.5 shadow-xl"><div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold border-2 border-dark-800 bg-dark-950 ${grade.color}">${grade.letter}</div></div>
+                                </div>
+                                <div class="w-full py-4 px-5 rounded-xl border border-dashed flex justify-between items-center ${potClass} mb-6"><span class="text-xs font-bold opacity-70">${t('potential').toUpperCase()}</span><span class="text-sm font-black tracking-wider uppercase">${potTrans}</span></div>
+                                <div class="w-full space-y-3 text-sm">
+                                    <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('age')}</span><span class="text-white font-mono font-bold">${currentAge}</span></div>
+                                    <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('birth_date')}</span><span class="text-white text-xs">${birthDatePretty}</span></div>
+                                    <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('height')}</span><span class="text-white font-mono font-bold">${p.height || '-'}</span></div>
+                                    <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('foot')}</span><span class="text-white font-bold">${footTrans}</span></div>
+                                    <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('market_value')}</span><span class="text-scout-400 font-mono font-bold">${this.formatMarketValue(currentReport.marketValue || p.marketValue)}</span></div>
+                                    ${(p.transfers && p.transfers.length > 0) ? `
+                                    <div onclick="document.getElementById('section-transfers')?.scrollIntoView({behavior:'smooth'})" class="flex justify-between py-2 border-b border-dark-800/50 cursor-pointer group hover:bg-dark-800/30 px-1.5 rounded-lg transition-colors" title="Aşağıdaki Transfer Geçmişine Git">
+                                        <span class="text-slate-400 font-medium flex items-center gap-1.5 text-xs"><i data-lucide="arrow-right-left" class="w-3.5 h-3.5 text-emerald-400"></i> Transfer Geçmişi</span>
+                                        <span class="text-emerald-400 font-bold text-xs flex items-center gap-1">${p.transfers.length} Transfer <i data-lucide="arrow-down" class="w-3 h-3 text-slate-500 group-hover:translate-y-0.5 transition-transform"></i></span>
+                                    </div>
+                                    ` : ''}
+                                    ${p.nationality ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('nationality')}</span><span class="text-white flex items-center gap-1.5">${natFlag} <span class="font-bold">${natName}</span></span></div>` : ''}
+                                    <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('report_date')}</span><span class="text-white font-mono text-xs opacity-70">${currentReport.date}</span></div>
+                                    ${currentReport.matchId && this.getMatchDisplay(currentReport.matchId) ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium flex items-center gap-1"><i data-lucide="tv" class="w-3 h-3 text-scout-400"></i> ${t('watched_match')}</span><span class="text-scout-400 text-xs font-bold text-right max-w-[60%] truncate" title="${this.getMatchDisplay(currentReport.matchId)}">${this.getMatchDisplay(currentReport.matchId)}</span></div>` : ''}
+                                    ${currentReport.source ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('source')}</span><span class="text-white text-xs text-right max-w-[60%] truncate" title="${currentReport.source}">${currentReport.source}</span></div>` : ''}
+                                </div>
                             </div>
-                            <div class="w-full py-4 px-5 rounded-xl border border-dashed flex justify-between items-center ${potClass} mb-6"><span class="text-xs font-bold opacity-70">${t('potential').toUpperCase()}</span><span class="text-sm font-black tracking-wider uppercase">${potTrans}</span></div>
-                            <div class="w-full space-y-3 text-sm">
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('age')}</span><span class="text-white font-mono font-bold">${currentAge}</span></div>
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('birth_date')}</span><span class="text-white text-xs">${birthDatePretty}</span></div>
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('height')}</span><span class="text-white font-mono font-bold">${p.height || '-'}</span></div>
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('foot')}</span><span class="text-white font-bold">${footTrans}</span></div>
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('market_value')}</span><span class="text-scout-400 font-mono font-bold">${this.formatMarketValue(currentReport.marketValue || p.marketValue)}</span></div>
-                                ${p.nationality ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('nationality')}</span><span class="text-white flex items-center gap-1.5">${natFlag} <span class="font-bold">${natName}</span></span></div>` : ''}
-                                <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('report_date')}</span><span class="text-white font-mono text-xs opacity-70">${currentReport.date}</span></div>
-                                ${currentReport.matchId && this.getMatchDisplay(currentReport.matchId) ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium flex items-center gap-1"><i data-lucide="tv" class="w-3 h-3 text-scout-400"></i> ${t('watched_match')}</span><span class="text-scout-400 text-xs font-bold text-right max-w-[60%] truncate" title="${this.getMatchDisplay(currentReport.matchId)}">${this.getMatchDisplay(currentReport.matchId)}</span></div>` : ''}
-                                ${currentReport.source ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('source')}</span><span class="text-white text-xs text-right max-w-[60%] truncate" title="${currentReport.source}">${currentReport.source}</span></div>` : ''}
+                            <div class="grid grid-cols-2 gap-3">
+                                ${p.tmUrl ? `<button onclick="app.openExternal('${p.tmUrl}')" class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-[#1a3150]/80 hover:bg-[#1a3150] text-white text-xs font-bold transition-all border border-[#304e76] hover:scale-[1.02]"><i data-lucide="globe" class="w-4 h-4"></i> TM</button>` : `<button disabled class="py-4 rounded-2xl bg-dark-900 text-slate-600 text-xs font-bold border border-dark-800 cursor-not-allowed opacity-50">TM ${t('no_data') || 'Yok'}</button>`}
+                                ${p.sofaUrl ? `<button onclick="app.openExternal('${p.sofaUrl}')" class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-[#2c3e50]/80 hover:bg-[#2c3e50] text-white text-xs font-bold transition-all border border-[#48637d] hover:scale-[1.02]"><i data-lucide="activity" class="w-4 h-4"></i> Sofascore</button>` : `<button disabled class="py-4 rounded-2xl bg-dark-900 text-slate-600 text-xs font-bold border border-dark-800 cursor-not-allowed opacity-50">Sofa ${t('no_data') || 'Yok'}</button>`}
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            ${p.tmUrl ? `<button onclick="app.openExternal('${p.tmUrl}')" class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-[#1a3150]/80 hover:bg-[#1a3150] text-white text-xs font-bold transition-all border border-[#304e76] hover:scale-[1.02]"><i data-lucide="globe" class="w-4 h-4"></i> TM</button>` : `<button disabled class="py-4 rounded-2xl bg-dark-900 text-slate-600 text-xs font-bold border border-dark-800 cursor-not-allowed opacity-50">TM ${t('no_data') || 'Yok'}</button>`}
-                            ${p.sofaUrl ? `<button onclick="app.openExternal('${p.sofaUrl}')" class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-[#2c3e50]/80 hover:bg-[#2c3e50] text-white text-xs font-bold transition-all border border-[#48637d] hover:scale-[1.02]"><i data-lucide="activity" class="w-4 h-4"></i> Sofascore</button>` : `<button disabled class="py-4 rounded-2xl bg-dark-900 text-slate-600 text-xs font-bold border border-dark-800 cursor-not-allowed opacity-50">Sofa ${t('no_data') || 'Yok'}</button>`}
-                        </div>
+
+                        <!-- 2. ORTA VE SAĞ KOLON (players-modal-content.js) -->
+                        ${mainContentHTML.topSection}
+
                     </div>
 
-                    <!-- ORTA VE SAĞ KOLON (DIŞARIDAN GELİYOR) -->
-                    ${mainContentHTML}
+                    <!-- ALT BÖLÜM: GENİŞ TRANSFER GEÇMİŞİ & MEDYA / NOTLAR ALANI -->
+                    ${mainContentHTML.bottomSection}
 
                 </div>
             </div>
@@ -201,7 +215,7 @@ ScoutApp.prototype.switchAttrTab = function(category) {
     }
 };
 
-// 2. Medya Sekmeleri (Notlar vs Videolar)
+// 2. Medya Sekmeleri (Notlar vs Videolar vs Transferler)
 ScoutApp.prototype.switchMediaTab = function(tabName) {
     // Tüm medya içeriklerini gizle
     document.querySelectorAll('.media-content').forEach(el => {
@@ -231,6 +245,156 @@ ScoutApp.prototype.switchMediaTab = function(tabName) {
     
     // Grafik boyutunu korumak için küçük bir hack (ApexCharts bazen layout değişiminde sapıtabiliyor)
     window.dispatchEvent(new Event('resize'));
+};
+
+// 3. Transfer Silme
+ScoutApp.prototype.deletePlayerTransfer = function(playerId, transferIdOrIndex) {
+    this.confirmAction("Bu transfer kaydını silmek istediğinize emin misiniz?", () => {
+        const p = this.state.data.players.find(x => x.id === playerId);
+        if (!p || !p.transfers) return;
+
+        p.transfers = p.transfers.filter((t, idx) => t.id ? t.id !== transferIdOrIndex : idx !== transferIdOrIndex);
+        this.saveData();
+        this.openPlayerModal(playerId);
+        this.notify("Transfer kaydı silindi.");
+    });
+};
+
+// 4. Transfer Detay Modalı (Tıklanınca Açılan Pencere)
+ScoutApp.prototype.openTransferDetailModal = function(playerId, transferIdOrIndex) {
+    const p = this.state.data.players.find(x => x.id === playerId);
+    if (!p || !p.transfers) return;
+
+    const tr = p.transfers.find((t, idx) => (t.id ? t.id === transferIdOrIndex : idx === transferIdOrIndex));
+    if (!tr) return;
+
+    const fromTeam = tr.fromTeamId ? this.state.data.teams.find(t => t.id === tr.fromTeamId) : null;
+    const fromName = fromTeam ? this.getTeamName(fromTeam.id) : (tr.fromTeamName || 'Önceki Kulüp');
+    const fromLogo = fromTeam ? fromTeam.logo : '';
+    
+    const toTeam = tr.toTeamId ? this.state.data.teams.find(t => t.id === tr.toTeamId) : null;
+    const toName = toTeam ? this.getTeamName(toTeam.id) : (tr.toTeamName || 'Yeni Kulüp');
+    const toLogo = toTeam ? toTeam.logo : '';
+
+    const feeFormatted = tr.fee ? `€${Number(tr.fee).toLocaleString('tr-TR')}` : (tr.type === 'Serbest Transfer' ? 'Bedelsiz' : 'Belirtilmedi');
+
+    const detailHtml = `
+        <div class="p-7 max-w-lg mx-auto space-y-6 animate-fade-in">
+            <!-- Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-dark-800/80">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/5">
+                        <i data-lucide="arrow-right-left" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white tracking-wide">Transfer Detayları</h3>
+                        <p class="text-xs text-slate-400">${tr.date || '-'} tarihinde kaydedildi</p>
+                    </div>
+                </div>
+                <button onclick="app.openPlayerModal(${playerId})" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-dark-800 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Kulüp Geçiş Kartı -->
+            <div class="bg-gradient-to-r from-dark-900 via-dark-850 to-dark-900 p-5 rounded-2xl border border-dark-750 flex items-center justify-between shadow-inner">
+                <!-- Çıkış Kulübü -->
+                <div class="flex flex-col items-center text-center gap-2 min-w-0 flex-1">
+                    <div class="w-12 h-12 rounded-2xl bg-dark-950 p-2 border border-dark-700 flex items-center justify-center shadow-md">
+                        ${this.getLogoDisplayHTML(fromLogo, "w-full h-full object-contain")}
+                    </div>
+                    <div>
+                        <span class="text-[9px] uppercase font-bold text-slate-500 block tracking-wider">Eski Kulüp</span>
+                        <span class="text-xs font-bold text-slate-200 truncate max-w-[130px] block">${fromName}</span>
+                    </div>
+                </div>
+
+                <!-- Transfer Oku & Şekil Rozeti -->
+                <div class="px-2 flex flex-col items-center justify-center gap-1.5 shrink-0">
+                    <div class="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shadow-sm">
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </div>
+                    ${tr.type ? `
+                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                            tr.type === 'Kiralık' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 
+                            tr.type === 'Serbest Transfer' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 
+                            'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                        }">
+                            ${tr.type}
+                        </span>
+                    ` : ''}
+                </div>
+
+                <!-- Varış Kulübü -->
+                <div class="flex flex-col items-center text-center gap-2 min-w-0 flex-1">
+                    <div class="w-12 h-12 rounded-2xl bg-dark-950 p-2 border border-emerald-500/30 flex items-center justify-center shadow-md">
+                        ${this.getLogoDisplayHTML(toLogo, "w-full h-full object-contain")}
+                    </div>
+                    <div>
+                        <span class="text-[9px] uppercase font-bold text-emerald-400 block tracking-wider">Yeni Kulüp</span>
+                        <span class="text-xs font-bold text-white truncate max-w-[130px] block">${toName}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detay Parametreleri (Grid) -->
+            <div class="grid grid-cols-2 gap-3.5 text-xs">
+                <!-- Bedel -->
+                <div class="bg-dark-950/70 border border-dark-800 p-3.5 rounded-2xl space-y-1">
+                    <div class="flex items-center gap-1.5 text-slate-400 text-[11px] font-medium">
+                        <i data-lucide="circle-dollar-sign" class="w-3.5 h-3.5 text-emerald-400"></i> Transfer Bedeli
+                    </div>
+                    <div class="text-sm font-bold text-white font-mono">${feeFormatted}</div>
+                </div>
+
+                <!-- Sözleşme -->
+                <div class="bg-dark-950/70 border border-dark-800 p-3.5 rounded-2xl space-y-1">
+                    <div class="flex items-center gap-1.5 text-slate-400 text-[11px] font-medium">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5 text-blue-400"></i> Sözleşme Süresi
+                    </div>
+                    <div class="text-sm font-bold text-white">${tr.contract || 'Belirtilmedi'}</div>
+                </div>
+
+                <!-- Transfer Tarihi -->
+                <div class="bg-dark-950/70 border border-dark-800 p-3.5 rounded-2xl space-y-1">
+                    <div class="flex items-center gap-1.5 text-slate-400 text-[11px] font-medium">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i> Transfer Tarihi
+                    </div>
+                    <div class="text-sm font-bold text-white font-mono">${tr.date || '-'}</div>
+                </div>
+
+                <!-- Transfer Türü -->
+                <div class="bg-dark-950/70 border border-dark-800 p-3.5 rounded-2xl space-y-1">
+                    <div class="flex items-center gap-1.5 text-slate-400 text-[11px] font-medium">
+                        <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-400"></i> Transfer Şekli
+                    </div>
+                    <div class="text-sm font-bold text-white">${tr.type || 'Kalıcı Transfer'}</div>
+                </div>
+            </div>
+
+            <!-- Not -->
+            ${tr.note ? `
+                <div class="bg-dark-950/70 border border-dark-800 p-4 rounded-2xl space-y-1.5">
+                    <div class="flex items-center gap-1.5 text-slate-400 text-[11px] font-medium">
+                        <i data-lucide="message-square" class="w-3.5 h-3.5 text-amber-400"></i> Transfer Notu
+                    </div>
+                    <p class="text-xs text-slate-200 leading-relaxed italic">"${tr.note}"</p>
+                </div>
+            ` : ''}
+
+            <!-- Alt Butonlar -->
+            <div class="flex items-center gap-3 pt-2 border-t border-dark-800/80">
+                <button onclick="app.deletePlayerTransfer(${playerId}, ${tr.id || transferIdOrIndex})" class="py-3 px-4 rounded-xl border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i> Transferi Sil
+                </button>
+                <button onclick="app.openPlayerModal(${playerId})" class="flex-1 py-3 px-4 bg-dark-800 hover:bg-dark-700 text-white font-bold rounded-xl text-xs transition-all text-center">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    `;
+    this.showModal(detailHtml);
+    setTimeout(() => { if (window.lucide) window.lucide.createIcons(); }, 10);
 };
 
 // 3. Özellik Ağacını Aç/Kapat (Kategorisiz Model)

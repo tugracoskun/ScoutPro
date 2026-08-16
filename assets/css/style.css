@@ -304,15 +304,18 @@ input, textarea, select {
 
 /* --- JSVECTORMAP TOOLTIP OVERRIDE --- */
 .jvm-tooltip {
-    background-color: rgba(15, 23, 42, 0.9) !important;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(51, 65, 85, 0.8) !important;
-    border-radius: 0.75rem !important;
+    background-color: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(51, 65, 85, 0.9) !important;
+    border-radius: 0.875rem !important;
     padding: 0 !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4) !important;
     color: #e2e8f0 !important;
     font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    white-space: normal !important;
+    pointer-events: none;
+    z-index: 9999 !important;
     overflow: hidden;
 }
 

@@ -172,10 +172,19 @@ ScoutApp.prototype.getPlayerCardHTML = function(p) {
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-3 gap-2 bg-dark-950/50 rounded-lg p-2 border border-dark-800/50">
-                    <div class="text-center"><div class="text-[10px] text-slate-500">${t('age')}</div><div class="font-medium text-white">${currentAge}</div></div>
-                    <div class="text-center"><div class="text-[10px] text-slate-500">${t('grade')}</div><div class="font-bold text-xs ${grade.color}">${grade.letter}</div></div>
-                    <div class="text-center"><div class="text-[10px] text-slate-500">${t('detail')}</div><i data-lucide="search" class="w-4 h-4 mx-auto text-slate-400 hover:text-white transition-colors"></i></div>
+                <div class="grid grid-cols-3 gap-2 bg-dark-950/50 rounded-xl p-2.5 border border-dark-800/60 items-center">
+                    <div class="text-center">
+                        <div class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">${t('age')}</div>
+                        <div class="font-bold text-sm text-white font-mono mt-0.5">${currentAge}</div>
+                    </div>
+                    <div class="text-center border-x border-dark-800/60">
+                        <div class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">${t('grade')}</div>
+                        <div class="font-black text-sm ${grade.color} mt-0.5">${grade.letter}</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">${t('detail')}</div>
+                        <div class="flex items-center justify-center mt-0.5"><i data-lucide="search" class="w-4 h-4 text-slate-400 group-hover:text-scout-400 transition-colors"></i></div>
+                    </div>
                 </div>
             </div>
         </div>
