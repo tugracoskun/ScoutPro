@@ -161,6 +161,19 @@ ScoutApp.prototype.handleCustomSelect = function(id, val, text, icon, evtCode) {
         const callbackFn = new Function('value', evtCode.replace('this.value', 'value'));
         callbackFn.call(dummyInput, val);
     }
+
+    // Transfer tespiti: edit-p-team için farklı takım seçilince onEditTeamChange'i tetikle
+    if (id === 'edit-p-team') {
+        // Oyuncu ID'sini save butonundan al
+        const saveBtn = document.querySelector('button[onclick^="app.updatePlayer("]');
+        if (saveBtn) {
+            const match = saveBtn.getAttribute('onclick').match(/updatePlayer\((\d+)\)/);
+            if (match) {
+                const playerId = parseInt(match[1]);
+                this.onEditTeamChange(playerId, val, text, icon);
+            }
+        }
+    }
 };
 
 ScoutApp.prototype.filterCustomSelect = function(id, query, evtCode) {

@@ -19,7 +19,7 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
                 ${this.createInput('edit-p-name', t('player_name'), 'Ad Soyad', 'text', p.name)}
                 
                 <div class="grid grid-cols-2 gap-4">
-                    ${this.createCustomSearchSelect('edit-p-team', 'Kulüp / Gençlik Takımı', 'Takım Ara...', teams, p.teamId)}
+                    ${this.createCustomSearchSelect('edit-p-team', 'Kulüb / Gençlik Takımı', 'Takım Ara...', teams, p.teamId, '', false, p.teamId)}
                     ${this.createCustomSearchSelect('edit-p-national-team', 'Milli Takımı', 'Milli Takım Ara...', nationalTeams, p.nationalTeamId)}
                 </div>
 
@@ -75,6 +75,9 @@ ScoutApp.prototype.openEditPlayerModal = function(id) {
         </div>
     `;
     lucide.createIcons();
+    // Orijinal takım ID'sini kaydet (transfer tespiti için)
+    const teamInput = document.getElementById('edit-p-team');
+    if (teamInput) teamInput.dataset.originalTeamId = p.teamId || '';
 };
 
 // --- OYUNCU DÜZENLEME (Otomatik Yaş Hesaplama ve U23) ---
@@ -171,4 +174,192 @@ ScoutApp.prototype.deletePlayer = function(id) {
         
         this.notify(t('deleted_success'));
     });
+};
+
+// --- TRANSFER TESPETİ & DİYALOG ---
+ScoutApp.prototype.onEditTeamChange = function(playerId, newTeamId, newTeamTxt, newTeamIcon) {
+    const teamInput = document.getElementById('edit-p-team');
+    const originalTeamId = teamInput ? (teamInput.dataset.originalTeamId || '') : '';
+    const newId = String(newTeamId);
+    const oldId = String(originalTeamId);
+
+    // Aynı takım seçildiyse veya orijinal boşsa diyalog açma
+    if (!oldId || newId === oldId) return;
+
+    // Yeni takım bilgisini geçici kaydet
+    this.state.tempData.pendingTransfer = { playerId, newTeamId: parseInt(newTeamId), newTeamTxt, newTeamIcon };
+
+    const oldTeam = this.state.data.teams.find(t => t.id == originalTeamId);
+    const oldTeamName = oldTeam ? this.getTeamName(oldTeam.id) : 'Bilinmiyor';
+
+    // Transfer sorgu modalı
+    const modalHtml = `
+        <div class="p-6 space-y-4 max-w-md">
+            <div class="flex items-start gap-4">
+                <div class="p-3 rounded-xl bg-amber-500/10 text-amber-400 shrink-0">
+                    <i data-lucide="arrow-right-left" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white mb-1">Takım değiştirildi</h3>
+                    <p class="text-sm text-slate-400">Oyuncunun takımını <span class="text-white font-semibold">${oldTeamName}</span>'dan <span class="text-white font-semibold">${newTeamTxt}</span>'a geçirmek istiyorsunuz. Sebebi nedir?</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="app.confirmTransferChoice('mistake')" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-dark-700 bg-dark-800 hover:border-slate-500 hover:bg-dark-700 transition-all text-center">
+                    <i data-lucide="rotate-ccw" class="w-5 h-5 text-slate-400"></i>
+                    <span class="text-xs font-bold text-slate-300">Yanlışlığı Düzelttim</span>
+                    <span class="text-[10px] text-slate-600">Sadece hatayı düzelttim</span>
+                </button>
+                <button onclick="app.confirmTransferChoice('transfer')" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/60 hover:bg-emerald-500/10 transition-all text-center">
+                    <i data-lucide="trending-up" class="w-5 h-5 text-emerald-400"></i>
+                    <span class="text-xs font-bold text-emerald-300">Transfer Oldu</span>
+                    <span class="text-[10px] text-slate-500">Transfer detayı gir</span>
+                </button>
+            </div>
+            <button onclick="app.cancelTransferChoice()" class="w-full text-xs text-slate-500 hover:text-slate-300 py-2 transition-colors">Vazgeç (eski takımı koru)</button>
+        </div>
+    `;
+    this.showModal(modalHtml);
+    setTimeout(() => { if (window.lucide) window.lucide.createIcons(); }, 10);
+};
+
+ScoutApp.prototype.confirmTransferChoice = function(choice) {
+    this.closeModal();
+    const pending = this.state.tempData.pendingTransfer;
+    if (!pending) return;
+
+    if (choice === 'mistake') {
+        // Sadece takımı güncelle, kayıt yok
+        this.state.tempData.pendingTransfer = null;
+        this.notify('Takım güncellendi.');
+        return;
+    }
+
+    // Transfer detay modalı
+    const teams = this.state.data.teams.filter(t => t.type !== 'national');
+    const newTeam = teams.find(t => t.id === pending.newTeamId);
+
+    const detailHtml = `
+        <div class="p-6 space-y-4 max-w-md">
+            <div class="flex items-center gap-3 mb-1">
+                <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400">
+                    <i data-lucide="trending-up" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white">Transfer Detayları</h3>
+                    <p class="text-xs text-slate-500">${pending.newTeamTxt} &mdash; Tüm alanlar opsiyoneldir</p>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <!-- Transfer Şekli -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-slate-400">Transfer Şekli</label>
+                    <div class="flex gap-2">
+                        ${['Bonservis','Kiralık','Serbest Transfer','Yetisştirme Tazminatı'].map(s =>
+                            `<label class="flex items-center gap-1.5 cursor-pointer">
+                                <input type="radio" name="transfer-type" value="${s}" class="accent-emerald-500">
+                                <span class="text-xs text-slate-300">${s}</span>
+                            </label>`
+                        ).join('')}
+                    </div>
+                </div>
+
+                <!-- Transfer Bedeli -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-slate-400">Transfer Bedeli (€)</label>
+                    <input type="number" id="transfer-fee" placeholder="Örn: 2000000" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600">
+                </div>
+
+                <!-- Sözleşme -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-slate-400">Sözleşme Süresi</label>
+                    <input type="text" id="transfer-contract" placeholder="Örn: 2026-07 veya 2 yıl" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600">
+                </div>
+
+                <!-- Transfer Tarihi -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-slate-400">Transfer Tarihi</label>
+                    <input type="date" id="transfer-date" value="${new Date().toISOString().split('T')[0]}" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 transition-colors">
+                </div>
+
+                <!-- Not -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-slate-400">Not (opsiyonel)</label>
+                    <textarea id="transfer-note" rows="2" placeholder="Ek notlar..." class="w-full bg-dark-950 border border-dark-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-600 resize-none"></textarea>
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-1">
+                <button onclick="app.saveTransferData(${pending.playerId})" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm flex items-center justify-center gap-2 transition-all">
+                    <i data-lucide="check" class="w-4 h-4"></i> Transferi Kaydet
+                </button>
+                <button onclick="app.cancelTransferChoice()" class="px-5 py-3 bg-dark-800 hover:bg-dark-700 text-slate-300 font-bold rounded-xl text-sm transition-all">
+                    Vazgeç
+                </button>
+            </div>
+        </div>
+    `;
+    this.showModal(detailHtml);
+    setTimeout(() => { if (window.lucide) window.lucide.createIcons(); }, 10);
+};
+
+ScoutApp.prototype.saveTransferData = function(playerId) {
+    const pending = this.state.tempData.pendingTransfer;
+    if (!pending) { this.closeModal(); return; }
+
+    const p = this.state.data.players.find(x => x.id === playerId);
+    if (!p) { this.closeModal(); return; }
+
+    const typeEl = document.querySelector('input[name="transfer-type"]:checked');
+    const fee = document.getElementById('transfer-fee')?.value || '';
+    const contract = document.getElementById('transfer-contract')?.value || '';
+    const date = document.getElementById('transfer-date')?.value || new Date().toISOString().split('T')[0];
+    const note = document.getElementById('transfer-note')?.value || '';
+
+    const oldTeamId = p.teamId;
+
+    // Transfer geçmişini kaydet
+    if (!p.transfers) p.transfers = [];
+    p.transfers.push({
+        id: Date.now(),
+        date,
+        fromTeamId: oldTeamId || null,
+        toTeamId: pending.newTeamId,
+        toTeamName: pending.newTeamTxt,
+        type: typeEl ? typeEl.value : '',
+        fee: fee ? parseInt(fee) : null,
+        contract,
+        note
+    });
+
+    // Oyuncunun takımını güncelle
+    p.teamId = pending.newTeamId;
+
+    this.saveData();
+    this.state.tempData.pendingTransfer = null;
+    this.closeModal();
+
+    // Edit modal'daki orijinal teamId'yi güncelle
+    const teamInput = document.getElementById('edit-p-team');
+    if (teamInput) teamInput.dataset.originalTeamId = String(pending.newTeamId);
+
+    this.notify(`✅ Transfer kaydedildi — ${pending.newTeamTxt}`);
+};
+
+ScoutApp.prototype.cancelTransferChoice = function() {
+    const pending = this.state.tempData.pendingTransfer;
+    if (pending) {
+        // Eski takımı geri yükle
+        const teamInput = document.getElementById('edit-p-team');
+        const originalTeamId = teamInput ? (teamInput.dataset.originalTeamId || '') : '';
+        if (teamInput && originalTeamId) {
+            const oldTeam = this.state.data.teams.find(t => t.id == originalTeamId);
+            teamInput.value = originalTeamId;
+            const textInput = document.getElementById('edit-p-team-input');
+            if (textInput && oldTeam) textInput.value = this.getTeamName(oldTeam.id);
+        }
+        this.state.tempData.pendingTransfer = null;
+    }
+    this.closeModal();
 };

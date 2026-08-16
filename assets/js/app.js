@@ -188,6 +188,39 @@ class ScoutApp {
                                 ${p.tmUrl ? `<a href="${p.tmUrl}" target="_blank" class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-[#1a3150] hover:bg-[#25426a] text-white text-xs font-bold transition-all border border-[#304e76] hover:shadow-lg"><i data-lucide="globe" class="w-4 h-4"></i> Transfermarkt</a>` : `<button disabled class="py-4 rounded-2xl bg-dark-900 text-slate-600 text-xs font-bold border border-dark-800 cursor-not-allowed">TM Yok</button>`}
                                 ${p.sofaUrl ? `<a href="${p.sofaUrl}" target="_blank" class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-[#2c3e50] hover:bg-[#3c5267] text-white text-xs font-bold transition-all border border-[#48637d] hover:shadow-lg"><i data-lucide="activity" class="w-4 h-4"></i> Sofascore</a>` : `<button disabled class="py-4 rounded-2xl bg-dark-900 text-slate-600 text-xs font-bold border border-dark-800 cursor-not-allowed">Sofa Yok</button>`}
                             </div>
+
+                            <!-- Transfer Geçmişi -->
+                            ${(p.transfers && p.transfers.length > 0) ? `
+                            <div class="bg-dark-900 rounded-3xl border border-dark-800 p-5 shadow-lg">
+                                <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-4">
+                                    <i data-lucide="arrow-right-left" class="w-4 h-4 text-emerald-400"></i> Transfer Geçmişi
+                                </h3>
+                                <div class="space-y-3">
+                                    ${[...p.transfers].reverse().map(tr => {
+                                        const fromTeam = tr.fromTeamId ? this.state.data.teams.find(t => t.id === tr.fromTeamId) : null;
+                                        const fromName = fromTeam ? this.getTeamName(fromTeam.id) : '—';
+                                        const feeStr = tr.fee ? `€${Number(tr.fee).toLocaleString('tr-TR')}` : '';
+                                        return `
+                                        <div class="bg-dark-950/60 border border-dark-800 rounded-2xl p-3">
+                                            <div class="flex items-center justify-between mb-1.5">
+                                                <span class="text-[10px] font-mono text-slate-500">${tr.date || ''}</span>
+                                                ${tr.type ? `<span class="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${tr.type === 'Kiralık' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}">${tr.type}</span>` : ''}
+                                            </div>
+                                            <div class="flex items-center gap-1.5 text-xs">
+                                                <span class="text-slate-400 truncate">${fromName}</span>
+                                                <i data-lucide="arrow-right" class="w-3 h-3 text-slate-600 shrink-0"></i>
+                                                <span class="text-white font-semibold truncate">${tr.toTeamName || ''}</span>
+                                            </div>
+                                            ${(feeStr || tr.contract) ? `
+                                            <div class="flex gap-3 mt-1.5">
+                                                ${feeStr ? `<span class="text-[10px] text-emerald-400 font-bold">${feeStr}</span>` : ''}
+                                                ${tr.contract ? `<span class="text-[10px] text-slate-500">${tr.contract}</span>` : ''}
+                                            </div>` : ''}
+                                            ${tr.note ? `<p class="text-[10px] text-slate-500 mt-1 italic">${tr.note}</p>` : ''}
+                                        </div>`;
+                                    }).join('')}
+                                </div>
+                            </div>` : ''}
                         </div>
 
                         <!-- KOLON 2: ÖZELLİKLER (Orta - 5 Birim) -->
