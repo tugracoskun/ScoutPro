@@ -11,7 +11,7 @@ const dataPath = path.join(app.getPath('userData'), 'scout_data.json');
 const imageCacheDir = path.join(app.getPath('userData'), 'image_cache');
 
 if (!fs.existsSync(imageCacheDir)) {
-    try { fs.mkdirSync(imageCacheDir, { recursive: true }); } catch(e) {}
+    try { fs.mkdirSync(imageCacheDir, { recursive: true }); } catch (e) { }
 }
 
 function getUrlHash(url) {
@@ -185,7 +185,7 @@ ipcMain.handle('open-external', async (event, url) => {
 // 6. GÖRSEL ÖNBELLEKLEME HİZMETLERİ (Offline Media & Logo Caching)
 ipcMain.handle('cache-images', async (event, urls) => {
     if (!Array.isArray(urls) || urls.length === 0) return {};
-    
+
     const results = {};
     const batchSize = 5; // Concurrency limit
     for (let i = 0; i < urls.length; i += batchSize) {
@@ -211,7 +211,7 @@ ipcMain.handle('get-cache-info', async () => {
             try {
                 const stat = fs.statSync(path.join(imageCacheDir, file));
                 totalSize += stat.size;
-            } catch (e) {}
+            } catch (e) { }
         });
         return { count: files.length, sizeBytes: totalSize };
     } catch (e) {
@@ -224,7 +224,7 @@ ipcMain.handle('clear-image-cache', async () => {
         if (fs.existsSync(imageCacheDir)) {
             const files = fs.readdirSync(imageCacheDir);
             files.forEach((file) => {
-                try { fs.unlinkSync(path.join(imageCacheDir, file)); } catch (e) {}
+                try { fs.unlinkSync(path.join(imageCacheDir, file)); } catch (e) { }
             });
         }
         return { success: true };

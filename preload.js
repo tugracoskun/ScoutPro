@@ -14,7 +14,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getCacheInfo: () => ipcRenderer.invoke('get-cache-info'),
     clearImageCache: () => ipcRenderer.invoke('clear-image-cache'),
     restartApp: () => ipcRenderer.invoke('restart-app'),
-    
+
     // Mouse navigasyon tuşları dinleyicisi
     onMouseNavigation: (callback) => ipcRenderer.on('mouse-navigation', (event, cmd) => callback(cmd))
 });

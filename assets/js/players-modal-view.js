@@ -1,12 +1,12 @@
 // --- OYUNCU DETAY MODALI: GÖRÜNÜM (ANA İSKELET & SOL KOLON) ---
 
-ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, activeTab = 'notes') {
+ScoutApp.prototype.openPlayerModal = function (id, selectedHistoryIndex = 0, activeTab = 'notes') {
     const p = this.state.data.players.find(x => x.id === id);
-    if(!p) return;
+    if (!p) return;
 
     // Veri bütünlüğü ve Sıralama
     if (!p.history || p.history.length === 0) {
-        p.history = [{ date: p.dateAdded, rating: p.rating, stats: {...p.stats}, potential: p.potential }];
+        p.history = [{ date: p.dateAdded, rating: p.rating, stats: { ...p.stats }, potential: p.potential }];
     }
     if (!p.videos) p.videos = [];
 
@@ -18,14 +18,14 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
     const prevReport = (selectedHistoryIndex < p.history.length - 1) ? p.history[selectedHistoryIndex + 1] : null;
 
     const grade = this.getGrade(currentReport.rating);
-    const potClass = currentReport.potential === 'Yüksek' 
-        ? 'bg-scout-500/10 text-scout-400 border-scout-500/30' 
+    const potClass = currentReport.potential === 'Yüksek'
+        ? 'bg-scout-500/10 text-scout-400 border-scout-500/30'
         : 'bg-slate-800/50 text-slate-400 border-slate-700';
-    
+
     // Yaş ve Tarih Hesaplama (Güvenli)
     let currentAge = '-';
     let birthDatePretty = '-';
-    
+
     if (typeof this.calculateAge === 'function') {
         currentAge = p.birthDate ? this.calculateAge(p.birthDate) : p.age;
         birthDatePretty = p.birthDate ? this.formatDatePretty(p.birthDate) : '-';
@@ -52,7 +52,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
         'Bilinmiyor': window.getLang && window.getLang() === 'en' ? 'Unknown' : 'Bilinmiyor'
     };
     const footTrans = p.foot ? (footTransMap[p.foot] || p.foot) : '-';
-    
+
     const potTrans = currentReport.potential === 'Düşük' ? (window.getLang && window.getLang() === 'en' ? 'LOW' : 'DÜŞÜK') : (currentReport.potential === 'Yüksek' ? (window.getLang && window.getLang() === 'en' ? 'HIGH' : 'YÜKSEK') : (currentReport.potential || (window.getLang && window.getLang() === 'en' ? 'LOW' : 'DÜŞÜK')));
 
     const posTrans = window.tPos ? window.tPos(p.position) : p.position;
@@ -182,11 +182,11 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
             </div>
         </div>
     `);
-    
+
     // BUG FIX: Grafik çizimi için süreyi artır ve pencere boyutunu kontrol et
     setTimeout(() => {
         this.initComparisonRadar(p, currentReport, prevReport);
-        
+
         // Pencere boyutuna göre yeniden çizimi tetikle (Garanti olsun)
         window.dispatchEvent(new Event('resize'));
     }, 300); // 300ms gecikme (Animasyon bitişini bekler)
@@ -195,7 +195,7 @@ ScoutApp.prototype.openPlayerModal = function(id, selectedHistoryIndex = 0, acti
 // --- TAB DEĞİŞTİRME FONKSİYONLARI (RE-RENDER YOK) ---
 
 // 1. Özellik Sekmeleri (Teknik, Taktik vs.)
-ScoutApp.prototype.switchAttrTab = function(category) {
+ScoutApp.prototype.switchAttrTab = function (category) {
     // Tüm içerikleri gizle
     document.querySelectorAll('.attr-content').forEach(el => el.classList.add('hidden'));
     // Seçileni göster
@@ -206,17 +206,17 @@ ScoutApp.prototype.switchAttrTab = function(category) {
         btn.classList.remove('text-white', 'border-scout-500');
         btn.classList.add('text-slate-500', 'border-transparent');
     });
-    
+
     // Aktif butonu parlat
     const activeBtn = document.getElementById(`btn-cat-${category}`);
-    if(activeBtn) {
+    if (activeBtn) {
         activeBtn.classList.remove('text-slate-500', 'border-transparent');
         activeBtn.classList.add('text-white', 'border-scout-500');
     }
 };
 
 // 2. Medya Sekmeleri (Notlar vs Videolar vs Transferler)
-ScoutApp.prototype.switchMediaTab = function(tabName) {
+ScoutApp.prototype.switchMediaTab = function (tabName) {
     // Tüm medya içeriklerini gizle
     document.querySelectorAll('.media-content').forEach(el => {
         el.classList.remove('flex');
@@ -238,17 +238,17 @@ ScoutApp.prototype.switchMediaTab = function(tabName) {
 
     // Aktif butonu parlat
     const activeBtn = document.getElementById(`btn-media-${tabName}`);
-    if(activeBtn) {
+    if (activeBtn) {
         activeBtn.classList.remove('text-slate-500', 'border-transparent');
         activeBtn.classList.add('text-white', 'border-scout-500');
     }
-    
+
     // Grafik boyutunu korumak için küçük bir hack (ApexCharts bazen layout değişiminde sapıtabiliyor)
     window.dispatchEvent(new Event('resize'));
 };
 
 // 3. Transfer Silme
-ScoutApp.prototype.deletePlayerTransfer = function(playerId, transferIdOrIndex) {
+ScoutApp.prototype.deletePlayerTransfer = function (playerId, transferIdOrIndex) {
     this.confirmAction("Bu transfer kaydını silmek istediğinize emin misiniz?", () => {
         const p = this.state.data.players.find(x => x.id === playerId);
         if (!p || !p.transfers) return;
@@ -261,7 +261,7 @@ ScoutApp.prototype.deletePlayerTransfer = function(playerId, transferIdOrIndex) 
 };
 
 // 4. Transfer Detay Modalı (Tıklanınca Açılan Pencere)
-ScoutApp.prototype.openTransferDetailModal = function(playerId, transferIdOrIndex) {
+ScoutApp.prototype.openTransferDetailModal = function (playerId, transferIdOrIndex) {
     const p = this.state.data.players.find(x => x.id === playerId);
     if (!p || !p.transfers) return;
 
@@ -271,7 +271,7 @@ ScoutApp.prototype.openTransferDetailModal = function(playerId, transferIdOrInde
     const fromTeam = tr.fromTeamId ? this.state.data.teams.find(t => t.id === tr.fromTeamId) : null;
     const fromName = fromTeam ? this.getTeamName(fromTeam.id) : (tr.fromTeamName || 'Önceki Kulüp');
     const fromLogo = fromTeam ? fromTeam.logo : '';
-    
+
     const toTeam = tr.toTeamId ? this.state.data.teams.find(t => t.id === tr.toTeamId) : null;
     const toName = toTeam ? this.getTeamName(toTeam.id) : (tr.toTeamName || 'Yeni Kulüp');
     const toLogo = toTeam ? toTeam.logo : '';
@@ -315,11 +315,10 @@ ScoutApp.prototype.openTransferDetailModal = function(playerId, transferIdOrInde
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </div>
                     ${tr.type ? `
-                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                            tr.type === 'Kiralık' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 
-                            tr.type === 'Serbest Transfer' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 
-                            'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        }">
+                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${tr.type === 'Kiralık' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                tr.type === 'Serbest Transfer' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                    'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+            }">
                             ${tr.type}
                         </span>
                     ` : ''}
@@ -398,7 +397,7 @@ ScoutApp.prototype.openTransferDetailModal = function(playerId, transferIdOrInde
 };
 
 // 3. Özellik Ağacını Aç/Kapat (Kategorisiz Model)
-ScoutApp.prototype.toggleAttrTree = function(key) {
+ScoutApp.prototype.toggleAttrTree = function (key) {
     const content = document.getElementById(`tree-content-${key}`);
     const icon = document.getElementById(`tree-icon-${key}`);
     if (content.classList.contains('hidden')) {
@@ -411,16 +410,16 @@ ScoutApp.prototype.toggleAttrTree = function(key) {
 };
 
 // --- PDF DIŞA AKTARMA ---
-ScoutApp.prototype.exportPlayerToPDF = async function(id, selectedHistoryIndex) {
+ScoutApp.prototype.exportPlayerToPDF = async function (id, selectedHistoryIndex) {
     if (typeof html2pdf === 'undefined') {
         window.alert('PDF kütüphanesi yüklenemedi. Sayfayı yenileyip tekrar deneyin.', 'error');
         return;
     }
 
     const p = this.state.data.players.find(x => x.id === id);
-    if(!p) return;
-    
-    const currentReport = p.history && p.history.length > 0 ? p.history[selectedHistoryIndex] : { date: p.dateAdded, rating: p.rating, stats: {...p.stats}, potential: p.potential };
+    if (!p) return;
+
+    const currentReport = p.history && p.history.length > 0 ? p.history[selectedHistoryIndex] : { date: p.dateAdded, rating: p.rating, stats: { ...p.stats }, potential: p.potential };
     const grade = this.getGrade(currentReport.rating);
 
     window.alert('PDF belgesi oluşturuluyor, lütfen bekleyin...', 'success');
@@ -475,7 +474,7 @@ ScoutApp.prototype.exportPlayerToPDF = async function(id, selectedHistoryIndex) 
 
     if (mapping.group !== 'Default') {
         const cats = Object.keys(attributeGroup);
-        
+
         // Özellik tablosu - 2 sütun yan yana
         const catColors = {
             'Teknik': '#ef4444', 'Fiziksel': '#eab308', 'Psikolojik': '#22c55e',
@@ -487,10 +486,10 @@ ScoutApp.prototype.exportPlayerToPDF = async function(id, selectedHistoryIndex) 
             const color = catColors[cat] || '#64748b';
             const attrs = attributeGroup[cat] || [];
             const displayCat = window.tAttr ? window.tAttr(cat) : cat;
-            
+
             attributesHTML += `<div style="background:#fafafa; border:1px solid #e5e7eb; border-radius:6px; padding:6px 8px; border-left:3px solid ${color}; font-size:8.5px;">`;
             attributesHTML += `<div style="font-weight:800; color:${color}; text-transform:uppercase; font-size:8px; margin-bottom:4px; letter-spacing:0.3px;">${displayCat}</div>`;
-            
+
             attrs.forEach(attr => {
                 const val = currentReport.stats[attr.name] || 50;
                 const v = parseInt(val);
@@ -500,7 +499,7 @@ ScoutApp.prototype.exportPlayerToPDF = async function(id, selectedHistoryIndex) 
                 else if (v >= 65) valColor = '#2563eb';
                 else if (v <= 40) valColor = '#dc2626';
                 const attrName = window.tAttr ? window.tAttr(attr.name) : attr.name;
-                
+
                 attributesHTML += `
                     <div style="display:flex; align-items:center; justify-space-between; padding:1.5px 0; border-bottom:1px solid #f1f5f9;">
                         <span style="color:#475569; font-weight:500; font-size:8px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${attrName}">${attrName}</span>
@@ -547,7 +546,7 @@ ScoutApp.prototype.exportPlayerToPDF = async function(id, selectedHistoryIndex) 
         const attrName = window.tAttr ? window.tAttr(attr.name) : attr.name;
         strengthsHTML += `
             <div style="display:flex; align-items:center; gap:4px; padding:1.5px 0; font-size:7.5px; line-height:1.2;">
-                <div style="width:13px; height:13px; border-radius:50%; background:#22c55e; color:#fff; display:flex; align-items:center; justify-content:center; font-size:6px; font-weight:800; flex-shrink:0;">${i+1}</div>
+                <div style="width:13px; height:13px; border-radius:50%; background:#22c55e; color:#fff; display:flex; align-items:center; justify-content:center; font-size:6px; font-weight:800; flex-shrink:0;">${i + 1}</div>
                 <span style="color:#1e293b; font-weight:600; flex:1;">${attrName}</span>
                 <div style="width:40px; height:3px; background:#dcfce7; border-radius:2px; overflow:hidden; flex-shrink:0;">
                     <div style="height:100%; width:${attr.val}%; background:#22c55e; border-radius:2px;"></div>
@@ -562,7 +561,7 @@ ScoutApp.prototype.exportPlayerToPDF = async function(id, selectedHistoryIndex) 
         const attrName = window.tAttr ? window.tAttr(attr.name) : attr.name;
         weaknessesHTML += `
             <div style="display:flex; align-items:center; gap:4px; padding:1.5px 0; font-size:7.5px; line-height:1.2;">
-                <div style="width:13px; height:13px; border-radius:50%; background:#ef4444; color:#fff; display:flex; align-items:center; justify-content:center; font-size:6px; font-weight:800; flex-shrink:0;">${i+1}</div>
+                <div style="width:13px; height:13px; border-radius:50%; background:#ef4444; color:#fff; display:flex; align-items:center; justify-content:center; font-size:6px; font-weight:800; flex-shrink:0;">${i + 1}</div>
                 <span style="color:#1e293b; font-weight:600; flex:1;">${attrName}</span>
                 <div style="width:40px; height:3px; background:#fee2e2; border-radius:2px; overflow:hidden; flex-shrink:0;">
                     <div style="height:100%; width:${attr.val}%; background:#ef4444; border-radius:2px;"></div>
@@ -664,17 +663,17 @@ ScoutApp.prototype.exportPlayerToPDF = async function(id, selectedHistoryIndex) 
     document.body.appendChild(container);
 
     const opt = {
-        margin:       [0.15, 0.12, 0.15, 0.12],
-        filename:     p.name.replace(/\s+/g, '_') + '_Scout_Raporu.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2.5, useCORS: true, logging: false, letterRendering: true },
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['css'] }
+        margin: [0.15, 0.12, 0.15, 0.12],
+        filename: p.name.replace(/\s+/g, '_') + '_Scout_Raporu.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2.5, useCORS: true, logging: false, letterRendering: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css'] }
     };
 
     try {
         await html2pdf().set(opt).from(container.querySelector('#pdf-content')).save();
-    } catch(e) {
+    } catch (e) {
         console.error('PDF oluşturma hatası:', e);
         window.alert('PDF oluşturulurken bir hata oluştu.', 'error');
     } finally {
