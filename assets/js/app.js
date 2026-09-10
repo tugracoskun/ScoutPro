@@ -1091,7 +1091,11 @@ class ScoutApp {
         lucide.createIcons();
     }
 
-    closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
+    closeModal() { 
+        const tip = document.getElementById('similar-breakdown-tooltip');
+        if (tip) tip.classList.add('hidden');
+        document.getElementById('modal-overlay').classList.add('hidden'); 
+    }
 
     openAddCountryModal() {
         this.showModal(`

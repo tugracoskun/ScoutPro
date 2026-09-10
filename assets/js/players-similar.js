@@ -161,10 +161,14 @@ ScoutApp.prototype.calculatePlayerSimilarity = function(targetPlayer, otherPlaye
     const weightedScore = rawProfileScore * Math.pow(posFactor, 0.65);
     const similarityScore = Math.min(99, Math.max(15, Math.round(weightedScore)));
 
-    // En benzer metrikleri sırala
+    // En benzer metrikleri sırala (puanı artıranlar)
     metricComparisons.sort((a, b) => a.diff - b.diff);
     const topMatches = metricComparisons.slice(0, 3);
     
+    // Puanı kıran en belirgin ayrışmalar (diff en yüksek olanlar)
+    const sortedByWorst = [...metricComparisons].sort((a, b) => b.diff - a.diff);
+    const topDivergences = sortedByWorst.filter(m => m.diff >= 4).slice(0, 3);
+
     // Diğer oyuncunun hedef oyuncuya göre net üstün olduğu metrikler (+4 ve üzeri)
     const advantages = metricComparisons
         .filter(m => (m.otherVal - m.targetVal) >= 4)
@@ -174,12 +178,29 @@ ScoutApp.prototype.calculatePlayerSimilarity = function(targetPlayer, otherPlaye
     const tAge = parseInt(targetPlayer.birthDate ? this.calculateAge(targetPlayer.birthDate) : targetPlayer.age) || 22;
     const oAge = parseInt(otherPlayer.birthDate ? this.calculateAge(otherPlayer.birthDate) : otherPlayer.age) || 22;
 
+    const breakdown = {
+        attrSimilarity: Math.round(attrSimilarity),
+        avgDiff: parseFloat(avgDiff.toFixed(1)),
+        ratingMatch: Math.round(ratingMatch),
+        tRating: tRating,
+        oRating: oRating,
+        ratingDiff: ratingDiff,
+        posFactor: Math.round(posFactor * 100),
+        posFactorLabel: targetPlayer.position === otherPlayer.position ? 'Tam Uyum (%100)' : `${targetPlayer.position} ↔ ${otherPlayer.position} (%${Math.round(posFactor * 100)})`,
+        rawScore: Math.round(rawProfileScore),
+        finalScore: similarityScore,
+        comparedCount: comparedCount,
+        positiveFactors: topMatches.map(m => ({ name: m.name, diff: m.diff, targetVal: m.targetVal, otherVal: m.otherVal })),
+        negativeFactors: topDivergences.map(m => ({ name: m.name, diff: m.diff, targetVal: m.targetVal, otherVal: m.otherVal }))
+    };
+
     return {
         player: otherPlayer,
         similarityScore: similarityScore,
         comparedCount: comparedCount,
         topMatches: topMatches,
         advantages: advantages,
+        breakdown: breakdown,
         ageDiff: Math.abs(tAge - oAge),
         isSamePosition: targetPlayer.position === otherPlayer.position
     };
@@ -218,9 +239,9 @@ ScoutApp.prototype.openSimilarPlayersModal = function(prefillId = null) {
         <style>
             #modal-content { max-width: 1050px !important; max-height: 92vh !important; overflow-y: auto !important; }
         </style>
-        <div class="p-6 md:p-7 relative space-y-5">
+        <div class="p-6 md:p-7 relative space-y-5" onscroll="app.hideSimilarityTooltip()">
             <!-- KAPATMA BUTONU -->
-            <button onclick="app.closeModal()" class="absolute top-4 right-4 text-slate-400 hover:bg-dark-800 hover:text-white transition-colors w-8 h-8 rounded-lg flex items-center justify-center">
+            <button onclick="app.hideSimilarityTooltip(); app.closeModal()" class="absolute top-4 right-4 text-slate-400 hover:bg-dark-800 hover:text-white transition-colors w-8 h-8 rounded-lg flex items-center justify-center">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
@@ -233,17 +254,22 @@ ScoutApp.prototype.openSimilarPlayersModal = function(prefillId = null) {
             </div>
 
             <!-- FİLTRE VE HEDEF SEÇİM BARI (Kompakt, simetrik ve hizalı) -->
-            <div class="bg-dark-950 p-4 rounded-2xl border border-dark-800 space-y-3 relative z-40">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <!-- Hedef Oyuncu Seçici -->
-                    <div class="w-full sm:w-80">
-                        ${this.createCustomSearchSelect('similar-target-player', 'Hedef Oyuncu', 'Oyuncu Ara...', allPlayerOptions, this.state.similarAnalysis.targetId, 'app.onSimilarTargetChange(this.value)')}
+            <div class="bg-dark-950 p-4 rounded-2xl border border-dark-800 space-y-3.5 relative z-40">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <!-- Hedef Oyuncu Seçici (Daha geniş, belirgin ve şık) -->
+                    <div class="w-full sm:w-96">
+                        <div class="flex items-center gap-1.5 mb-1.5 ml-0.5">
+                            <i data-lucide="target" class="w-3.5 h-3.5 text-scout-400"></i>
+                            <span class="text-xs font-bold text-slate-300">Hedef Oyuncu</span>
+                            <span class="text-[10px] text-slate-500 font-medium">(Referans Alınan Profil)</span>
+                        </div>
+                        ${this.createCustomSearchSelect('similar-target-player', '', 'Oyuncu Ara...', allPlayerOptions, this.state.similarAnalysis.targetId, 'app.onSimilarTargetChange(this.value)')}
                     </div>
 
                     <!-- Sağ Kontroller: Aynı Mevki & Eşleşme Oranı (Birebir simetrik ve ikonsuz) -->
-                    <div class="flex items-center gap-2 self-end sm:self-auto pt-4 sm:pt-0">
+                    <div class="flex items-center gap-2 self-end sm:self-auto pt-2 sm:pt-4">
                         <button type="button" onclick="app.setSimilarFilter('samePositionOnly', !app.state.similarAnalysis.samePositionOnly)" 
-                            class="h-9 px-3.5 rounded-xl text-xs font-bold border transition-all ${this.state.similarAnalysis.samePositionOnly ? 'bg-scout-600 text-white border-scout-500' : 'bg-dark-900 text-slate-300 border-dark-700 hover:text-white'}">
+                            class="h-9 px-3.5 rounded-xl text-xs font-bold border transition-all ${this.state.similarAnalysis.samePositionOnly ? 'bg-scout-600 text-white border-scout-500 shadow-sm' : 'bg-dark-900 text-slate-300 border-dark-700 hover:text-white'}">
                             Aynı Mevki
                         </button>
 
@@ -256,15 +282,19 @@ ScoutApp.prototype.openSimilarPlayersModal = function(prefillId = null) {
                     </div>
                 </div>
 
-                <!-- Metrik Odak Filtreleri (Tek satır, taşma yapmaz) -->
+                <!-- Metrik Odak Filtreleri (Tümü ile diğerleri arasında net ayrım çizgisi ve boşluk) -->
                 <div class="flex items-center gap-2 pt-2.5 border-t border-dark-800/80 overflow-x-auto">
                     <span class="text-xs font-bold text-slate-400 shrink-0 mr-1">Metrik Odağı:</span>
                     <div class="flex items-center gap-1.5 flex-nowrap">
-                        <button type="button" onclick="app.setSimilarFilter('metricCategory', 'all')" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${this.state.similarAnalysis.metricCategory === 'all' ? 'bg-scout-600 text-white border-scout-500' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Tümü</button>
-                        <button type="button" onclick="app.setSimilarFilter('metricCategory', 'Teknik')" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${this.state.similarAnalysis.metricCategory === 'Teknik' ? 'bg-scout-600 text-white border-scout-500' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Teknik</button>
-                        <button type="button" onclick="app.setSimilarFilter('metricCategory', 'Taktik')" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${this.state.similarAnalysis.metricCategory === 'Taktik' ? 'bg-scout-600 text-white border-scout-500' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Taktik</button>
-                        <button type="button" onclick="app.setSimilarFilter('metricCategory', 'Fiziksel')" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${this.state.similarAnalysis.metricCategory === 'Fiziksel' ? 'bg-scout-600 text-white border-scout-500' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Fiziksel</button>
-                        <button type="button" onclick="app.setSimilarFilter('metricCategory', 'Psiko-Sosyal')" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${this.state.similarAnalysis.metricCategory === 'Psiko-Sosyal' ? 'bg-scout-600 text-white border-scout-500' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Psiko-Sosyal</button>
+                        <button type="button" onclick="app.setSimilarFilter('metricCategory', 'all')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${this.state.similarAnalysis.metricCategory === 'all' ? 'bg-scout-600 text-white border-scout-500 shadow-sm' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Tümü</button>
+                        
+                        <!-- Ayrım Çizgisi ve Boşluk (Ayrım algısı için) -->
+                        <div class="h-4 w-[1px] bg-dark-750 mx-2 shrink-0"></div>
+
+                        <button type="button" onclick="app.setSimilarFilter('metricCategory', 'Teknik')" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${this.state.similarAnalysis.metricCategory === 'Teknik' ? 'bg-scout-600 text-white border-scout-500 shadow-sm' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Teknik</button>
+                        <button type="button" onclick="app.setSimilarFilter('metricCategory', 'Taktik')" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${this.state.similarAnalysis.metricCategory === 'Taktik' ? 'bg-scout-600 text-white border-scout-500 shadow-sm' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Taktik</button>
+                        <button type="button" onclick="app.setSimilarFilter('metricCategory', 'Fiziksel')" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${this.state.similarAnalysis.metricCategory === 'Fiziksel' ? 'bg-scout-600 text-white border-scout-500 shadow-sm' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Fiziksel</button>
+                        <button type="button" onclick="app.setSimilarFilter('metricCategory', 'Psiko-Sosyal')" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${this.state.similarAnalysis.metricCategory === 'Psiko-Sosyal' ? 'bg-scout-600 text-white border-scout-500 shadow-sm' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">Psiko-Sosyal</button>
                     </div>
                 </div>
             </div>
@@ -274,20 +304,168 @@ ScoutApp.prototype.openSimilarPlayersModal = function(prefillId = null) {
                 <!-- Dinamik olarak renderSimilarPlayersResults ile doldurulur -->
             </div>
         </div>
+
+        <!-- MÜHENDİSLİK DETAY TOOLTIP (Fixed pozisyonlu, overflow kırpılmasını önleyen sistem) -->
+        <div id="similar-breakdown-tooltip" 
+             class="fixed z-[9999] hidden w-80 sm:w-96 bg-dark-950/98 backdrop-blur-2xl border border-dark-700 p-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] text-left pointer-events-none transition-all duration-150 text-xs space-y-3">
+        </div>
     `);
 
     lucide.createIcons();
     this.renderSimilarPlayersResults();
 };
 
+ScoutApp.prototype.showSimilarityTooltip = function(event, idx) {
+    const tooltip = document.getElementById('similar-breakdown-tooltip');
+    if (!tooltip || !this._currentSimilarMatches || !this._currentSimilarMatches[idx]) return;
+
+    const m = this._currentSimilarMatches[idx];
+    let badgeTheme = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+    if (m.similarityScore < 70) {
+        badgeTheme = 'bg-amber-500/10 text-amber-400 border-amber-500/30';
+    } else if (m.similarityScore < 85) {
+        badgeTheme = 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+    }
+
+    tooltip.innerHTML = `
+        <!-- Başlık -->
+        <div class="flex items-center justify-between pb-2.5 border-b border-dark-800">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-md bg-scout-500/10 border border-scout-500/20 text-scout-400 flex items-center justify-center">
+                    <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-white text-xs leading-none">Eşleşme Analizi & Mühendisliği</div>
+                    <div class="text-[10px] text-slate-500 mt-0.5">${m.breakdown.comparedCount} ortak metrik üzerinden hesaplandı</div>
+                </div>
+            </div>
+            <div class="px-2 py-0.5 rounded-md ${badgeTheme} font-bold text-xs">
+                %${m.similarityScore}
+            </div>
+        </div>
+
+        <!-- Temel Skor Faktörleri -->
+        <div class="space-y-2 pb-2.5 border-b border-dark-800">
+            <!-- 1. Nitelik Yakınlığı -->
+            <div class="space-y-1">
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-slate-300">Ortak Nitelik Yakınlığı <span class="text-slate-500">(%70 Ağırlık)</span></span>
+                    <span class="font-bold text-white">%${m.breakdown.attrSimilarity} <span class="text-[10px] text-slate-500 font-normal">(±${m.breakdown.avgDiff}p sapma)</span></span>
+                </div>
+                <div class="w-full bg-dark-900 rounded-full h-1.5 overflow-hidden">
+                    <div class="bg-emerald-500 h-full rounded-full" style="width: ${m.breakdown.attrSimilarity}%"></div>
+                </div>
+            </div>
+
+            <!-- 2. Reyting Dengesi -->
+            <div class="space-y-1">
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-slate-300">Genel Reyting Dengesi <span class="text-slate-500">(%30 Ağırlık)</span></span>
+                    <span class="font-bold text-white">%${m.breakdown.ratingMatch} <span class="text-[10px] text-slate-500 font-normal">(${m.breakdown.tRating} vs ${m.breakdown.oRating})</span></span>
+                </div>
+                <div class="w-full bg-dark-900 rounded-full h-1.5 overflow-hidden">
+                    <div class="bg-blue-500 h-full rounded-full" style="width: ${m.breakdown.ratingMatch}%"></div>
+                </div>
+            </div>
+
+            <!-- 3. Taktiksel Mevki Faktörü -->
+            <div class="flex items-center justify-between text-[11px] pt-0.5">
+                <span class="text-slate-300">Taktiksel Rol Uyumu</span>
+                <span class="font-bold ${m.breakdown.posFactor >= 95 ? 'text-emerald-400' : (m.breakdown.posFactor >= 75 ? 'text-blue-400' : 'text-amber-400')}">
+                    ${m.breakdown.posFactorLabel}
+                </span>
+            </div>
+        </div>
+
+        <!-- Ayrışmalar: Puan Yükseltenler ve Kıranlar -->
+        <div class="space-y-2">
+            <!-- Benzerliği Artıranlar -->
+            <div>
+                <div class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1 mb-1">
+                    <i data-lucide="check-circle" class="w-3 h-3"></i> Benzerliği Yükselten Metrikler:
+                </div>
+                <div class="space-y-1">
+                    ${m.breakdown.positiveFactors.slice(0, 2).map(f => `
+                        <div class="flex items-center justify-between text-[11px] bg-dark-900/90 px-2 py-1 rounded-lg border border-dark-800">
+                            <span class="text-slate-300 truncate">${f.name}</span>
+                            <span class="font-bold text-emerald-400 shrink-0 ml-2">
+                                ${f.otherVal} / ${f.targetVal} ${f.diff === 0 ? '(0 Fark)' : `(±${f.diff})`}
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <!-- Puan Kıranlar -->
+            ${m.breakdown.negativeFactors.length > 0 ? `
+                <div>
+                    <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1 mb-1">
+                        <i data-lucide="alert-circle" class="w-3 h-3"></i> Puan Kıran Ayrışmalar:
+                    </div>
+                    <div class="space-y-1">
+                        ${m.breakdown.negativeFactors.slice(0, 2).map(f => `
+                            <div class="flex items-center justify-between text-[11px] bg-dark-900/90 px-2 py-1 rounded-lg border border-dark-800">
+                                <span class="text-slate-300 truncate">${f.name}</span>
+                                <span class="font-bold text-amber-400 shrink-0 ml-2">
+                                    ${f.otherVal} / ${f.targetVal} (-${f.diff} Sapma)
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : `
+                <div class="text-[10px] text-slate-500 italic">
+                    Belirgin bir negatif sapma bulunmuyor, profiller dengeli.
+                </div>
+            `}
+        </div>
+    `;
+
+    lucide.createIcons({ root: tooltip });
+    tooltip.classList.remove('hidden');
+
+    // Ekran koordinatlarını hesapla (kesilme ve taşmaları engelle)
+    const trigger = event.currentTarget;
+    const rect = trigger.getBoundingClientRect();
+    const tooltipWidth = tooltip.offsetWidth || 380;
+    const tooltipHeight = tooltip.offsetHeight || 360;
+
+    let left = rect.right - tooltipWidth;
+    if (left < 15) left = 15;
+    if (left + tooltipWidth > window.innerWidth - 15) {
+        left = window.innerWidth - tooltipWidth - 15;
+    }
+
+    // Aşağıda yer yoksa yukarı aç
+    const spaceBelow = window.innerHeight - rect.bottom;
+    let top;
+    if (spaceBelow < tooltipHeight + 15 && rect.top > tooltipHeight + 15) {
+        top = rect.top - tooltipHeight - 8;
+    } else {
+        top = rect.bottom + 8;
+    }
+
+    tooltip.style.left = `${Math.max(10, left)}px`;
+    tooltip.style.top = `${Math.max(10, top)}px`;
+};
+
+ScoutApp.prototype.hideSimilarityTooltip = function() {
+    const tooltip = document.getElementById('similar-breakdown-tooltip');
+    if (tooltip) {
+        tooltip.classList.add('hidden');
+    }
+};
+
 ScoutApp.prototype.onSimilarTargetChange = function(newId) {
     if (!newId) return;
+    this.hideSimilarityTooltip();
     this.state.similarAnalysis.targetId = parseInt(newId);
     this.renderSimilarPlayersResults();
 };
 
 ScoutApp.prototype.setSimilarFilter = function(key, value) {
     if (!this.state.similarAnalysis) return;
+    this.hideSimilarityTooltip();
     this.state.similarAnalysis[key] = value;
     this.openSimilarPlayersModal(this.state.similarAnalysis.targetId);
 };
@@ -319,6 +497,7 @@ ScoutApp.prototype.renderSimilarPlayersResults = function() {
 
     // Benzerliğe göre azalan sırala
     matches.sort((a, b) => b.similarityScore - a.similarityScore);
+    this._currentSimilarMatches = matches;
 
     const targetAge = targetPlayer.birthDate ? this.calculateAge(targetPlayer.birthDate) : targetPlayer.age;
     const targetGrade = this.getGrade(targetPlayer.rating);
@@ -406,8 +585,8 @@ ScoutApp.prototype.renderSimilarPlayersResults = function() {
                         <p class="text-xs text-slate-500 max-w-sm">${targetPlayer.position === 'Kaleci' ? 'Kaleciler mevki dinamikleri gereği yalnızca diğer kalecilerle eşleştirilir. Havuzunuza başka bir kaleci raporladığınızda burada listelenecektir.' : 'Eşleşme oranını düşürerek veya "Aynı Mevki" filtresini kaldırarak daha fazla sonuca ulaşabilirsiniz.'}</p>
                     </div>
                 ` : `
-                    <div class="space-y-2.5 max-h-[560px] overflow-y-auto custom-scrollbar pr-1">
-                        ${matches.map(m => {
+                    <div class="space-y-2.5 max-h-[560px] overflow-y-auto custom-scrollbar pr-1" onscroll="app.hideSimilarityTooltip()">
+                        ${matches.map((m, idx) => {
                             const p = m.player;
                             const age = p.birthDate ? this.calculateAge(p.birthDate) : p.age;
                             const grade = this.getGrade(p.rating);
@@ -421,7 +600,7 @@ ScoutApp.prototype.renderSimilarPlayersResults = function() {
                             }
 
                             return `
-                                <div class="p-3.5 bg-dark-900 border border-dark-800 hover:border-dark-700 rounded-xl transition-all">
+                                <div class="p-3.5 bg-dark-900 border border-dark-800 hover:border-dark-700 rounded-xl transition-all relative">
                                     <div class="flex items-center justify-between gap-3">
                                         <!-- Profil Bilgisi -->
                                         <div class="flex items-center gap-3 min-w-0">
@@ -446,21 +625,24 @@ ScoutApp.prototype.renderSimilarPlayersResults = function() {
                                             </div>
                                         </div>
 
-                                        <!-- Eşleşme Oranı ve Aksiyon Butonları (Kompakt, standart font, ikonsuz eşleşme) -->
+                                        <!-- Eşleşme Oranı (Hover Mühendislik Tooltip) ve Aksiyon Butonları -->
                                         <div class="flex items-center gap-2 shrink-0">
-                                            <div class="px-2.5 py-1 rounded-lg text-xs font-bold border ${badgeTheme}">
-                                                %${m.similarityScore} Eşleşme
+                                            <div class="px-2.5 py-1 rounded-lg text-xs font-bold border flex items-center gap-1.5 cursor-help transition-all hover:brightness-110 select-none ${badgeTheme}"
+                                                 onmouseenter="app.showSimilarityTooltip(event, ${idx})"
+                                                 onmouseleave="app.hideSimilarityTooltip()">
+                                                <span>%${m.similarityScore} Eşleşme</span>
+                                                <i data-lucide="info" class="w-3.5 h-3.5 opacity-85"></i>
                                             </div>
 
                                             <button onclick="app.closeModal(); app.openCompareModal(${targetPlayer.id}, ${p.id})" 
-                                                class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white text-xs font-bold border border-dark-700 transition-all flex items-center gap-1.5"
+                                                class="px-2.5 py-1 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white text-xs font-bold border border-dark-700 transition-all flex items-center gap-1.5 shrink-0"
                                                 title="Hedef oyuncuyla yan yana kıyasla">
                                                 <i data-lucide="scale" class="w-3.5 h-3.5"></i>
                                                 <span class="hidden sm:inline">Karşılaştır</span>
                                             </button>
 
                                             <button onclick="app.closeModal(); app.openPlayerModal(${p.id})" 
-                                                class="p-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-400 hover:text-white border border-dark-700 transition-all"
+                                                class="p-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-400 hover:text-white border border-dark-700 transition-all shrink-0"
                                                 title="Oyuncu Rapor Detayını Gör">
                                                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
                                             </button>
