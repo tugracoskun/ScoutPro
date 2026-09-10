@@ -95,6 +95,13 @@ ScoutApp.prototype.openPlayerModal = function (id, selectedHistoryIndex = 0, act
                         </div>
                     </div>
 
+                    <!-- Listeleri Yönet Butonu -->
+                    <button onclick="app.openAssignPlayerToListsModal(${id})" class="h-9 px-3 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white flex items-center gap-1.5 transition-all border border-dark-700 text-xs font-semibold" title="Oyuncunun Listelerini Yönet">
+                        <i data-lucide="bookmark" class="w-4 h-4 text-scout-400"></i>
+                        <span>Listeler</span>
+                        ${(p.listIds && p.listIds.length > 0) ? `<span class="px-1.5 py-0.2 rounded-md bg-scout-500/20 text-scout-400 text-[10px] font-bold">${p.listIds.length}</span>` : ''}
+                    </button>
+
                     <!-- Düzenle ve Sil Butonları -->
                     <button onclick="app.openEditPlayerModal(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-blue-500/20 hover:text-blue-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700" title="${t('edit')}">
                         <i data-lucide="pencil" class="w-4 h-4"></i>

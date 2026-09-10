@@ -21,9 +21,71 @@ ScoutApp.prototype.getListColorTheme = function(color) {
         amber: { dot: 'bg-amber-500', text: 'text-amber-400', badge: 'bg-amber-500/10 border-amber-500/20 text-amber-400' },
         purple: { dot: 'bg-purple-500', text: 'text-purple-400', badge: 'bg-purple-500/10 border-purple-500/20 text-purple-400' },
         cyan: { dot: 'bg-cyan-500', text: 'text-cyan-400', badge: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400' },
-        pink: { dot: 'bg-pink-500', text: 'text-pink-400', badge: 'bg-pink-500/10 border-pink-500/20 text-pink-400' }
+        pink: { dot: 'bg-pink-500', text: 'text-pink-400', badge: 'bg-pink-500/10 border-pink-500/20 text-pink-400' },
+        orange: { dot: 'bg-orange-500', text: 'text-orange-400', badge: 'bg-orange-500/10 border-orange-500/20 text-orange-400' },
+        indigo: { dot: 'bg-indigo-500', text: 'text-indigo-400', badge: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' }
     };
     return themes[color] || themes.blue;
+};
+
+ScoutApp.prototype.getWatchlistAvailableIcons = function() {
+    return [
+        { val: 'flag', label: 'Bayrak' },
+        { val: 'sparkles', label: 'Genç Yetenek' },
+        { val: 'target', label: 'Hedef' },
+        { val: 'eye', label: 'Takip' },
+        { val: 'award', label: 'Kalite / Ödül' },
+        { val: 'shield', label: 'Savunma' },
+        { val: 'zap', label: 'Fırtına / Hız' },
+        { val: 'bookmark', label: 'Yer İmi' },
+        { val: 'star', label: 'Yıldız' },
+        { val: 'flame', label: 'Sıcak Takip' },
+        { val: 'users', label: 'Kadro / Ekip' },
+        { val: 'heart', label: 'Favori' }
+    ];
+};
+
+ScoutApp.prototype.getWatchlistAvailableColors = function() {
+    return [
+        { val: 'red', label: 'Kırmızı' },
+        { val: 'emerald', label: 'Yeşil' },
+        { val: 'blue', label: 'Mavi' },
+        { val: 'amber', label: 'Sarı' },
+        { val: 'purple', label: 'Mor' },
+        { val: 'cyan', label: 'Siyan' },
+        { val: 'pink', label: 'Pembe' },
+        { val: 'orange', label: 'Turuncu' },
+        { val: 'indigo', label: 'İndigo' }
+    ];
+};
+
+ScoutApp.prototype.selectWatchlistIcon = function(targetInputId, iconVal, activeColor = 'scout') {
+    const input = document.getElementById(targetInputId);
+    if (input) input.value = iconVal;
+    
+    const container = document.getElementById(`container-${targetInputId}`);
+    if (container) {
+        const activeClass = activeColor === 'amber'
+            ? 'bg-amber-500/20 border-amber-500 text-amber-400 shadow-sm scale-105'
+            : 'bg-scout-500/20 border-scout-500 text-scout-400 shadow-sm scale-105';
+        container.querySelectorAll('.wl-icon-btn').forEach(btn => {
+            const isMatch = btn.getAttribute('data-icon') === iconVal;
+            btn.className = `wl-icon-btn w-8 h-8 md:w-9 md:h-9 rounded-xl border flex items-center justify-center transition-all ${isMatch ? activeClass : 'bg-dark-900 border-dark-800 text-slate-400 hover:text-white hover:border-dark-700'}`;
+        });
+    }
+};
+
+ScoutApp.prototype.selectWatchlistColor = function(targetInputId, colorVal) {
+    const input = document.getElementById(targetInputId);
+    if (input) input.value = colorVal;
+
+    const container = document.getElementById(`container-${targetInputId}`);
+    if (container) {
+        container.querySelectorAll('.wl-color-btn').forEach(btn => {
+            const isMatch = btn.getAttribute('data-color') === colorVal;
+            btn.className = `wl-color-btn w-7 h-7 rounded-full transition-all flex items-center justify-center ${isMatch ? 'ring-2 ring-offset-2 ring-offset-dark-950 ring-white scale-110 shadow-md' : 'opacity-70 hover:opacity-100 hover:scale-105'}`;
+        });
+    }
 };
 
 ScoutApp.prototype.renderWatchlist = function(c, skipAnimation = false) {
@@ -140,30 +202,29 @@ ScoutApp.prototype.renderWatchlist = function(c, skipAnimation = false) {
                         const isActive = filter.listId === list.id;
                         const theme = this.getListColorTheme(list.color);
                         return `
-                            <div class="relative group flex items-center">
-                                <button onclick="app.filterWatchlist('listId', '${list.id}')" 
-                                    class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${isActive ? 'bg-dark-800 border border-dark-700 text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-dark-800/40'}">
-                                    <span class="w-2 h-2 rounded-full ${theme.dot}"></span>
-                                    <span>${list.name}</span>
-                                    <span class="px-1.5 py-0.2 rounded-md text-[10px] font-bold ${isActive ? 'bg-dark-950 text-slate-200' : 'bg-dark-950 text-slate-500'}">${count}</span>
-                                </button>
-                                ${!list.isBuiltin ? `
-                                    <button onclick="event.stopPropagation(); app.deleteWatchlistList('${list.id}')" 
-                                        class="ml-1 p-1 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Listeyi Sil">
-                                        <i data-lucide="x" class="w-3 h-3"></i>
-                                    </button>
-                                ` : ''}
-                            </div>
+                            <button onclick="app.filterWatchlist('listId', '${list.id}')" 
+                                class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${isActive ? 'bg-dark-800 border border-dark-700 text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-dark-800/40'}">
+                                <span class="w-2 h-2 rounded-full ${theme.dot}"></span>
+                                <span>${list.name}</span>
+                                <span class="px-1.5 py-0.2 rounded-md text-[10px] font-bold ${isActive ? 'bg-dark-950 text-slate-200' : 'bg-dark-950 text-slate-500'}">${count}</span>
+                            </button>
                         `;
                     }).join('')}
                 </div>
 
-                <!-- YENİ LİSTE EKLE BUTONU -->
-                <button onclick="app.openAddWatchlistListModal()" 
-                    class="px-3 py-1.5 bg-dark-800/60 hover:bg-dark-800 text-slate-300 hover:text-white rounded-xl text-xs font-medium border border-dark-700/60 transition-all flex items-center gap-1.5">
-                    <i data-lucide="plus" class="w-3.5 h-3.5 text-scout-400"></i>
-                    <span>Yeni Liste</span>
-                </button>
+                <!-- YENİ LİSTE (+) VE DÜZENLE (KALEM) AKSİYONLARI -->
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button onclick="app.openAddWatchlistListModal()" 
+                        class="w-8 h-8 rounded-xl bg-dark-800/60 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/60 hover:border-scout-500/40 transition-all flex items-center justify-center group shadow-sm"
+                        title="Yeni Liste Ekle">
+                        <i data-lucide="plus" class="w-4 h-4 text-scout-400 group-hover:scale-110 transition-transform"></i>
+                    </button>
+                    <button onclick="app.openManageWatchlistListsModal()" 
+                        class="w-8 h-8 rounded-xl bg-dark-800/60 hover:bg-dark-800 text-slate-400 hover:text-amber-400 border border-dark-700/60 hover:border-amber-500/40 transition-all flex items-center justify-center group shadow-sm"
+                        title="Listeleri Düzenle">
+                        <i data-lucide="pencil" class="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-400 group-hover:scale-110 transition-transform"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- EKLEME FORMU -->
@@ -415,26 +476,8 @@ ScoutApp.prototype.goToWatchlistAndHighlight = function(id) {
 // --- YENİ ADAY LİSTESİ OLUŞTURMA MODALI ---
 
 ScoutApp.prototype.openAddWatchlistListModal = function() {
-    const icons = [
-        { val: 'flag', txt: '🚩 Bayrak (Milli)' },
-        { val: 'sparkles', txt: '✨ Yıldız / Genç' },
-        { val: 'target', txt: '🎯 Hedef' },
-        { val: 'eye', txt: '👁️ Takip' },
-        { val: 'award', txt: '🏆 Ödül / Kalite' },
-        { val: 'shield', txt: '🛡️ Savunma' },
-        { val: 'zap', txt: '⚡ Fırtına / Hız' },
-        { val: 'bookmark', txt: '🔖 Yer İmi' }
-    ];
-
-    const colors = [
-        { val: 'red', txt: 'Kırmızı' },
-        { val: 'emerald', txt: 'Yeşil' },
-        { val: 'blue', txt: 'Mavi' },
-        { val: 'amber', txt: 'Sarı' },
-        { val: 'purple', txt: 'Mor' },
-        { val: 'cyan', txt: 'Siyan' },
-        { val: 'pink', txt: 'Pembe' }
-    ];
+    const icons = this.getWatchlistAvailableIcons();
+    const colors = this.getWatchlistAvailableColors();
 
     const html = `
         <div class="p-6 space-y-5">
@@ -455,9 +498,37 @@ ScoutApp.prototype.openAddWatchlistListModal = function() {
             
             <div class="space-y-4">
                 ${this.createInput('new-list-name', 'Liste Adı', 'Örn: U21 Milli Takım Adayları', 'text', '')}
-                <div class="grid grid-cols-2 gap-3">
-                    ${this.createSelect('new-list-icon', 'İkon', icons.map(i => ({ val: i.val, txt: i.txt })), 'flag')}
-                    ${this.createSelect('new-list-color', 'Tema Rengi', colors.map(c => ({ val: c.val, txt: c.txt })), 'blue')}
+                
+                <!-- İKON SEÇİCİ (LUCIDE ICONS GRID) -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-400 ml-1">İkon Seçin</label>
+                    <div id="container-new-list-icon" class="flex flex-wrap gap-2 p-2.5 bg-dark-950/60 rounded-xl border border-dark-800">
+                        ${icons.map(i => `
+                            <button type="button" onclick="app.selectWatchlistIcon('new-list-icon', '${i.val}')"
+                                data-icon="${i.val}"
+                                class="wl-icon-btn w-9 h-9 rounded-xl border flex items-center justify-center transition-all ${i.val === 'flag' ? 'bg-scout-500/20 border-scout-500 text-scout-400 shadow-sm scale-105' : 'bg-dark-900 border-dark-800 text-slate-400 hover:text-white hover:border-dark-700'}"
+                                title="${i.label}">
+                                <i data-lucide="${i.val}" class="w-4 h-4"></i>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <input type="hidden" id="new-list-icon" value="flag">
+                </div>
+
+                <!-- RENK SEÇİCİ (RENK PALETİ NOKTALARI) -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-400 ml-1">Tema Rengi</label>
+                    <div id="container-new-list-color" class="flex flex-wrap items-center gap-3 p-2.5 bg-dark-950/60 rounded-xl border border-dark-800">
+                        ${colors.map(c => `
+                            <button type="button" onclick="app.selectWatchlistColor('new-list-color', '${c.val}')"
+                                data-color="${c.val}"
+                                class="wl-color-btn w-7 h-7 rounded-full transition-all flex items-center justify-center ${c.val === 'blue' ? 'ring-2 ring-offset-2 ring-offset-dark-950 ring-white scale-110 shadow-md' : 'opacity-70 hover:opacity-100 hover:scale-105'}"
+                                title="${c.label}">
+                                <span class="w-full h-full rounded-full ${this.getListColorTheme(c.val).dot}"></span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <input type="hidden" id="new-list-color" value="blue">
                 </div>
             </div>
 
@@ -494,7 +565,180 @@ ScoutApp.prototype.addWatchlistList = function() {
     this.renderWatchlist(document.getElementById('content-area'));
 };
 
-ScoutApp.prototype.deleteWatchlistList = function(listId) {
+ScoutApp.prototype.openManageWatchlistListsModal = function(editingListId = null) {
+    const lists = this.getWatchlistLists();
+    const allCandidates = this.state.data.watchlist || [];
+    const icons = this.getWatchlistAvailableIcons();
+    const colors = this.getWatchlistAvailableColors();
+
+    const getListCount = (listId) => {
+        if (listId === 'milli') {
+            return allCandidates.filter(w => {
+                const listIds = w.listIds || (w.listId ? [w.listId] : []);
+                return listIds.includes('milli') || w.listId === 'milli' || Boolean(w.nationalTeam && w.nationalTeam.trim().length > 0);
+            }).length;
+        }
+        return allCandidates.filter(w => {
+            const listIds = w.listIds || (w.listId ? [w.listId] : []);
+            return listIds.includes(listId) || w.listId === listId;
+        }).length;
+    };
+
+    const html = `
+        <div class="p-6 space-y-5">
+            <!-- BAŞLIK & KAPATMA -->
+            <div class="flex items-center justify-between border-b border-dark-800 pb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+                        <i data-lucide="pencil" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Aday Listelerini Düzenle</h3>
+                        <p class="text-xs text-slate-400">Listelerin adını, simgesini veya rengini güncelleyin</p>
+                    </div>
+                </div>
+                <button onclick="app.closeModal()" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-400 hover:text-white flex items-center justify-center transition-all">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- LİSTE SATIRLARI -->
+            <div class="space-y-2.5 max-h-80 overflow-y-auto custom-scrollbar pr-1">
+                ${lists.map(list => {
+                    const count = getListCount(list.id);
+                    const theme = this.getListColorTheme(list.color);
+                    const isEditing = editingListId === list.id;
+
+                    if (isEditing) {
+                        return `
+                            <div class="p-4 bg-dark-950/90 rounded-xl border border-amber-500/40 shadow-lg space-y-3 animate-fade-in">
+                                <div class="flex items-center justify-between pb-2 border-b border-dark-800">
+                                    <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> "${list.name}" Düzenleniyor
+                                    </span>
+                                    <button onclick="app.openManageWatchlistListsModal()" class="text-xs text-slate-400 hover:text-white transition-colors">
+                                        Vazgeç
+                                    </button>
+                                </div>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="text-[11px] font-bold text-slate-400 mb-1 block">Liste Adı</label>
+                                        <input type="text" id="edit-list-name-${list.id}" value="${list.name.replace(/"/g, '&quot;')}" class="w-full bg-dark-900 border border-dark-700 rounded-xl px-3 py-2 text-sm text-white focus:border-amber-500 outline-none transition-all">
+                                    </div>
+                                    
+                                    <!-- İKON SEÇİCİ (LUCIDE ICONS GRID) -->
+                                    <div>
+                                        <label class="text-[11px] font-bold text-slate-400 mb-1 block">İkon Seçin</label>
+                                        <div id="container-edit-list-icon-${list.id}" class="flex flex-wrap gap-1.5 p-2 bg-dark-900/80 rounded-xl border border-dark-800">
+                                            ${icons.map(i => `
+                                                <button type="button" onclick="app.selectWatchlistIcon('edit-list-icon-${list.id}', '${i.val}', 'amber')"
+                                                    data-icon="${i.val}"
+                                                    class="wl-icon-btn w-8 h-8 rounded-lg border flex items-center justify-center transition-all ${i.val === (list.icon || 'bookmark') ? 'bg-amber-500/20 border-amber-500 text-amber-400 shadow-sm scale-105' : 'bg-dark-950 border-dark-800 text-slate-400 hover:text-white hover:border-dark-700'}"
+                                                    title="${i.label}">
+                                                    <i data-lucide="${i.val}" class="w-3.5 h-3.5"></i>
+                                                </button>
+                                            `).join('')}
+                                        </div>
+                                        <input type="hidden" id="edit-list-icon-${list.id}" value="${list.icon || 'bookmark'}">
+                                    </div>
+
+                                    <!-- RENK SEÇİCİ -->
+                                    <div>
+                                        <label class="text-[11px] font-bold text-slate-400 mb-1 block">Tema Rengi</label>
+                                        <div id="container-edit-list-color-${list.id}" class="flex flex-wrap items-center gap-2.5 p-2 bg-dark-900/80 rounded-xl border border-dark-800">
+                                            ${colors.map(c => `
+                                                <button type="button" onclick="app.selectWatchlistColor('edit-list-color-${list.id}', '${c.val}')"
+                                                    data-color="${c.val}"
+                                                    class="wl-color-btn w-6 h-6 rounded-full transition-all flex items-center justify-center ${c.val === list.color ? 'ring-2 ring-offset-2 ring-offset-dark-950 ring-white scale-110 shadow-md' : 'opacity-70 hover:opacity-100 hover:scale-105'}"
+                                                    title="${c.label}">
+                                                    <span class="w-full h-full rounded-full ${this.getListColorTheme(c.val).dot}"></span>
+                                                </button>
+                                            `).join('')}
+                                        </div>
+                                        <input type="hidden" id="edit-list-color-${list.id}" value="${list.color || 'blue'}">
+                                    </div>
+
+                                    <div class="flex items-center justify-end gap-2 pt-1 border-t border-dark-800/80">
+                                        <button onclick="app.openManageWatchlistListsModal()" class="px-3.5 py-1.5 rounded-xl bg-dark-800 hover:bg-dark-700 text-slate-300 font-semibold text-xs transition-colors">
+                                            İptal
+                                        </button>
+                                        <button onclick="app.saveWatchlistListEdit('${list.id}')" class="px-4 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20">
+                                            <i data-lucide="check" class="w-3.5 h-3.5"></i> Kaydet
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <div class="p-3 bg-dark-950/50 hover:bg-dark-950/80 rounded-xl border border-dark-800/80 hover:border-dark-700 transition-all flex items-center justify-between group">
+                            <div class="flex items-center gap-3">
+                                <span class="w-2.5 h-2.5 rounded-full ${theme.dot}"></span>
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="${list.icon || 'bookmark'}" class="w-4 h-4 ${theme.text}"></i>
+                                    <span class="text-sm font-semibold text-white">${list.name}</span>
+                                    ${list.isBuiltin ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-dark-800 border border-dark-700/60 text-slate-400">Sabit</span>` : ''}
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-slate-400 font-medium px-2 py-0.5 rounded-md bg-dark-900 border border-dark-800/80">${count} Oyuncu</span>
+                                <button onclick="app.openManageWatchlistListsModal('${list.id}')" 
+                                    class="p-1.5 rounded-lg bg-dark-800/80 hover:bg-amber-500/20 hover:text-amber-400 text-slate-400 transition-all" title="Düzenle">
+                                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                </button>
+                                ${!list.isBuiltin ? `
+                                    <button onclick="app.deleteWatchlistList('${list.id}', true)" 
+                                        class="p-1.5 rounded-lg bg-dark-800/80 hover:bg-red-500/20 hover:text-red-400 text-slate-400 transition-all" title="Listeyi Sil">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+
+            <!-- FOOTER İŞLEMLERİ -->
+            <div class="flex items-center justify-between pt-3 border-t border-dark-800">
+                <button onclick="app.openAddWatchlistListModal()" class="text-xs font-semibold text-scout-400 hover:text-scout-300 flex items-center gap-1.5 transition-colors">
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Yeni Liste Ekle
+                </button>
+                <button onclick="app.closeModal()" class="px-5 py-2 rounded-xl bg-dark-800 hover:bg-dark-700 text-slate-300 font-bold text-xs transition-all">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    `;
+
+    this.showModal(html);
+};
+
+ScoutApp.prototype.saveWatchlistListEdit = function(listId) {
+    const nameEl = document.getElementById(`edit-list-name-${listId}`);
+    const iconEl = document.getElementById(`edit-list-icon-${listId}`);
+    const colorEl = document.getElementById(`edit-list-color-${listId}`);
+
+    if (!nameEl || !nameEl.value.trim()) {
+        return alert("Lütfen liste adını yazın.");
+    }
+
+    const lists = this.getWatchlistLists();
+    const list = lists.find(l => l.id === listId);
+    if (!list) return;
+
+    list.name = nameEl.value.trim();
+    if (iconEl) list.icon = iconEl.value;
+    if (colorEl) list.color = colorEl.value;
+
+    this.saveData();
+    this.notify("Liste güncellendi.");
+    this.openManageWatchlistListsModal();
+    this.renderWatchlist(document.getElementById('content-area'), true);
+};
+
+ScoutApp.prototype.deleteWatchlistList = function(listId, fromManageModal = false) {
     const lists = this.getWatchlistLists();
     const list = lists.find(l => l.id === listId);
     if (!list) return;
@@ -518,6 +762,9 @@ ScoutApp.prototype.deleteWatchlistList = function(listId) {
 
         this.saveData();
         this.notify("Liste silindi.");
+        if (fromManageModal) {
+            this.openManageWatchlistListsModal();
+        }
         this.renderWatchlist(document.getElementById('content-area'));
     });
 };
