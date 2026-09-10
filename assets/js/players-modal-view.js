@@ -66,78 +66,86 @@ ScoutApp.prototype.openPlayerModal = function (id, selectedHistoryIndex = 0, act
             
             <!-- HEADER -->
             <div class="h-20 border-b border-dark-800 bg-dark-900/80 backdrop-blur flex items-center justify-between px-8 shrink-0">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-dark-800 flex items-center justify-center text-slate-400 border border-dark-700"><i data-lucide="user" class="w-5 h-5"></i></div>
-                    <div>
-                        <h2 class="text-xl font-bold text-white leading-none tracking-tight">${p.name}</h2>
+                <div class="flex items-center gap-4 min-w-0 mr-4">
+                    <div class="w-10 h-10 rounded-lg bg-dark-800 flex items-center justify-center text-slate-400 border border-dark-700 shrink-0"><i data-lucide="user" class="w-5 h-5"></i></div>
+                    <div class="min-w-0">
+                        <h2 class="text-xl font-bold text-white leading-none tracking-tight truncate">${p.name}</h2>
                         <div class="flex items-center gap-2 mt-1 flex-wrap">
-                            <span class="text-xs text-scout-400 font-bold uppercase tracking-wider">${posTrans}${p.role ? ` <span class="opacity-60 font-normal">- ${t(p.role)}</span>` : ''}</span>
-                            ${p.teamId ? `<span class="text-xs text-slate-600">•</span><span class="text-xs text-slate-400 flex items-center gap-1" title="Kulüp Takımı"><i data-lucide="shield" class="w-3 h-3"></i> ${this.getTeamName(p.teamId)}</span>` : ''}
-                            ${p.nationalTeamId ? `<span class="text-xs text-slate-600">•</span><span class="text-xs text-slate-400 flex items-center gap-1" title="Milli Takım"><i data-lucide="flag" class="w-3 h-3 text-blue-400"></i> <span class="text-blue-200/80">${this.getTeamName(p.nationalTeamId)}</span></span>` : ''}
-                            ${p.u23National ? `<span class="text-xs text-slate-600">•</span><span class="text-[10px] text-blue-400 font-bold px-1.5 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-md flex items-center gap-1"><i data-lucide="check-circle-2" class="w-3 h-3"></i> ${t('u23_national')}</span>` : ''}
+                            <span class="text-xs text-scout-400 font-bold uppercase tracking-wider shrink-0">${posTrans}${p.role ? ` <span class="opacity-60 font-normal">- ${t(p.role)}</span>` : ''}</span>
+                            ${p.teamId ? `<span class="text-xs text-slate-600 shrink-0">•</span><span class="text-xs text-slate-400 flex items-center gap-1 shrink-0" title="Kulüp Takımı"><i data-lucide="shield" class="w-3 h-3"></i> ${this.getTeamName(p.teamId)}</span>` : ''}
+                            ${p.nationalTeamId ? `<span class="text-xs text-slate-600 shrink-0">•</span><span class="text-xs text-slate-400 flex items-center gap-1 shrink-0" title="Milli Takım"><i data-lucide="flag" class="w-3 h-3 text-blue-400"></i> <span class="text-blue-200/80">${this.getTeamName(p.nationalTeamId)}</span></span>` : ''}
+                            ${p.u23National ? `<span class="text-xs text-slate-600 shrink-0">•</span><span class="text-[10px] text-blue-400 font-bold px-1.5 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-md flex items-center gap-1 shrink-0"><i data-lucide="check-circle-2" class="w-3 h-3"></i> ${t('u23_national')}</span>` : ''}
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2.5 shrink-0">
                     <!-- Tarih Seçimi (Geçmiş Raporlar) -->
-                    <div class="relative group mr-2">
-                        <div class="flex items-center gap-2 bg-dark-800 border border-dark-700 px-2 py-2 rounded-lg cursor-pointer">
-                            <i data-lucide="calendar-days" class="w-4 h-4 text-slate-400 ml-1"></i>
-                            <select onchange="app.openPlayerModal(${id}, this.value, '${activeTab}')" class="bg-transparent text-white text-sm font-bold outline-none cursor-pointer appearance-none pr-6 pl-1">
+                    <div class="relative group shrink-0">
+                        <div class="h-9 flex items-center gap-2 bg-dark-800 border border-dark-700 px-2.5 rounded-lg cursor-pointer">
+                            <i data-lucide="calendar-days" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                            <select onchange="app.openPlayerModal(${id}, this.value, '${activeTab}')" class="bg-transparent text-white text-xs font-bold outline-none cursor-pointer appearance-none pr-5 pl-0.5">
                                 ${p.history.map((h, idx) => `
                                     <option value="${idx}" class="bg-dark-900 text-slate-300" ${idx == selectedHistoryIndex ? 'selected' : ''}>
                                         ${h.date} (${t('grade')}: ${h.rating})
                                     </option>
                                 `).join('')}
                             </select>
-                            <i data-lucide="chevron-down" class="w-3 h-3 text-slate-500 absolute right-3 pointer-events-none"></i>
+                            <i data-lucide="chevron-down" class="w-3 h-3 text-slate-500 absolute right-2.5 pointer-events-none"></i>
                         </div>
                     </div>
 
                     <!-- Listeleri Yönet Butonu -->
-                    <button onclick="app.openAssignPlayerToListsModal(${id})" class="h-9 px-3 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white flex items-center gap-1.5 transition-all border border-dark-700 text-xs font-semibold" title="Oyuncunun Listelerini Yönet">
+                    <button onclick="app.openAssignPlayerToListsModal(${id})" class="h-9 px-3 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white flex items-center gap-1.5 transition-all border border-dark-700 text-xs font-semibold shrink-0 whitespace-nowrap" title="Oyuncunun Listelerini Yönet">
                         <i data-lucide="bookmark" class="w-4 h-4 text-scout-400"></i>
                         <span>Listeler</span>
                         ${(p.listIds && p.listIds.length > 0) ? `<span class="px-1.5 py-0.2 rounded-md bg-scout-500/20 text-scout-400 text-[10px] font-bold">${p.listIds.length}</span>` : ''}
                     </button>
 
                     <!-- Düzenle ve Sil Butonları -->
-                    <button onclick="app.openEditPlayerModal(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-blue-500/20 hover:text-blue-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700" title="${t('edit')}">
+                    <button onclick="app.openEditPlayerModal(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-blue-500/20 hover:text-blue-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700 shrink-0" title="${t('edit')}">
                         <i data-lucide="pencil" class="w-4 h-4"></i>
                     </button>
                     
-                    <button onclick="app.deletePlayer(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700" title="${t('delete')}">
+                    <button onclick="app.deletePlayer(${id})" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700 shrink-0" title="${t('delete')}">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </button>
 
-                    <div class="h-8 w-[1px] bg-dark-800 mx-2"></div>
+                    <div class="h-6 w-[1px] bg-dark-800 mx-1 shrink-0"></div>
 
-                    <button onclick="app.exportPlayerToPDF(${id}, ${selectedHistoryIndex})" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-lg text-sm font-bold transition-colors border border-slate-700 shadow-lg shadow-slate-900/20" title="PDF İndir">
-                        <i data-lucide="download" class="w-4 h-4"></i> PDF
+                    <!-- PDF İndir -->
+                    <button onclick="app.exportPlayerToPDF(${id}, ${selectedHistoryIndex})" class="h-9 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center gap-1.5 text-xs font-bold transition-colors border border-slate-700 shadow-sm shrink-0 whitespace-nowrap" title="PDF İndir">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>PDF</span>
                     </button>
                     
-                    <button onclick="app.closeModal(); setTimeout(() => app.openCompareModal(${id}), 100)" class="flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-3 py-2 rounded-lg text-sm font-bold transition-all shadow-lg" title="Bu oyuncuyu karşılaştır">
-                        <i data-lucide="scale" class="w-4 h-4"></i> Karşılaştır
+                    <!-- Karşılaştır -->
+                    <button onclick="app.closeModal(); setTimeout(() => app.openCompareModal(${id}), 100)" class="h-9 px-3 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 flex items-center gap-1.5 text-xs font-bold transition-all shadow-sm shrink-0 whitespace-nowrap" title="Bu oyuncuyu karşılaştır">
+                        <i data-lucide="scale" class="w-4 h-4"></i>
+                        <span>Karşılaştır</span>
                     </button>
 
-                    <button onclick="app.closeModal(); setTimeout(() => app.openSimilarPlayersModal(${id}), 100)" class="flex items-center gap-2 bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white border border-dark-700 px-3 py-2 rounded-lg text-sm font-bold transition-all" title="Metrik ve nitelik bazlı benzer oyuncuları bul">
-                        <i data-lucide="sparkles" class="w-4 h-4"></i> Benzer Oyuncular
+                    <!-- Benzer Oyuncular -->
+                    <button onclick="app.closeModal(); setTimeout(() => app.openSimilarPlayersModal(${id}), 100)" class="h-9 px-3 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white border border-dark-700 flex items-center gap-1.5 text-xs font-bold transition-all shrink-0 whitespace-nowrap" title="Metrik ve nitelik bazlı benzer oyuncuları bul">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span>Benzer Oyuncular</span>
                     </button>
 
-                    <button onclick="app.openAddReportModal(${id})" class="flex items-center gap-2 bg-scout-600 hover:bg-scout-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg shadow-scout-500/20">
-                        <i data-lucide="file-plus" class="w-4 h-4"></i> ${t('new_report')}
+                    <!-- Yeni Rapor Ekle -->
+                    <button onclick="app.openAddReportModal(${id})" class="h-9 px-3.5 rounded-lg bg-scout-600 hover:bg-scout-500 text-white flex items-center gap-1.5 text-xs font-bold transition-colors shadow-sm shrink-0 whitespace-nowrap">
+                        <i data-lucide="file-plus" class="w-4 h-4"></i>
+                        <span>${t('new_report')}</span>
                     </button>
 
-                    <div class="h-8 w-[1px] bg-dark-800 mx-2"></div>
+                    <div class="h-6 w-[1px] bg-dark-800 mx-1 shrink-0"></div>
                     
-                    <div class="text-right mr-2">
-                        <div class="text-[10px] text-slate-500 uppercase font-bold">${t('grade')}</div>
-                        <div class="text-lg font-black ${grade.color}">${grade.letter} <span class="text-sm text-slate-600 font-medium">(${currentReport.rating})</span></div>
+                    <div class="text-right mr-1 shrink-0">
+                        <div class="text-[10px] text-slate-500 uppercase font-bold leading-tight">${t('grade')}</div>
+                        <div class="text-base font-black ${grade.color} leading-none mt-0.5">${grade.letter} <span class="text-xs text-slate-500 font-medium">(${currentReport.rating})</span></div>
                     </div>
                     
-                    <button onclick="app.closeModal()" class="w-10 h-10 rounded-xl bg-dark-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700 group">
-                        <i data-lucide="x" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
+                    <button onclick="app.closeModal()" class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 flex items-center justify-center transition-all border border-dark-700 shrink-0 group">
+                        <i data-lucide="x" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
                     </button>
                 </div>
             </div>
