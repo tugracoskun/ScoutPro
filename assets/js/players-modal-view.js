@@ -121,6 +121,10 @@ ScoutApp.prototype.openPlayerModal = function (id, selectedHistoryIndex = 0, act
                         <i data-lucide="scale" class="w-4 h-4"></i> Karşılaştır
                     </button>
 
+                    <button onclick="app.closeModal(); setTimeout(() => app.openSimilarPlayersModal(${id}), 100)" class="flex items-center gap-2 bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white border border-dark-700 px-3 py-2 rounded-lg text-sm font-bold transition-all" title="Metrik ve nitelik bazlı benzer oyuncuları bul">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i> Benzer Oyuncular
+                    </button>
+
                     <button onclick="app.openAddReportModal(${id})" class="flex items-center gap-2 bg-scout-600 hover:bg-scout-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg shadow-scout-500/20">
                         <i data-lucide="file-plus" class="w-4 h-4"></i> ${t('new_report')}
                     </button>

@@ -140,10 +140,11 @@ ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
             </div>
 
             <!-- FİLTRELEME & SIRALAMA BAR (STICKY) -->
-            <div class="sticky top-0 z-30 bg-dark-950/80 backdrop-blur-xl border-b border-dark-800 py-4 -mx-8 px-8 flex flex-col xl:flex-row gap-4 justify-between items-center">
-                <div class="flex items-center gap-3 w-full xl:w-auto">
+            <div class="sticky top-0 z-30 bg-dark-950/80 backdrop-blur-xl border-b border-dark-800 py-4 -mx-8 px-8 flex flex-col xl:flex-row gap-3 xl:gap-4 justify-between items-stretch xl:items-center">
+                <!-- Sol Grup: Arama, Favori ve Mevkiler (Sola kaydırılmış, ferah düzen) -->
+                <div class="flex flex-wrap items-center gap-3">
                     <!-- Arama -->
-                    <div class="relative w-full xl:w-56 group">
+                    <div class="relative w-full sm:w-52 group">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4 group-focus-within:text-scout-500 transition-colors"></i>
                         <input type="text" id="player-pool-search" oninput="app.updatePlayerSearch(this)" value="${this.state.searchTerm || ''}" placeholder="${window.getLang && window.getLang() === 'en' ? 'Search players...' : 'Oyuncular içinde ara...'}" class="w-full bg-dark-900 border border-dark-700 rounded-xl pl-9 pr-4 py-2 text-sm text-white focus:border-scout-500 outline-none transition-all">
                     </div>
@@ -152,18 +153,25 @@ ScoutApp.prototype.renderPlayers = function(c, skipAnimation = false) {
                     <button onclick="app.togglePlayerFilter()" class="w-10 h-10 flex items-center justify-center rounded-xl border transition-all shrink-0 ${favBtnClass}" title="${t('region_favorites')}">
                         <i data-lucide="heart" class="w-4 h-4 ${this.state.playerFilter.favoritesOnly ? 'fill-white' : ''}"></i>
                     </button>
+
+                    <div class="hidden sm:block h-6 w-[1px] bg-dark-800"></div>
+
+                    <!-- Mevki Kategorileri (Sola yanaşık) -->
+                    <div class="flex gap-1.5 overflow-x-auto pb-0.5 max-w-full custom-scrollbar items-center">
+                        <button onclick="app.updatePlayerFilter('category', 'All')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-all shrink-0 ${this.state.playerFilter.category === 'All' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('all')} (${this.state.data.players.length})</button>
+                        <button onclick="app.updatePlayerFilter('category', 'Kaleci')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-all shrink-0 ${this.state.playerFilter.category === 'Kaleci' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('pos_gk')}</button>
+                        <button onclick="app.updatePlayerFilter('category', 'Defans')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-all shrink-0 ${this.state.playerFilter.category === 'Defans' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('cat_def')}</button>
+                        <button onclick="app.updatePlayerFilter('category', 'OrtaSaha')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-all shrink-0 ${this.state.playerFilter.category === 'OrtaSaha' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('cat_mid')}</button>
+                        <button onclick="app.updatePlayerFilter('category', 'Forvet')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-all shrink-0 ${this.state.playerFilter.category === 'Forvet' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('pos_st')}</button>
+                    </div>
                 </div>
 
-                <!-- Mevki Kategorileri -->
-                <div class="flex gap-2 overflow-x-auto pb-1 max-w-full custom-scrollbar">
-                    <button onclick="app.updatePlayerFilter('category', 'All')" class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${this.state.playerFilter.category === 'All' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('all')} (${this.state.data.players.length})</button>
-                    <button onclick="app.updatePlayerFilter('category', 'Kaleci')" class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${this.state.playerFilter.category === 'Kaleci' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('pos_gk')}</button>
-                    <button onclick="app.updatePlayerFilter('category', 'Defans')" class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${this.state.playerFilter.category === 'Defans' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('cat_def')}</button>
-                    <button onclick="app.updatePlayerFilter('category', 'OrtaSaha')" class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${this.state.playerFilter.category === 'OrtaSaha' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('cat_mid')}</button>
-                    <button onclick="app.updatePlayerFilter('category', 'Forvet')" class="px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${this.state.playerFilter.category === 'Forvet' ? 'bg-scout-600 text-white border-scout-600' : 'bg-dark-900 text-slate-400 border-dark-700 hover:text-white'}">${t('pos_st')}</button>
-                </div>
-
-                <div class="flex gap-2 items-center">
+                <!-- Sağ Grup: Benzer Oyuncular, Karşılaştır, Potansiyel, Sıralama -->
+                <div class="flex flex-wrap gap-2 items-center justify-end">
+                    <button onclick="app.openSimilarPlayersModal()" class="px-3 py-2 rounded-lg text-xs font-bold bg-dark-900 text-slate-300 border border-dark-700 hover:border-scout-500/50 hover:text-scout-400 transition-all flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        ${window.getLang && window.getLang() === 'en' ? 'Similar Players' : 'Benzer Oyuncular'}
+                    </button>
                     <button onclick="app.openCompareModal()" class="px-3 py-2 rounded-lg text-xs font-bold bg-dark-900 text-slate-300 border border-dark-700 hover:border-blue-500/50 hover:text-blue-400 transition-all flex items-center gap-2">
                         <i data-lucide="scale" class="w-4 h-4"></i>
                         ${window.getLang && window.getLang() === 'en' ? 'Compare' : 'Karşılaştır'}
