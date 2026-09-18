@@ -56,6 +56,7 @@ ScoutApp.prototype.openPlayerModal = function (id, selectedHistoryIndex = 0, act
     const potTrans = currentReport.potential === 'Düşük' ? (window.getLang && window.getLang() === 'en' ? 'LOW' : 'DÜŞÜK') : (currentReport.potential === 'Yüksek' ? (window.getLang && window.getLang() === 'en' ? 'HIGH' : 'YÜKSEK') : (currentReport.potential || (window.getLang && window.getLang() === 'en' ? 'LOW' : 'DÜŞÜK')));
 
     const posTrans = window.tPos ? window.tPos(p.position) : p.position;
+    const completeness = typeof this.getPlayerCompleteness === 'function' ? this.getPlayerCompleteness(p, currentReport) : { total: 0, observed: 0, missing: 0, pct: 100 };
 
     // Diğer kolonların içeriğini al (players-modal-content.js dosyasından gelir)
     // Bu sayede dosya boyutu yönetilebilir kalır.
@@ -179,6 +180,17 @@ ScoutApp.prototype.openPlayerModal = function (id, selectedHistoryIndex = 0, act
                                     ` : ''}
                                     ${p.nationality ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('nationality')}</span><span class="text-white flex items-center gap-1.5">${natFlag} <span class="font-bold">${natName}</span></span></div>` : ''}
                                     <div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('report_date')}</span><span class="text-white font-mono text-xs opacity-70">${currentReport.date}</span></div>
+                                    <div class="flex justify-between items-center py-2 border-b border-dark-800/50">
+                                        <span class="text-slate-500 font-medium flex items-center gap-1.5 text-xs">
+                                            <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-scout-400"></i> ${window.getLang && window.getLang() === 'en' ? 'Data Level' : 'Bilgi Seviyesi'}
+                                        </span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-mono font-bold text-xs ${completeness.pct === 100 ? 'text-emerald-400' : (completeness.pct >= 70 ? 'text-scout-400' : 'text-amber-400')}">%${completeness.pct}</span>
+                                            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded ${completeness.missing > 0 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}">
+                                                ${completeness.missing > 0 ? `${completeness.missing} ${window.getLang && window.getLang() === 'en' ? 'missing' : 'eksik'}` : (window.getLang && window.getLang() === 'en' ? 'Full' : 'Tam')}
+                                            </span>
+                                        </div>
+                                    </div>
                                     ${currentReport.matchId && this.getMatchDisplay(currentReport.matchId) ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium flex items-center gap-1"><i data-lucide="tv" class="w-3 h-3 text-scout-400"></i> ${t('watched_match')}</span><span class="text-scout-400 text-xs font-bold text-right max-w-[60%] truncate" title="${this.getMatchDisplay(currentReport.matchId)}">${this.getMatchDisplay(currentReport.matchId)}</span></div>` : ''}
                                     ${currentReport.source ? `<div class="flex justify-between py-2 border-b border-dark-800/50"><span class="text-slate-500 font-medium">${t('source')}</span><span class="text-white text-xs text-right max-w-[60%] truncate" title="${currentReport.source}">${currentReport.source}</span></div>` : ''}
                                 </div>
@@ -186,6 +198,35 @@ ScoutApp.prototype.openPlayerModal = function (id, selectedHistoryIndex = 0, act
                             <div class="grid grid-cols-2 gap-3">
                                 ${p.tmUrl ? `<button onclick="app.openExternal('${p.tmUrl}')" class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-[#1a3150]/80 hover:bg-[#1a3150] text-white text-xs font-bold transition-all border border-[#304e76] hover:scale-[1.02]"><i data-lucide="globe" class="w-4 h-4"></i> TM</button>` : `<button disabled class="py-4 rounded-2xl bg-dark-900 text-slate-600 text-xs font-bold border border-dark-800 cursor-not-allowed opacity-50">TM ${t('no_data') || 'Yok'}</button>`}
                                 ${p.sofaUrl ? `<button onclick="app.openExternal('${p.sofaUrl}')" class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-[#2c3e50]/80 hover:bg-[#2c3e50] text-white text-xs font-bold transition-all border border-[#48637d] hover:scale-[1.02]"><i data-lucide="activity" class="w-4 h-4"></i> Sofascore</button>` : `<button disabled class="py-4 rounded-2xl bg-dark-900 text-slate-600 text-xs font-bold border border-dark-800 cursor-not-allowed opacity-50">Sofa ${t('no_data') || 'Yok'}</button>`}
+                            </div>
+
+                            <!-- OYUNCU BİLGİ SEVİYESİ & METRİK EKSİKLİĞİ PROGRESS KARTI -->
+                            <div class="bg-dark-900/50 backdrop-blur rounded-3xl border border-dark-800 p-5 shadow-xl flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-8 h-8 rounded-xl bg-scout-500/10 border border-scout-500/20 text-scout-400 flex items-center justify-center shadow-sm">
+                                            <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-bold text-white uppercase tracking-wider">${window.getLang && window.getLang() === 'en' ? 'Data Completeness' : 'Oyuncu Bilgi Seviyesi'}</h4>
+                                            <p class="text-[10px] text-slate-400">${completeness.missing > 0 ? `${completeness.missing} ${window.getLang && window.getLang() === 'en' ? 'metrics missing in this match' : 'metrik bu maçta gözlemlenmedi'}` : (window.getLang && window.getLang() === 'en' ? 'All metrics observed' : 'Tüm metrikler eksiksiz')}</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm font-black font-mono ${completeness.pct === 100 ? 'text-emerald-400' : (completeness.pct >= 70 ? 'text-scout-400' : 'text-amber-400')}">%${completeness.pct}</span>
+                                </div>
+                                
+                                <!-- Progress Bar -->
+                                <div class="w-full h-2 bg-dark-950 rounded-full overflow-hidden border border-dark-800 p-[1px]">
+                                    <div class="h-full rounded-full transition-all duration-500 ${completeness.pct === 100 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : (completeness.pct >= 70 ? 'bg-gradient-to-r from-scout-500 to-emerald-400' : 'bg-gradient-to-r from-amber-500 to-orange-400')}" style="width: ${completeness.pct}%"></div>
+                                </div>
+
+                                <!-- Detay İstatistikleri -->
+                                <div class="flex justify-between items-center text-[10px] text-slate-400 font-medium pt-1 border-t border-dark-800/60">
+                                    <span>${window.getLang && window.getLang() === 'en' ? 'Observed' : 'Gözlemlenen'}: <strong class="text-white">${completeness.observed} / ${completeness.total}</strong> Metrik</span>
+                                    <span class="${completeness.missing > 0 ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold'}">
+                                        ${completeness.missing > 0 ? `%${100 - completeness.pct} ${window.getLang && window.getLang() === 'en' ? 'Deficiency' : 'Veri Eksikliği'}` : (window.getLang && window.getLang() === 'en' ? '100% Complete' : 'Eksiksiz Rapor')}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 

@@ -236,6 +236,7 @@ ScoutApp.prototype.getPlayerCardHTML = function(p) {
     const grade = this.getGrade(p.rating);
     const potColor = p.potential === 'Yüksek' ? 'text-scout-400' : 'text-slate-500';
     const currentAge = p.birthDate ? this.calculateAge(p.birthDate) : p.age;
+    const completeness = typeof this.getPlayerCompleteness === 'function' ? this.getPlayerCompleteness(p) : { pct: 100, missing: 0 };
 
     return `
         <div class="scout-card bg-dark-900 rounded-2xl p-5 relative group overflow-hidden border border-dark-800 hover:border-scout-500/30 transition-all">
@@ -253,7 +254,14 @@ ScoutApp.prototype.getPlayerCardHTML = function(p) {
                     <img src="${this.getImageUrl(p.image)}" class="w-14 h-14 rounded-xl object-cover bg-dark-950 border border-dark-700" onerror="this.onerror=null;this.src=window.DEFAULT_AVATAR_DATA_URL">
                     <div class="flex-1 min-w-0 pr-8">
                         <h4 class="font-bold text-white text-lg leading-tight truncate">${p.name}</h4>
-                        <div class="text-xs text-scout-400 font-medium mt-1">${window.tPos ? window.tPos(p.position) : p.position}</div>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="text-xs text-scout-400 font-medium">${window.tPos ? window.tPos(p.position) : p.position}</span>
+                            ${completeness.missing > 0 ? `
+                                <span class="px-1.5 py-0.2 rounded-md bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[9px] font-bold" title="${completeness.missing} metrik eksik">%${completeness.pct} Bilgi</span>
+                            ` : `
+                                <span class="px-1.5 py-0.2 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-bold" title="Eksiksiz Rapor">Tam</span>
+                            `}
+                        </div>
                         <div class="text-xs text-slate-500 mt-0.5 truncate">${p.teamId ? this.getTeamName(p.teamId) : ''}${p.teamId && p.nationalTeamId ? ' - ' : ''}${p.nationalTeamId ? this.getTeamName(p.nationalTeamId) : ''}</div>
                     </div>
                 </div>

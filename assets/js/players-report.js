@@ -232,7 +232,7 @@ ScoutApp.prototype.createDetailedSlider = function(label, sub, val, styleClass) 
 
     const iconHtml = styleClass.includes('critical') 
         ? `<i data-lucide="star" class="w-3.5 h-3.5 text-scout-400 fill-scout-400 shrink-0"></i>`
-        : `<div class="w-3.5 h-3.5 shrink-0"></div>`; // Spacer (Boşluk)
+        : ``;
 
     const unobservedClass = isUnobserved ? 'attr-unobserved' : '';
     const displayVal = isUnobserved ? '?' : numericVal;
@@ -240,25 +240,27 @@ ScoutApp.prototype.createDetailedSlider = function(label, sub, val, styleClass) 
         ? (window.getLang && window.getLang() === 'en' ? 'Observed - Click to rate' : 'Gözlemlendi - Puanlamak için tıkla') 
         : (window.getLang && window.getLang() === 'en' ? 'Mark as Not Observed' : 'Bu maçta gözlemleme fırsatım olmadı (Es geç)');
     const btnStyle = isUnobserved 
-        ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-sm' 
+        ? 'bg-amber-500/25 text-amber-300 border-amber-500/50 shadow-sm' 
         : 'bg-dark-900 text-slate-500 hover:text-white border-dark-800 hover:border-slate-600';
 
     return `
         <div id="card-${safeKey}" class="bg-dark-950 p-4 rounded-xl border border-dark-800 relative z-10 ${styleClass} ${unobservedClass} transition-all hover:border-dark-700 group">
-            <div class="flex justify-between items-start mb-3">
-                <div class="flex flex-col min-w-0 pr-2 w-full">
-                    <!-- Üst Satır: İkon + İsim -->
-                    <div class="flex items-center gap-2">
-                        ${iconHtml}
-                        <span class="text-xs font-bold text-slate-200 truncate attr-label" title="${label}">${window.tAttr ? window.tAttr(label) : label}</span>
+            <div class="flex justify-between items-start mb-3 gap-3">
+                <!-- Sol Üst: Soru İşareti Butonu + İsim + Alt Açıklama -->
+                <div class="flex items-start gap-2.5 min-w-0 flex-1">
+                    <button type="button" id="btn-unobs-${safeKey}" onclick="app.toggleRepStatObserved('${label}', this)" 
+                        class="unobserved-toggle-btn w-6 h-6 mt-0.5 rounded-lg flex items-center justify-center text-xs font-black border shrink-0 transition-all ${btnStyle}" 
+                        title="${btnTitle}">?</button>
+                    <div class="flex flex-col min-w-0 flex-1">
+                        <div class="flex items-center gap-1.5">
+                            ${iconHtml}
+                            <span class="text-xs font-bold text-slate-200 truncate attr-label" title="${label}">${window.tAttr ? window.tAttr(label) : label}</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 leading-tight mt-1 line-clamp-1 group-hover:text-slate-400 transition-colors" title="${sub}">${window.tSub ? window.tSub(sub) : sub}</span>
                     </div>
-                    <!-- Alt Satır: Açıklama -->
-                    <span class="text-[10px] text-slate-500 leading-tight mt-1 line-clamp-1 group-hover:text-slate-400 transition-colors pl-[22px]" title="${sub}">${window.tSub ? window.tSub(sub) : sub}</span>
                 </div>
-                <div class="flex items-center gap-1.5 shrink-0">
-                    <button type="button" id="btn-unobs-${safeKey}" onclick="app.toggleRepStatObserved('${label}', this)" class="unobserved-toggle-btn w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black border transition-all ${btnStyle}" title="${btnTitle}">?</button>
-                    <span id="val-${safeKey}" class="text-sm font-black bg-dark-900 px-2 py-0.5 rounded border border-dark-800 min-w-[36px] text-center transition-colors" style="color: ${color}">${displayVal}</span>
-                </div>
+                <!-- Sağ Üst: Puan Kutusu -->
+                <span id="val-${safeKey}" class="text-sm font-black bg-dark-900 px-2.5 py-0.5 rounded-lg border border-dark-800 min-w-[36px] text-center shrink-0 transition-colors" style="color: ${color}">${displayVal}</span>
             </div>
             
             <!-- RENKLİ SLIDER -->

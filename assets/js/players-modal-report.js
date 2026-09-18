@@ -110,15 +110,19 @@ ScoutApp.prototype.getSliderHTMLForUpdate = function(attributeGroup, currentStat
 
         return `
             <div id="card-new-${safeKey}" class="${styleClass} ${unobservedClass} px-4 py-3 rounded-xl border mb-2 transition-all">
-                <div class="flex justify-between mb-2">
-                    <div class="flex flex-col min-w-0 pr-2">
-                        <span class="text-xs font-bold text-slate-200 truncate" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</span>
-                        <span class="text-[10px] text-slate-500 truncate" title="${attr.sub}">${window.tSub ? window.tSub(attr.sub) : attr.sub}</span>
+                <div class="flex justify-between items-start mb-2.5 gap-3">
+                    <!-- Sol Üst: Soru İşareti Butonu + İsim + Alt Açıklama -->
+                    <div class="flex items-start gap-2.5 min-w-0 flex-1">
+                        <button type="button" id="btn-unobs-new-${safeKey}" onclick="app.toggleModalReportStatObserved('${attr.name}', this)" 
+                            class="unobserved-toggle-btn w-6 h-6 mt-0.5 rounded-lg flex items-center justify-center text-xs font-black border shrink-0 transition-all ${btnStyle}" 
+                            title="${btnTitle}">?</button>
+                        <div class="flex flex-col min-w-0 flex-1">
+                            <span class="text-xs font-bold text-slate-200 truncate attr-label" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</span>
+                            <span class="text-[10px] text-slate-500 truncate" title="${attr.sub}">${window.tSub ? window.tSub(attr.sub) : attr.sub}</span>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <button type="button" id="btn-unobs-new-${safeKey}" onclick="app.toggleModalReportStatObserved('${attr.name}', this)" class="unobserved-toggle-btn w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black border transition-all ${btnStyle}" title="${btnTitle}">?</button>
-                        <span id="val-new-${safeKey}" class="text-sm font-black min-w-[32px] text-center transition-colors" style="color: ${color}">${displayVal}</span>
-                    </div>
+                    <!-- Sağ Üst: Puan Kutusu -->
+                    <span id="val-new-${safeKey}" class="text-sm font-black bg-dark-900 px-2.5 py-0.5 rounded-lg border border-dark-800 min-w-[36px] text-center shrink-0 transition-colors" style="color: ${color}">${displayVal}</span>
                 </div>
                 <input type="range" min="0" max="100" value="${val}" id="slider-new-${safeKey}"
                     oninput="app.updateModalReportStat('${attr.name}', this.value, this)" 

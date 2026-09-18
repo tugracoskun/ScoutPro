@@ -16,6 +16,27 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
     let contentHTML = '';
     let firstCategory = null;
 
+    // --- METRİK PROGRESS / OYUNCU BİLGİ SEVİYESİ HESAPLAMA ---
+    let totalAttrs = 0;
+    let observedAttrs = 0;
+    if (mapping.group !== 'Default' && attributeGroup) {
+        Object.keys(attributeGroup).forEach(cat => {
+            (attributeGroup[cat] || []).forEach(attr => {
+                totalAttrs++;
+                const v = currentReport.stats ? currentReport.stats[attr.name] : undefined;
+                if (v !== null && v !== undefined) observedAttrs++;
+            });
+        });
+    } else if (attributeGroup && attributeGroup['Genel']) {
+        attributeGroup['Genel'].forEach(attr => {
+            totalAttrs++;
+            const v = currentReport.stats ? currentReport.stats[attr.name] : undefined;
+            if (v !== null && v !== undefined) observedAttrs++;
+        });
+    }
+    const missingAttrs = totalAttrs - observedAttrs;
+    const completenessPct = totalAttrs > 0 ? Math.round((observedAttrs / totalAttrs) * 100) : 100;
+
     if (mapping.group !== 'Default') {
         const categories = Object.keys(attributeGroup); // Teknik, Taktik, Fiziksel...
         firstCategory = categories[0];
@@ -163,11 +184,13 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
         <!-- 2. ORTA KOLON: 4 KÖŞE MODELİ (Özellikler) -->
         <div class="lg:col-span-5 flex flex-col gap-6">
             <div class="bg-dark-900/50 backdrop-blur rounded-3xl border border-dark-800 p-6 shadow-xl flex flex-col">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <div class="flex justify-between items-start mb-3 gap-3">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2 mt-0.5">
                         <i data-lucide="layout-grid" class="text-scout-400 w-5 h-5"></i> ${t('attr_details')}
                     </h3>
-                    ${prevReport ? `<span class="text-[10px] text-slate-500 bg-dark-950 px-2.5 py-1 rounded-lg border border-dark-700 flex items-center gap-1"><i data-lucide="arrow-left-right" class="w-3 h-3"></i> ${t('comparison')}: ${prevReport.date}</span>` : ''}
+                    
+                    <!-- SAĞ ÜST ALAN: KARŞILAŞTIRMA -->
+                    ${prevReport ? `<span class="text-[10px] text-slate-400 bg-dark-950 px-2.5 py-0.5 rounded-lg border border-dark-700 flex items-center gap-1 shadow-sm shrink-0"><i data-lucide="arrow-left-right" class="w-3 h-3 text-scout-400"></i> ${t('comparison')}: ${prevReport.date}</span>` : ''}
                 </div>
                 
                 <!-- TAB BUTONLARI -->
@@ -361,4 +384,32 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
     `;
 
     return { topSection, bottomSection };
+};
+
+ScoutApp.prototype.getPlayerCompleteness = function(p, targetReport) {
+    if (!p) return { total: 0, observed: 0, missing: 0, pct: 100 };
+    const mapping = POSITION_MAPPING[p.position] || { group: 'Default' };
+    const attributeGroup = ATTRIBUTE_GROUPS[mapping.group];
+    const stats = (targetReport && targetReport.stats) ? targetReport.stats : ((p.history && p.history.length > 0 && p.history[0].stats) ? p.history[0].stats : (p.stats || {}));
+    
+    let total = 0;
+    let observed = 0;
+    if (mapping.group !== 'Default' && attributeGroup) {
+        Object.keys(attributeGroup).forEach(cat => {
+            (attributeGroup[cat] || []).forEach(attr => {
+                total++;
+                const v = stats[attr.name];
+                if (v !== null && v !== undefined) observed++;
+            });
+        });
+    } else if (attributeGroup && attributeGroup['Genel']) {
+        attributeGroup['Genel'].forEach(attr => {
+            total++;
+            const v = stats[attr.name];
+            if (v !== null && v !== undefined) observed++;
+        });
+    }
+    const missing = total - observed;
+    const pct = total > 0 ? Math.round((observed / total) * 100) : 100;
+    return { total, observed, missing, pct };
 };
