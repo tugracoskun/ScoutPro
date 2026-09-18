@@ -77,8 +77,8 @@ ScoutApp.prototype.calculatePlayerSimilarity = function(targetPlayer, otherPlaye
         oStats[key] !== undefined && oStats[key] !== null
     );
 
-    const tKeyCount = Object.keys(tStats).length;
-    const oKeyCount = Object.keys(oStats).length;
+    const tKeyCount = Object.keys(tStats).filter(k => tStats[k] !== null && tStats[k] !== undefined).length;
+    const oKeyCount = Object.keys(oStats).filter(k => oStats[k] !== null && oStats[k] !== undefined).length;
     const maxKeys = Math.max(tKeyCount, oKeyCount);
     const overlapRatio = maxKeys > 0 ? (commonKeys.length / maxKeys) : 0;
 

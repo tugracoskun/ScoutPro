@@ -45,15 +45,29 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
             contentHTML += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">`;
             
             attributeGroup[cat].forEach(attr => {
-                const val = currentReport.stats[attr.name] || 50;
+                const rawVal = currentReport.stats ? currentReport.stats[attr.name] : undefined;
+                const isUnobserved = (rawVal === null);
+                const val = isUnobserved ? null : (rawVal !== undefined ? rawVal : 50);
                 let diffHtml = '';
                 
-                // Gelişim Karşılaştırması
-                if (prevReport && prevReport.stats[attr.name]) {
-                    const diff = val - prevReport.stats[attr.name];
-                    if (diff > 0) diffHtml = `<span class="text-[10px] font-bold text-green-500 bg-green-500/10 px-1.5 py-0.5 rounded ml-auto">+${diff}</span>`;
-                    else if (diff < 0) diffHtml = `<span class="text-[10px] font-bold text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded ml-auto">${diff}</span>`;
-                    else diffHtml = `<span class="text-[10px] font-bold text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded ml-auto">-</span>`;
+                // Gelişim Karşılaştırması (her iki raporda da sayısal gözlem varsa)
+                if (prevReport && prevReport.stats) {
+                    const prevRaw = prevReport.stats[attr.name];
+                    if (typeof val === 'number' && typeof prevRaw === 'number' && prevRaw !== null) {
+                        const diff = val - prevRaw;
+                        if (diff > 0) diffHtml = `<span class="text-[10px] font-bold text-green-500 bg-green-500/10 px-1.5 py-0.5 rounded ml-auto">+${diff}</span>`;
+                        else if (diff < 0) diffHtml = `<span class="text-[10px] font-bold text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded ml-auto">${diff}</span>`;
+                        else diffHtml = `<span class="text-[10px] font-bold text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded ml-auto">-</span>`;
+                    }
+                }
+
+                let scoreHtml = '';
+                if (isUnobserved) {
+                    const unobsTitle = window.getLang && window.getLang() === 'en' ? 'Not Observed in this match' : 'Bu maçta gözlemleme fırsatı olmadı';
+                    scoreHtml = `<span class="unobserved-badge text-xs font-bold px-2 py-0.5 rounded-md text-slate-400 font-mono tracking-tight" title="${unobsTitle}">?</span>`;
+                } else {
+                    const scoreColor = val >= 85 ? 'text-green-400' : (val >= 70 ? 'text-green-600' : (val >= 50 ? 'text-yellow-500' : 'text-red-500'));
+                    scoreHtml = `<span class="font-mono font-black text-lg ${scoreColor}">${val}</span>`;
                 }
 
                 contentHTML += `
@@ -64,7 +78,7 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
                         </div>
                         <div class="flex justify-between items-end">
                              <span class="text-[10px] text-slate-500 truncate max-w-[70%]" title="${attr.sub}">${window.tSub ? window.tSub(attr.sub) : attr.sub}</span>
-                             <span class="font-mono font-black text-lg ${val >= 85 ? 'text-green-400' : (val >= 70 ? 'text-green-600' : (val >= 50 ? 'text-yellow-500' : 'text-red-500'))}">${val}</span>
+                             ${scoreHtml}
                         </div>
                     </div>
                 `;
@@ -72,67 +86,71 @@ ScoutApp.prototype.getPlayerContentHTML = function(p, currentReport, prevReport,
             contentHTML += `</div>`;
             
             // --- GÜÇLÜ YÖNLER & GELİŞTİRME ALANLARI (ALT KISIM) ---
-            const attrsWithScores = attributeGroup[cat].map(attr => ({
-                name: attr.name,
-                sub: attr.sub,
-                val: currentReport.stats[attr.name] || 50
-            }));
+            // Sadece gözlemlenmiş (null olmayan) metrikleri sırala
+            const attrsWithScores = attributeGroup[cat]
+                .map(attr => ({
+                    name: attr.name,
+                    sub: attr.sub,
+                    val: currentReport.stats ? currentReport.stats[attr.name] : undefined
+                }))
+                .filter(item => typeof item.val === 'number' && !isNaN(item.val) && item.val !== null);
             
-            // Büyükten küçüğe sırala
-            attrsWithScores.sort((a, b) => b.val - a.val);
-            
-            const maxItems = Math.min(5, Math.ceil(attrsWithScores.length / 2));
-            const topAttrs = attrsWithScores.slice(0, maxItems);
-            // En düşükleri al ve ters çevir (en düşük en başta olsun)
-            const bottomAttrs = attrsWithScores.slice(-maxItems).reverse();
-            
-            contentHTML += `
-                <div class="bg-dark-950/60 p-4 rounded-2xl border border-dark-800">
-                    <h4 class="text-xs font-black text-scout-400 uppercase tracking-widest mb-3 flex items-center gap-2 border-l-2 border-scout-500 pl-2">
-                        ${t('strengths_weaknesses') || 'GÜÇLÜ YÖNLER & GELİŞTİRME ALANLARI'}
-                    </h4>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- EN İYİ X -->
-                        <div>
-                            <div class="text-[10px] font-bold text-green-400 uppercase flex items-center gap-1.5 mb-3">
-                                <i data-lucide="trophy" class="w-3.5 h-3.5"></i> ${t('top') || 'EN İYİ'} ${maxItems}
-                            </div>
-                            <div class="space-y-2">
-                                ${topAttrs.map((attr, i) => `
-                                    <div class="bg-dark-900 px-3 py-1.5 rounded-xl border border-dark-800 flex items-center gap-3">
-                                        <div class="w-5 h-5 rounded-full bg-scout-500 text-dark-950 flex items-center justify-center text-[10px] font-black shrink-0">${i+1}</div>
-                                        <div class="text-xs font-bold text-white truncate flex-1" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</div>
-                                        <div class="w-24 h-1.5 bg-dark-950 rounded-full overflow-hidden shrink-0">
-                                            <div class="h-full bg-gradient-to-r from-blue-500 to-scout-400 rounded-full" style="width: ${attr.val}%"></div>
+            if (attrsWithScores.length > 0) {
+                // Büyükten küçüğe sırala
+                attrsWithScores.sort((a, b) => b.val - a.val);
+                
+                const maxItems = Math.min(5, Math.ceil(attrsWithScores.length / 2));
+                const topAttrs = attrsWithScores.slice(0, maxItems);
+                const bottomAttrs = attrsWithScores.slice(-maxItems).reverse();
+                
+                contentHTML += `
+                    <div class="bg-dark-950/60 p-4 rounded-2xl border border-dark-800">
+                        <h4 class="text-xs font-black text-scout-400 uppercase tracking-widest mb-3 flex items-center gap-2 border-l-2 border-scout-500 pl-2">
+                            ${t('strengths_weaknesses') || 'GÜÇLÜ YÖNLER & GELİŞTİRME ALANLARI'}
+                        </h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- EN İYİ X -->
+                            <div>
+                                <div class="text-[10px] font-bold text-green-400 uppercase flex items-center gap-1.5 mb-3">
+                                    <i data-lucide="trophy" class="w-3.5 h-3.5"></i> ${t('top') || 'EN İYİ'} ${topAttrs.length}
+                                </div>
+                                <div class="space-y-2">
+                                    ${topAttrs.map((attr, i) => `
+                                        <div class="bg-dark-900 px-3 py-1.5 rounded-xl border border-dark-800 flex items-center gap-3">
+                                            <div class="w-5 h-5 rounded-full bg-scout-500 text-dark-950 flex items-center justify-center text-[10px] font-black shrink-0">${i+1}</div>
+                                            <div class="text-xs font-bold text-white truncate flex-1" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</div>
+                                            <div class="w-24 h-1.5 bg-dark-950 rounded-full overflow-hidden shrink-0">
+                                                <div class="h-full bg-gradient-to-r from-blue-500 to-scout-400 rounded-full" style="width: ${attr.val}%"></div>
+                                            </div>
+                                            <div class="font-mono text-xs font-black text-scout-400 w-6 text-right">${attr.val}</div>
                                         </div>
-                                        <div class="font-mono text-xs font-black text-scout-400 w-6 text-right">${attr.val}</div>
-                                    </div>
-                                `).join('')}
+                                    `).join('')}
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- GELİŞTİRMELİ -->
-                        <div>
-                            <div class="text-[10px] font-bold text-red-400 uppercase flex items-center gap-1.5 mb-3">
-                                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> ${t('needs_improvement') || 'GELİŞTİRMELİ'}
-                            </div>
-                            <div class="space-y-2">
-                                ${bottomAttrs.map((attr, i) => `
-                                    <div class="bg-dark-900 px-3 py-1.5 rounded-xl border border-dark-800 flex items-center gap-3">
-                                        <div class="w-5 h-5 rounded-full bg-scout-500 text-dark-950 flex items-center justify-center text-[10px] font-black shrink-0">${i+1}</div>
-                                        <div class="text-xs font-bold text-white truncate flex-1" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</div>
-                                        <div class="w-24 h-1.5 bg-dark-950 rounded-full overflow-hidden shrink-0">
-                                            <div class="h-full bg-gradient-to-r from-red-600 to-orange-400 rounded-full" style="width: ${attr.val}%"></div>
+                            <!-- GELİŞTİRMELİ -->
+                            <div>
+                                <div class="text-[10px] font-bold text-red-400 uppercase flex items-center gap-1.5 mb-3">
+                                    <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> ${t('needs_improvement') || 'GELİŞTİRMELİ'}
+                                </div>
+                                <div class="space-y-2">
+                                    ${bottomAttrs.map((attr, i) => `
+                                        <div class="bg-dark-900 px-3 py-1.5 rounded-xl border border-dark-800 flex items-center gap-3">
+                                            <div class="w-5 h-5 rounded-full bg-scout-500 text-dark-950 flex items-center justify-center text-[10px] font-black shrink-0">${i+1}</div>
+                                            <div class="text-xs font-bold text-white truncate flex-1" title="${attr.name}">${window.tAttr ? window.tAttr(attr.name) : attr.name}</div>
+                                            <div class="w-24 h-1.5 bg-dark-950 rounded-full overflow-hidden shrink-0">
+                                                <div class="h-full bg-gradient-to-r from-red-600 to-orange-400 rounded-full" style="width: ${attr.val}%"></div>
+                                            </div>
+                                            <div class="font-mono text-xs font-black text-orange-400 w-6 text-right">${attr.val}</div>
                                         </div>
-                                        <div class="font-mono text-xs font-black text-orange-400 w-6 text-right">${attr.val}</div>
-                                    </div>
-                                `).join('')}
+                                    `).join('')}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
             
             contentHTML += `</div>`;
         });

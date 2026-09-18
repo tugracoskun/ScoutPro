@@ -164,22 +164,33 @@ ScoutApp.prototype.renderComparison = function() {
             groupedStats[category].forEach(key => {
                 const v1Raw = p1Stats[key];
                 const v2Raw = p2Stats[key];
-                const v1 = parseInt(v1Raw) || 0;
-                const v2 = parseInt(v2Raw) || 0;
+                const isObs1 = (v1Raw !== null && v1Raw !== undefined);
+                const isObs2 = (v2Raw !== null && v2Raw !== undefined);
+                const v1 = isObs1 ? parseInt(v1Raw) : null;
+                const v2 = isObs2 ? parseInt(v2Raw) : null;
                 
                 let c1 = 'text-slate-300';
                 let c2 = 'text-slate-300';
                 
-                if (v1 > v2) {
-                    c1 = 'text-blue-400 font-black';
-                    c2 = 'text-slate-500';
-                } else if (v2 > v1) {
+                // Karşılaştırma renklendirmesi sadece her iki oyuncuda da gözlemlenmişse yapılır
+                if (v1 !== null && v2 !== null) {
+                    if (v1 > v2) {
+                        c1 = 'text-blue-400 font-black';
+                        c2 = 'text-slate-500';
+                    } else if (v2 > v1) {
+                        c1 = 'text-slate-500';
+                        c2 = 'text-purple-400 font-black';
+                    }
+                } else if (v1 === null && v2 !== null) {
                     c1 = 'text-slate-500';
-                    c2 = 'text-purple-400 font-black';
+                    c2 = 'text-slate-300 font-semibold';
+                } else if (v2 === null && v1 !== null) {
+                    c1 = 'text-slate-300 font-semibold';
+                    c2 = 'text-slate-500';
                 }
 
-                const val1Str = v1Raw !== undefined ? v1Raw : '-';
-                const val2Str = v2Raw !== undefined ? v2Raw : '-';
+                const val1Str = v1Raw === null ? '<span class="unobserved-badge text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" title="Gözlemlenmedi">?</span>' : (v1Raw !== undefined ? v1Raw : '-');
+                const val2Str = v2Raw === null ? '<span class="unobserved-badge text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" title="Gözlemlenmedi">?</span>' : (v2Raw !== undefined ? v2Raw : '-');
                 
                 detailedHtml += `
                     <div class="flex items-center justify-between py-2 px-3 hover:bg-dark-800 rounded-lg transition-colors border-b border-dark-800/50 last:border-0 group">
@@ -233,9 +244,11 @@ ScoutApp.prototype.drawCompareRadar = function(p1, p2) {
             const attrs = attributeGroup[cat];
             let sum = 0, count = 0;
             attrs.forEach(attrObj => {
-                const val = p1.stats[attrObj.name] || 50;
-                sum += parseInt(val);
-                count++;
+                const val = p1.stats ? p1.stats[attrObj.name] : null;
+                if (typeof val === 'number' && !isNaN(val) && val !== null) {
+                    sum += parseInt(val);
+                    count++;
+                }
             });
             return count > 0 ? Math.round(sum / count) : 50;
         });
@@ -244,9 +257,11 @@ ScoutApp.prototype.drawCompareRadar = function(p1, p2) {
             const attrs = attributeGroup[cat];
             let sum = 0, count = 0;
             attrs.forEach(attrObj => {
-                const val = p2.stats[attrObj.name] || 50;
-                sum += parseInt(val);
-                count++;
+                const val = p2.stats ? p2.stats[attrObj.name] : null;
+                if (typeof val === 'number' && !isNaN(val) && val !== null) {
+                    sum += parseInt(val);
+                    count++;
+                }
             });
             return count > 0 ? Math.round(sum / count) : 50;
         });

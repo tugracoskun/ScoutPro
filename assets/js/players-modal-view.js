@@ -510,19 +510,27 @@ ScoutApp.prototype.exportPlayerToPDF = async function (id, selectedHistoryIndex)
             attributesHTML += `<div style="font-weight:800; color:${color}; text-transform:uppercase; font-size:8px; margin-bottom:4px; letter-spacing:0.3px;">${displayCat}</div>`;
 
             attrs.forEach(attr => {
-                const val = currentReport.stats[attr.name] || 50;
-                const v = parseInt(val);
-                allAttrs.push({ name: attr.name, val: v, category: cat });
-                let valColor = '#64748b';
-                if (v >= 80) valColor = '#16a34a';
-                else if (v >= 65) valColor = '#2563eb';
-                else if (v <= 40) valColor = '#dc2626';
+                const rawVal = currentReport.stats ? currentReport.stats[attr.name] : undefined;
+                const isUnobserved = (rawVal === null);
                 const attrName = window.tAttr ? window.tAttr(attr.name) : attr.name;
+                
+                let valStr = '?';
+                let valColor = '#94a3b8';
+
+                if (!isUnobserved) {
+                    const v = parseInt(rawVal !== undefined ? rawVal : 50);
+                    valStr = v;
+                    allAttrs.push({ name: attr.name, val: v, category: cat });
+                    if (v >= 80) valColor = '#16a34a';
+                    else if (v >= 65) valColor = '#2563eb';
+                    else if (v <= 40) valColor = '#dc2626';
+                    else valColor = '#64748b';
+                }
 
                 attributesHTML += `
                     <div style="display:flex; align-items:center; justify-space-between; padding:1.5px 0; border-bottom:1px solid #f1f5f9;">
                         <span style="color:#475569; font-weight:500; font-size:8px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${attrName}">${attrName}</span>
-                        <span style="color:${valColor}; font-weight:800; font-family:monospace; font-size:9px; margin-left:4px;">${v}</span>
+                        <span style="color:${valColor}; font-weight:800; font-family:monospace; font-size:9px; margin-left:4px;">${valStr}</span>
                     </div>
                 `;
             });
@@ -531,23 +539,29 @@ ScoutApp.prototype.exportPlayerToPDF = async function (id, selectedHistoryIndex)
         attributesHTML += '</div>';
     } else {
         const attrs = attributeGroup['Genel'] || [];
-        attrs.forEach(attr => {
-            const val = currentReport.stats[attr.name] || 50;
-            allAttrs.push({ name: attr.name, val: parseInt(val), category: 'Genel' });
-        });
         attributesHTML += '<div style="background:#fafafa; border:1px solid #e5e7eb; border-radius:8px; padding:10px;">';
         attrs.forEach(attr => {
-            const val = currentReport.stats[attr.name] || 50;
-            const v = parseInt(val);
-            let valColor = '#64748b';
-            if (v >= 80) valColor = '#16a34a';
-            else if (v >= 65) valColor = '#2563eb';
-            else if (v <= 40) valColor = '#dc2626';
+            const rawVal = currentReport.stats ? currentReport.stats[attr.name] : undefined;
+            const isUnobserved = (rawVal === null);
             const attrName = window.tAttr ? window.tAttr(attr.name) : attr.name;
+
+            let valStr = '?';
+            let valColor = '#94a3b8';
+
+            if (!isUnobserved) {
+                const v = parseInt(rawVal !== undefined ? rawVal : 50);
+                valStr = v;
+                allAttrs.push({ name: attr.name, val: v, category: 'Genel' });
+                if (v >= 80) valColor = '#16a34a';
+                else if (v >= 65) valColor = '#2563eb';
+                else if (v <= 40) valColor = '#dc2626';
+                else valColor = '#64748b';
+            }
+
             attributesHTML += `
                 <div style="display:flex; align-items:center; justify-content:space-between; padding:2px 0; font-size:9px;">
                     <span style="color:#475569;">${attrName}</span>
-                    <span style="color:${valColor}; font-weight:700; font-family:monospace;">${v}</span>
+                    <span style="color:${valColor}; font-weight:700; font-family:monospace;">${valStr}</span>
                 </div>
             `;
         });

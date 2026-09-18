@@ -334,7 +334,38 @@ const ATTR_TRANSLATIONS = {
     "Zorluklara Tepki": "Reaction to Adversity",
     "Yenen Hatalı Golden Sonraki Tutum, Düşmeden Kalma": "Attitude after conceding a mistake goal, Bouncing back",
     "Kararlılık": "Determination",
-    "Kalesini Gole Kapatma Hırsı, Her Tobu Kurtarma İsteği": "Desire to keep a clean sheet, Will to save every shot"
+    "Kalesini Gole Kapatma Hırsı, Her Tobu Kurtarma İsteği": "Desire to keep a clean sheet, Will to save every shot",
+
+    // Modern Outfield Attributes & Translations
+    "Top Taşıma (Carrying)": "Ball Carrying",
+    "Boş Alanı Kat Etme, Baskı Altında Soğukkanlı Çıkış": "Progressing into space, Composed exit under pressure",
+    "Baskıya Direnç": "Press Resistance",
+    "Pres Altında Top Saklama, Dar Alandan Temiz Çıkış": "Shielding under press, Clean escape from tight spaces",
+    "Çevre Kontrolü (Scanning)": "Scanning & Awareness",
+    "Top Gelmeden Önce Omuz Arkası ve Alan Kontrolü": "Shoulder check and pitch scan before receiving",
+    "Şut & Bitiricilik": "Shooting & Finishing",
+    "Ceza Sahasına Sızıp Vuruş, Ceza Sahası Dışı Şut Tehdidi": "Runs into box to finish, Long-range shooting threat",
+    "İçe Kat Etme (Inverted)": "Inverted Movement",
+    "Merkez Orta Sahaya Katılıp Oyun Kurma ve Alan Açma": "Tucking inside into midfield to build up and create space",
+    "Geri Dönüş & Kademe (Recovery)": "Recovery & Tracking Back",
+    "Top Kaybında Geriye Koşu ve Geçiş Savunması": "Tracking back on turnover and transition defense",
+    "Pozisyon Disiplini": "Positional Discipline",
+    "Kendi Bölgesini Terk Etmeme, Defans Önü Kalkanı": "Holding shape, Defensive shield",
+    "Uzun Top & Oyun Yönü": "Long Balls & Switching Play",
+    "Diyagonal Pas, Oyunu Genişletme ve Yön Değiştirme": "Diagonal pass, Stretching play and switching sides",
+    "Kafa Vuruşu, Orta Sahada Hava Topu Kazanma": "Heading, Winning aerial duels in midfield",
+    "Dikey Sıçrama ve Hava Mücadelesi": "Vertical jump and aerial duels",
+    "İçe Kat Etme (Inverted Cut)": "Cutting Inside",
+    "Bekin İçinden Yarı Alana Sızıp Şut/Pas Açısı Bulma": "Cutting inside fullback into half-space for shot/pass",
+    "Frikik, Korner ve Kavisli Ortalar": "Free kicks, corners and curling deliveries",
+    "Kilit Pas & Servis": "Key Pass & Service",
+    "Kanatlara ve Arkadan Gelen Orta Sahaya Gol Pası": "Through-ball to wingers and late arriving midfielders",
+    "Kalabalık Ceza Sahasında Çabuk Ayak ve Çalım": "Quick feet and agility inside crowded penalty area",
+    "Pres Yönlendirmesi (Gegenpress)": "Press Direction (Gegenpress)",
+    "Stoperi Hataya Zorlama, Pas Kanalını Gölgeleme (Shadow Cover)": "Forcing defender into error, Shadow cover pass lanes",
+    "Ceza Sahasında Boşluğu ve Kaleciyi Tara": "Scanning penalty box space and goalkeeper position",
+    "Gözlemlenmedi": "Not Observed",
+    "Gözlemlenemedi": "Not Observed"
 };
 
 window.tAttr = function(key) {

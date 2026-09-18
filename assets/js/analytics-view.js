@@ -340,8 +340,16 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
     const maxValEUR = this.stepToEuro(this.state.analyticsFilter.maxVal !== undefined ? this.state.analyticsFilter.maxVal : 100);
     const pot = this.state.analyticsFilter.potential || 'all';
 
+    const isXMarketValue = xAxisAttr === 'Piyasa Değeri (€)' || xAxisAttr === 'Piyasa Değeri' || (typeof xAxisAttr === 'string' && (xAxisAttr.includes('Piyasa') || xAxisAttr.includes('Market')));
+    const isYMarketValue = yAxisAttr === 'Piyasa Değeri (€)' || yAxisAttr === 'Piyasa Değeri' || (typeof yAxisAttr === 'string' && (yAxisAttr.includes('Piyasa') || yAxisAttr.includes('Market')));
+
     const players = this.state.data.players.filter(p => {
         if (p.position !== pos || !p.stats) return false;
+        
+        // Gözlemlenmeyen (null) metrikleri scatter plot grafiğinde 0'a çekmemek için hariç tut
+        if (!isXMarketValue && (p.stats[xAxisAttr] === null || p.stats[xAxisAttr] === undefined)) return false;
+        if (!isYMarketValue && (p.stats[yAxisAttr] === null || p.stats[yAxisAttr] === undefined)) return false;
+
         const age = parseInt(p.age) || 0;
         if (age && (age < minAge || age > maxAge)) return false;
         
@@ -358,7 +366,7 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
     });
 
     if (players.length === 0) {
-        chartArea.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-slate-500 font-medium gap-2"><i data-lucide="filter-x" class="w-8 h-8 opacity-40"></i>Kriterlere uyan oyuncu bulunamadı.</div>`;
+        chartArea.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-slate-500 font-medium gap-2"><i data-lucide="filter-x" class="w-8 h-8 opacity-40"></i>Kriterlere uyan veya her iki metriği gözlemlenmiş oyuncu bulunamadı.</div>`;
         if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
     }
@@ -367,9 +375,6 @@ ScoutApp.prototype.drawAnalyticsChart = function() {
     let sumX = 0;
     let sumY = 0;
     let validCount = 0;
-
-    const isXMarketValue = xAxisAttr === 'Piyasa Değeri (€)' || xAxisAttr === 'Piyasa Değeri' || (typeof xAxisAttr === 'string' && (xAxisAttr.includes('Piyasa') || xAxisAttr.includes('Market')));
-    const isYMarketValue = yAxisAttr === 'Piyasa Değeri (€)' || yAxisAttr === 'Piyasa Değeri' || (typeof yAxisAttr === 'string' && (yAxisAttr.includes('Piyasa') || yAxisAttr.includes('Market')));
 
     let maxX = 100;
     let maxY = 100;

@@ -15,7 +15,7 @@ const PLAYER_ROLES = {
 // --- ÖZELLİK HAVUZU VE ALT DETAYLAR ---
 const ATTRIBUTE_GROUPS = {
     
-    // 1. STOPER GRUBU (Aynen Korundu)
+    // 1. STOPER GRUBU (MODERN PASÖR & SAVUNMA)
     'Stoper': {
         'Teknik': [
             { name: 'Müdahale (Tackling)', sub: 'Ayakta Kalarak Top Kazanma, Zamanlama, Faulsüz Hamle' },
@@ -23,12 +23,15 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Markaj', sub: 'Rakibe Yakınlık, Temaslı Oyun, Nefes Aldırmama' },
             { name: 'Pas Dağıtımı (Kısa)', sub: 'Baskı Altında Hatasız Pas, Pas Şiddeti' },
             { name: 'Hat Kıran Paslar', sub: 'Dikey Paslar, Bloğu Delen Paslar (Packing)' },
+            { name: 'Top Taşıma (Carrying)', sub: 'Boş Alanı Kat Etme, Baskı Altında Soğukkanlı Çıkış' },
+            { name: 'Baskıya Direnç', sub: 'Pres Altında Top Saklama, Dar Alandan Temiz Çıkış' },
             { name: 'Uzun Top / Oyun Kurma', sub: 'Ters Kanada Diyagonal Pas, Oyunun Yönünü Değiştirme' },
             { name: 'İlk Dokunuş', sub: 'Topu Vücuduna Göre Alma, Oyuna Açma' }
         ],
         'Taktik': [
             { name: 'Pozisyon Alma', sub: 'Ofsayt Çizgisi, Doğru Yerde Durma' },
             { name: 'Sezgi (Anticipation)', sub: 'Pas Arası Yapma (Interception), Tehlikeyi Önceden Sezme' },
+            { name: 'Çevre Kontrolü (Scanning)', sub: 'Top Gelmeden Önce Omuz Arkası ve Alan Kontrolü' },
             { name: 'Karar Verme', sub: 'Risk Yönetimi: Ne Zaman Pas, Ne Zaman Uzaklaştırma?' },
             { name: 'Kademeye Girme', sub: 'Bek veya Partnerinin Arkasını Toplama' },
             { name: 'Vücut Oryantasyonu', sub: 'Yan Durma (Side-on), Rakibi Dışarı Yönlendirme' }
@@ -52,18 +55,23 @@ const ATTRIBUTE_GROUPS = {
         ]
     },
 
-    // 2. BEK GRUBU (YENİLENDİ: SAĞ/SOL BEK)
+    // 2. BEK GRUBU (MODERN İKİ YÖNLÜ & İÇ BEK)
     'Bek': {
         'Teknik': [
             { name: '1v1 Savunma', sub: 'Ayakta Kalma, Fake Yememe, Müdahale Başarısı' },
             { name: 'Orta Kalitesi', sub: 'Erken Orta, Çizgiden Kesme, Yerden Cut-back' },
             { name: 'Top Sürme (Carrying)', sub: 'Boş Alanı Kat Etme, Baskı Altında Çıkış' },
             { name: 'Pas & Oyun Kurulumu', sub: 'Merkeze Yardım, İstasyon Olma (Inverted)' },
+            { name: 'Hat Kıran Paslar', sub: 'İç Koridordan (Half-Space) Dikey Paslar' },
+            { name: 'Şut & Bitiricilik', sub: 'Ceza Sahasına Sızıp Vuruş, Ceza Sahası Dışı Şut Tehdidi' },
+            { name: 'Duran Top Kullanımı', sub: 'Korner, Frikik ve Taç Organizasyonu' },
+            { name: 'Dar Alanda Beceri', sub: 'Çizgi Kenarında Çoklu Baskıda Çıkış' },
             { name: 'Ters Ayak', sub: 'İçe Kat Ederken Şut/Pas Tehdidi' },
             { name: 'İlk Dokunuş', sub: 'Hızla Giderken Top Kontrolü' }
         ],
         'Taktik': [
             { name: 'Bindirme Zamanlaması', sub: 'Overlap/Underlap Kararı, Kanatla Uyum' },
+            { name: 'İçe Kat Etme (Inverted)', sub: 'Merkez Orta Sahaya Katılıp Oyun Kurma ve Alan Açma' },
             { name: 'Arka Direk Farkındalığı', sub: 'Kör Nokta Kontrolü, Ters Topları Sezme (Kritik)' },
             { name: 'Geri Dönüş (Recovery)', sub: 'Hücumdan Savunmaya Geçiş Hızı ve Açısı' },
             { name: 'Alan Savunması', sub: 'Stoperle Arayı Kapatma, Kanal (Half-Space) Kontrolü' },
@@ -88,7 +96,7 @@ const ATTRIBUTE_GROUPS = {
         ]
     },
 
-    // 2. ORTA SAHA GRUBU (GÜNCELLENDİ: DOS, MOS, OOS - HİBRİT HAVUZ)
+    // 3. ORTA SAHA GRUBU (DOS, MOS, OOS - HİBRİT HAVUZ)
     'OrtaSaha': {
         'Teknik': [
             { name: 'Dar Alanda Beceri', sub: 'Çoklu Baskıda Top Saklama, Telefon Kulübesinde Çalım (Kritik)' },
@@ -97,24 +105,29 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Şut ve Bitiricilik', sub: 'Ceza Sahası Dışı Şut, Gölge Forvet Koşusu (Shadow Striker)' },
             { name: 'Duran Top Kullanımı', sub: 'Korner, Frikik ve Duran Top Organizasyonu' },
             { name: 'Vücut Çalımı', sub: 'Topa Dokunmadan Rakibi Ekarte Etme (Feints)' },
-            { name: 'Progresif Pas', sub: 'Dikine Oynama, Hat Kıran Paslar' }, // MOS'tan geldi
-            { name: 'Top Taşıma', sub: 'Boş Alanı Kat Etme' }, // MOS'tan geldi
-            { name: 'Baskıya Direnç', sub: 'Sırtı Dönük Top Alma' }, // DOS'tan geldi
-            { name: 'Savunma Müdahalesi', sub: 'Top Kapma, Müdahale' } // DOS'tan geldi
+            { name: 'Progresif Pas', sub: 'Dikine Oynama, Hat Kıran Paslar' },
+            { name: 'Top Taşıma', sub: 'Boş Alanı Kat Etme' },
+            { name: 'Baskıya Direnç', sub: 'Sırtı Dönük Top Alma' },
+            { name: 'Savunma Müdahalesi', sub: 'Top Kapma, Müdahale' },
+            { name: 'Hava Hakimiyeti', sub: 'Kafa Vuruşu, Orta Sahada Hava Topu Kazanma' },
+            { name: 'Uzun Top & Oyun Yönü', sub: 'Diyagonal Pas, Oyunu Genişletme ve Yön Değiştirme' }
         ],
         'Taktik': [
             { name: 'Hatlar Arası Oyun', sub: 'Blok Arasındaki "Cep" (Pocket) Boşluklarını Bulma' },
             { name: 'Karar Verme (Hız)', sub: 'Final Bölgesinde Hızlı Düşünme (Pas mı Şut mu?)' },
             { name: 'Topsuz Koşu (Destek)', sub: 'Forvete Alan Açma, Kör Nokta Koşusu' },
             { name: 'Pres Başlatma', sub: 'Top Kaybında Önde Baskı (Gegenpress)' },
-            { name: 'Tempo Kontrolü', sub: 'Oyunu Hızlandırma/Yavaşlatma (La Pausa)' }, // MOS
-            { name: 'Çevre Kontrolü (Scanning)', sub: 'Omuz Arkası Kontrol' } // DOS
+            { name: 'Tempo Kontrolü', sub: 'Oyunu Hızlandırma/Yavaşlatma (La Pausa)' },
+            { name: 'Çevre Kontrolü (Scanning)', sub: 'Omuz Arkası Kontrol' },
+            { name: 'Geri Dönüş & Kademe (Recovery)', sub: 'Top Kaybında Geriye Koşu ve Geçiş Savunması' },
+            { name: 'Pozisyon Disiplini', sub: 'Kendi Bölgesini Terk Etmeme, Defans Önü Kalkanı' }
         ],
         'Fiziksel': [
             { name: 'Çeviklik & Denge', sub: 'Düşük Ağırlık Merkezi, Ani Yön Değiştirme' },
             { name: 'Patlayıcı Hız', sub: 'İlk 3 Metre Çıkış Hızı (Burst)' },
             { name: 'Dayanıklılık', sub: 'Maç Boyu Hücum ve Savunma Presi' },
-            { name: 'İkili Mücadele Gücü', sub: 'Omuz Omuza Ayakta Kalma' } // MOS/DOS
+            { name: 'İkili Mücadele Gücü', sub: 'Omuz Omuza Ayakta Kalma' },
+            { name: 'Sıçrama', sub: 'Dikey Sıçrama ve Hava Mücadelesi' }
         ],
         'Psiko-Sosyal': [
             { name: 'Yaratıcılık & Flair', sub: 'Beklenmedik Olanı Yapma, Topuk Pası, Aşırtma' },
@@ -127,12 +140,14 @@ const ATTRIBUTE_GROUPS = {
         ]
     },
 
-    // 3. KANAT GRUBU
+    // 4. KANAT GRUBU
     'Kanat': {
         'Teknik': [
             { name: '1v1 Dripling & Eksiltme', sub: 'Statik/Dinamik Geçiş, Body Feint, Rakibi Ekarte Etme' },
             { name: 'Orta Kalitesi', sub: 'Erken Orta, Çizgiden Kesme, Yerden Cut-back' },
             { name: 'Bitiricilik & Şut', sub: 'Ters Ayakla Plase, Yakın Direk Sert Şut, Ceza Sahası Girişi' },
+            { name: 'Son Pas / Kilit Pas', sub: 'Ceza Sahasına Öldürücü Pas, Koridor Yaratma' },
+            { name: 'Duran Top Kullanımı', sub: 'Frikik, Korner ve Kavisli Ortalar' },
             { name: 'İlk Dokunuş (Progresif)', sub: 'Topu Koşu Yoluna Alma, Hız Kesmeden Kontrol' },
             { name: 'Ters Ayak Kullanımı', sub: 'İçe Kat Ederken Şut/Pas Tehdidi, Tahmin Edilemezlik' },
             { name: 'Dar Alan Becerisi', sub: 'Çizgi Kenarında Sıkışınca Top Saklama' },
@@ -140,6 +155,7 @@ const ATTRIBUTE_GROUPS = {
         ],
         'Taktik': [
             { name: 'Topsuz Koşu (Arka Direk)', sub: 'Ters Kanat Ortasında İkinci Forvet Gibi Girme (Kritik)' },
+            { name: 'İçe Kat Etme (Inverted Cut)', sub: 'Bekin İçinden Yarı Alana Sızıp Şut/Pas Açısı Bulma' },
             { name: 'Karar Verme (3. Bölge)', sub: 'Final Anında Doğru Tercih (Çalım mı, Pas mı, Şut mu?)' },
             { name: 'Genişlik & Derinlik', sub: 'Çizgide Kalma vs İçe Kat Etme Zamanlaması' },
             { name: 'Kör Nokta Koşuları', sub: 'Bekin Görüş Alanından Çıkarak Sızma (Blindside)' },
@@ -162,12 +178,14 @@ const ATTRIBUTE_GROUPS = {
         ]
     },
 
-    // 4. FORVET GRUBU
+    // 5. FORVET GRUBU
     'Forvet': {
         'Teknik': [
             { name: 'Bitiricilik', sub: 'Vuruş Kalitesi, Köşeleri Arama, Tek Vuruş (One-touch)' },
             { name: 'Sırtı Dönük Oyun', sub: 'Baskı Altında Top Saklama, Duvar Olma, Servis Yapma' },
+            { name: 'Kilit Pas & Servis', sub: 'Kanatlara ve Arkadan Gelen Orta Sahaya Gol Pası' },
             { name: 'İlk Dokunuş (Ceza Sahası)', sub: 'Sert Pası Yumuşatma, Şut Açısı Yaratma' },
+            { name: 'Dar Alan Becerisi', sub: 'Kalabalık Ceza Sahasında Çabuk Ayak ve Çalım' },
             { name: 'Kafa Vuruşu', sub: 'Zamanlama, Yönlendirme ve Sıçrama Tekniği' },
             { name: 'Zayıf Ayak', sub: 'Her İki Ayağı Şut/Pas İçin Kullanabilme' },
             { name: 'Dripling & Eksiltme', sub: 'Yüzü Dönükken Stoperin Üzerine Gitme, Çalım' },
@@ -179,7 +197,8 @@ const ATTRIBUTE_GROUPS = {
             { name: 'Ceza Sahası Sezgisi', sub: 'Topun Düşeceği Yeri Hissetme, Fırsatçılık (Poacher)' },
             { name: 'Kanal Koşuları', sub: 'Stoper-Bek Arasına Sızma (Runs into Depth)' },
             { name: 'Bağlantı Oyunu', sub: 'Orta Sahaya Yaklaşıp Pas İstasyonu Olma (False 9)' },
-            { name: 'Pres Yönlendirmesi', sub: 'Kavisli Koşuyla Rakip Stoperi Hataya Zorlama' },
+            { name: 'Pres Yönlendirmesi', sub: 'Kavisli Koşuyla Rakip Stoperi Hataya Zorlama (Gegenpress)' },
+            { name: 'Çevre Kontrolü (Scanning)', sub: 'Ceza Sahasında Boşluğu ve Kaleciyi Tara' },
             { name: 'Ofsayt Yönetimi', sub: 'Son Adımı Zamanlama, Ofsayt Tuzağından Kurtulma' }
         ],
         'Fiziksel': [

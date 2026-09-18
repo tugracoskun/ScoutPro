@@ -204,14 +204,16 @@ ScoutApp.prototype.renderAttributeInputs = function(set, weightKey) {
             html += `<div class="col-span-1 md:col-span-2 mt-6 mb-3 pb-1 border-b border-dark-800 font-bold text-sm uppercase tracking-wider ${clr} category-header" style="border-left-color: var(--tw-border-opacity, 1) ${borderClr}">${tCat}</div>`;
             
             set[cat].forEach(attr => { 
-                const val = this.state.newReport.stats[attr.name] || 50;
+                const rawVal = this.state.newReport.stats[attr.name];
+                const val = (rawVal === undefined) ? 50 : rawVal;
                 const styleClass = getStyleClass(attr.name);
                 html += this.createDetailedSlider(attr.name, attr.sub, val, styleClass); 
             });
         });
     } else {
         set['Genel'].forEach(attr => { 
-            const val = this.state.newReport.stats[attr.name] || 50;
+            const rawVal = this.state.newReport.stats[attr.name];
+            const val = (rawVal === undefined) ? 50 : rawVal;
             html += this.createDetailedSlider(attr.name, attr.sub, val, ''); 
         });
     }
@@ -219,22 +221,30 @@ ScoutApp.prototype.renderAttributeInputs = function(set, weightKey) {
     container.innerHTML = html;
 };
 
-// --- DÜZELTİLEN SLIDER (ALIGNMENT FIX & COLOR EFFECT) ---
+// --- DÜZELTİLEN SLIDER (ALIGNMENT FIX & COLOR EFFECT & N/A TOGGLE) ---
 ScoutApp.prototype.createDetailedSlider = function(label, sub, val, styleClass) {
     const safeKey = label.replace(/\s+/g, '-').replace(/\//g, '-').toLowerCase();
+    const isUnobserved = (val === null);
+    const numericVal = isUnobserved ? 50 : parseInt(val !== undefined ? val : 50);
     
-    // Değere göre renk (Başlangıç)
-    const color = val < 40 ? '#ef4444' : (val < 60 ? '#eab308' : (val < 80 ? '#a3e635' : '#22c55e'));
+    // Değere göre renk
+    const color = isUnobserved ? '#64748b' : (numericVal < 40 ? '#ef4444' : (numericVal < 60 ? '#eab308' : (numericVal < 80 ? '#a3e635' : '#22c55e')));
 
-    // HİZALAMA ÇÖZÜMÜ: 
-    // Kritik ise Yıldız ikonu, Değilse Görünmez boşluk ikonu koyuyoruz.
-    // Böylece metinler hep aynı hizadan başlar.
     const iconHtml = styleClass.includes('critical') 
         ? `<i data-lucide="star" class="w-3.5 h-3.5 text-scout-400 fill-scout-400 shrink-0"></i>`
         : `<div class="w-3.5 h-3.5 shrink-0"></div>`; // Spacer (Boşluk)
 
+    const unobservedClass = isUnobserved ? 'attr-unobserved' : '';
+    const displayVal = isUnobserved ? '?' : numericVal;
+    const btnTitle = isUnobserved 
+        ? (window.getLang && window.getLang() === 'en' ? 'Observed - Click to rate' : 'Gözlemlendi - Puanlamak için tıkla') 
+        : (window.getLang && window.getLang() === 'en' ? 'Mark as Not Observed' : 'Bu maçta gözlemleme fırsatım olmadı (Es geç)');
+    const btnStyle = isUnobserved 
+        ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-sm' 
+        : 'bg-dark-900 text-slate-500 hover:text-white border-dark-800 hover:border-slate-600';
+
     return `
-        <div class="bg-dark-950 p-4 rounded-xl border border-dark-800 relative z-10 ${styleClass} transition-colors hover:border-dark-700 group">
+        <div id="card-${safeKey}" class="bg-dark-950 p-4 rounded-xl border border-dark-800 relative z-10 ${styleClass} ${unobservedClass} transition-all hover:border-dark-700 group">
             <div class="flex justify-between items-start mb-3">
                 <div class="flex flex-col min-w-0 pr-2 w-full">
                     <!-- Üst Satır: İkon + İsim -->
@@ -242,18 +252,70 @@ ScoutApp.prototype.createDetailedSlider = function(label, sub, val, styleClass) 
                         ${iconHtml}
                         <span class="text-xs font-bold text-slate-200 truncate attr-label" title="${label}">${window.tAttr ? window.tAttr(label) : label}</span>
                     </div>
-                    <!-- Alt Satır: Açıklama (Soldan hizalı olsun diye padding veriyoruz) -->
+                    <!-- Alt Satır: Açıklama -->
                     <span class="text-[10px] text-slate-500 leading-tight mt-1 line-clamp-1 group-hover:text-slate-400 transition-colors pl-[22px]" title="${sub}">${window.tSub ? window.tSub(sub) : sub}</span>
                 </div>
-                <span id="val-${safeKey}" class="text-sm font-black bg-dark-900 px-2 py-0.5 rounded border border-dark-800 min-w-[36px] text-center" style="color: ${color}">${val}</span>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button type="button" id="btn-unobs-${safeKey}" onclick="app.toggleRepStatObserved('${label}', this)" class="unobserved-toggle-btn w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black border transition-all ${btnStyle}" title="${btnTitle}">?</button>
+                    <span id="val-${safeKey}" class="text-sm font-black bg-dark-900 px-2 py-0.5 rounded border border-dark-800 min-w-[36px] text-center transition-colors" style="color: ${color}">${displayVal}</span>
+                </div>
             </div>
             
             <!-- RENKLİ SLIDER -->
-            <input type="range" min="0" max="100" value="${val}" 
+            <input type="range" min="0" max="100" value="${numericVal}" 
+                id="slider-${safeKey}"
                 oninput="app.updateRepStat('${label}', this.value, this)" 
                 class="w-full h-1.5 bg-dark-800 rounded-lg appearance-none cursor-pointer relative z-20"
                 style="accent-color: ${color};">
         </div>`;
+};
+
+// --- GÖZLEMLENMEDİ (N/A) BUTON TOGGLE ---
+ScoutApp.prototype.toggleRepStatObserved = function(label, btnEl) {
+    const safeKey = label.replace(/\s+/g, '-').replace(/\//g, '-').toLowerCase();
+    const cardEl = document.getElementById(`card-${safeKey}`);
+    const valDisplay = document.getElementById(`val-${safeKey}`);
+    const sliderEl = document.getElementById(`slider-${safeKey}`);
+    const currentVal = this.state.newReport.stats[label];
+
+    if (currentVal === null) {
+        // Önceden gözlemlenmemiş -> aktifleştir
+        const restoredVal = parseInt(sliderEl ? sliderEl.value : 50) || 50;
+        this.state.newReport.stats[label] = restoredVal;
+        
+        if (cardEl) cardEl.classList.remove('attr-unobserved');
+        const color = restoredVal < 40 ? '#ef4444' : (restoredVal < 60 ? '#eab308' : (restoredVal < 80 ? '#a3e635' : '#22c55e'));
+        if (valDisplay) {
+            valDisplay.innerText = restoredVal;
+            valDisplay.style.color = color;
+        }
+        if (sliderEl) {
+            sliderEl.style.accentColor = color;
+            sliderEl.value = restoredVal;
+        }
+        if (btnEl) {
+            btnEl.className = 'unobserved-toggle-btn w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black border transition-all bg-dark-900 text-slate-500 hover:text-white border-dark-800 hover:border-slate-600';
+            btnEl.title = window.getLang && window.getLang() === 'en' ? 'Mark as Not Observed' : 'Bu maçta gözlemleme fırsatım olmadı (Es geç)';
+        }
+    } else {
+        // Aktif -> gözlemlenmedi (null) yap
+        this.state.newReport.stats[label] = null;
+        if (cardEl) cardEl.classList.add('attr-unobserved');
+        if (valDisplay) {
+            valDisplay.innerText = '?';
+            valDisplay.style.color = '#94a3b8';
+        }
+        if (sliderEl) {
+            sliderEl.style.accentColor = '#64748b';
+        }
+        if (btnEl) {
+            btnEl.className = 'unobserved-toggle-btn w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black border transition-all bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-sm';
+            btnEl.title = window.getLang && window.getLang() === 'en' ? 'Observed - Click to rate' : 'Gözlemlendi - Puanlamak için tıkla';
+        }
+    }
+
+    this.updateRadarChart();
+    this.calculateAverage();
 };
 
 // --- GÜNCELLEME VE RENK DEĞİŞİMİ ---
@@ -263,6 +325,17 @@ ScoutApp.prototype.updateRepStat = function(k, v, inputEl) {
     
     const safeKey = k.replace(/\s+/g, '-').replace(/\//g, '-').toLowerCase();
     const valDisplay = document.getElementById(`val-${safeKey}`);
+    const cardEl = document.getElementById(`card-${safeKey}`);
+    const btnEl = document.getElementById(`btn-unobs-${safeKey}`);
+
+    // Eğer soru işareti modundaysa otomatik olarak aktife al
+    if (cardEl && cardEl.classList.contains('attr-unobserved')) {
+        cardEl.classList.remove('attr-unobserved');
+    }
+    if (btnEl) {
+        btnEl.className = 'unobserved-toggle-btn w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black border transition-all bg-dark-900 text-slate-500 hover:text-white border-dark-800 hover:border-slate-600';
+        btnEl.title = window.getLang && window.getLang() === 'en' ? 'Mark as Not Observed' : 'Bu maçta gözlemleme fırsatım olmadı (Es geç)';
+    }
 
     // Dinamik Renk Hesabı
     const color = val < 40 ? '#ef4444' : (val < 60 ? '#eab308' : (val < 80 ? '#a3e635' : '#22c55e'));
@@ -392,12 +465,20 @@ ScoutApp.prototype.updateBirthDate = function(val) {
 };
 
 ScoutApp.prototype.calculateAverage = function() {
-    const stats = this.state.newReport.stats;
-    const values = Object.values(stats);
-    if(values.length===0) return;
+    const stats = this.state.newReport.stats || {};
+    const values = Object.values(stats).filter(v => typeof v === 'number' && !isNaN(v) && v !== null);
+    const badge = document.getElementById('rep-avg-badge');
+
+    if (values.length === 0) {
+        if(badge) { 
+            badge.innerText = '-'; 
+            badge.className = `w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold border-2 bg-dark-900 text-slate-500 border-slate-700`; 
+        }
+        return;
+    }
+
     const avg = Math.round(values.reduce((a,b)=>a+b,0)/values.length);
     const grade = this.getGrade(avg);
-    const badge = document.getElementById('rep-avg-badge');
     
     if(badge) { 
         badge.innerText = grade.letter; 
@@ -420,16 +501,21 @@ ScoutApp.prototype.updateRadarChart = function() {
             let sum = 0;
             let count = 0;
             attrs.forEach(attrObj => {
-                const val = this.state.newReport.stats[attrObj.name] || 50;
-                sum += parseInt(val);
-                count++;
+                const val = this.state.newReport.stats[attrObj.name];
+                if (typeof val === 'number' && !isNaN(val) && val !== null) {
+                    sum += parseInt(val);
+                    count++;
+                }
             });
             return count > 0 ? Math.round(sum / count) : 50;
         });
     } else {
         const s = attributeGroup['Genel']; 
         labels = s.map(x => x.name); 
-        data = s.map(a => this.state.newReport.stats[a.name] || 50);
+        data = s.map(a => {
+            const val = this.state.newReport.stats[a.name];
+            return (typeof val === 'number' && !isNaN(val) && val !== null) ? val : 50;
+        });
     }
     this.reportRadarChart.updateOptions({ xaxis: { categories: labels } });
     this.reportRadarChart.updateSeries([{ data: data }]);
@@ -440,8 +526,8 @@ ScoutApp.prototype.submitReport = function() {
     if(!r.name || !r.teamId) return alert(t('err_incomplete'));
     if(!r.birthDate) return alert(t('err_incomplete'));
 
-    const stats = Object.values(r.stats);
-    const avg = stats.length > 0 ? Math.round(stats.reduce((a,b)=>a+b,0)/stats.length) : 50;
+    const validStats = Object.values(r.stats || {}).filter(v => typeof v === 'number' && !isNaN(v) && v !== null);
+    const avg = validStats.length > 0 ? Math.round(validStats.reduce((a,b)=>a+b,0)/validStats.length) : 50;
     const teamIdInt = parseInt(r.teamId);
     const reportDate = new Date().toLocaleDateString('tr-TR');
     
